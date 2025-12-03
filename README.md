@@ -324,3 +324,4 @@ Built with modern web technologies and best practices for a production-ready exp
 ---
 
 **Made with ❤️ for better financial management**
+# expanse-tracker
