@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String          @id @default(cuid())
+  name          String
+  email         String          @unique
+  passwordHash  String
+  salary        Int             @default(0)
+  currency      String          @default("INR")
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  expenses      Expense[]
+  incomes       Income[]
+  udhar         Udhar[]
+  bankAccounts  BankAccount[]
+  smartScores   SmartScore[]
+  subscriptions Subscription[]
+}
+
+model Expense {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date           DateTime
+  title          String
+  amount         Int
+  category       String
+  bank           String
+  paymentMode    String
+  tags           String[]
+  notes          String?
+  receiptUrl     String?
+  isRecurring    Boolean  @default(false)
+  subscriptionId String?
+  createdAt      DateTime @default(now())
+
+  @@index([userId, date])
+  @@index([userId, category])
+}
+
+model Income {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime
+  source    String
+  amount    Int
+  notes     String?
+  createdAt DateTime @default(now())
+
+  @@index([userId, date])
+}
+
+model Udhar {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  person    String
+  reason    String
+  total     Int
+  remaining Int
+  direction String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Subscription {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name          String
+  amount        Int
+  interval      String
+  nextDueDate   DateTime
+  lastChargedAt DateTime
+  active        Boolean  @default(true)
+  source        String
+  expenseIds    String[]
+  createdAt     DateTime @default(now())
+
+  @@index([userId, active])
+}
+
+model SmartScore {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  year      Int
+  month     Int
+  score     Int
+  summary   String
+  metrics   Json
+  createdAt DateTime @default(now())
+
+  @@unique([userId, year, month])
+  @@index([userId])
+}
+
+model BankAccount {
+  id             String            @id @default(cuid())
+  userId         String
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider       String
+  providerAccId  String
+  bankName       String
+  maskedAccount  String
+  status         String
+  createdAt      DateTime          @default(now())
+  transactions   BankTransaction[]
+
+  @@index([userId])
+}
+
+model BankTransaction {
+  id              String      @id @default(cuid())
+  bankAccountId   String
+  bankAccount     BankAccount @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
+  userId          String
+  date            DateTime
+  amount          Int
+  description     String
+  type            String
+  rawMeta         Json
+  linkedExpenseId String?
+  createdAt       DateTime    @default(now())
+
+  @@index([bankAccountId, date])
+  @@index([userId, date])
+}
