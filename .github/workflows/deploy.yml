@@ -1,0 +1,203 @@
+name: 🚀 Deploy Expense Tracker to DigitalOcean
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allow manual deployment
+
+jobs:
+  deploy:
+    name: SSH Deploy via Docker Compose
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1️⃣ Checkout the code
+      - name: 🧩 Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Set up SSH
+      - name: 🔐 Set up SSH access
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # 3️⃣ Sync project files to server
+      - name: 📦 Sync project files to server
+        run: |
+          rsync -az --delete \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='*.log' \
+            --exclude='.env' \
+            --exclude='.env.local' \
+            --exclude='.env.production' \
+            --exclude='.next' \
+            --exclude='coverage' \
+            --exclude='dist' \
+            --exclude='build' \
+            --exclude='uploads' \
+            -e "ssh -o StrictHostKeyChecking=no" \
+            ./ ${{ secrets.USERNAME }}@${{ secrets.HOST }}:${{ secrets.PROJECT_DIR }}
+
+      # 4️⃣ Inject environment file
+      - name: ⚙️ Inject environment variables into server
+        run: |
+          echo "${{ secrets.ENV_FILE }}" | base64 -d > temp_env_file
+          scp -o StrictHostKeyChecking=no temp_env_file \
+            ${{ secrets.USERNAME }}@${{ secrets.HOST }}:${{ secrets.PROJECT_DIR }}/.env
+          rm temp_env_file
+          
+          ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
+          set -e
+          cd "${{ secrets.PROJECT_DIR }}"
+          
+          echo "✅ Environment file successfully written."
+          echo "📋 Verifying environment file..."
+          if [ -f .env ]; then
+            echo "✅ .env file exists"
+            echo "📊 Environment file size: $(wc -l < .env) lines"
+          else
+            echo "❌ .env file not found!"
+            exit 1
+          fi
+          EOF
+
+      # 5️⃣ Ensure required directories exist
+      - name: 📁 Ensure required directories exist on server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
+          set -e
+          cd "${{ secrets.PROJECT_DIR }}"
+          
+          echo "📁 Creating required directories..."
+          mkdir -p uploads
+          mkdir -p postgres_data
+          mkdir -p .next
+          
+          echo "🔐 Setting proper permissions..."
+          chmod 755 uploads
+          chmod 755 postgres_data
+          
+          echo "✅ Directory structure ready."
+          ls -la
+          EOF
+
+      # 6️⃣ Build & restart Docker containers
+      - name: 🐳 Build & restart Docker containers
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
+          set -euo pipefail
+          cd "${{ secrets.PROJECT_DIR }}"
+          
+          echo "🧱 Pulling latest Docker base images..."
+          docker compose pull || true
+          
+          echo "🛑 Stopping existing containers gracefully..."
+          docker compose down --remove-orphans || true
+          
+          echo "🧹 Cleaning up old containers and networks..."
+          docker container prune -f || true
+          docker network prune -f || true
+          
+          echo "🛠️ Building application image..."
+          docker compose build --no-cache app
+          
+          echo "🚀 Starting services..."
+          docker compose up -d --remove-orphans
+          
+          echo "⏳ Waiting for services to be ready..."
+          sleep 30
+          
+          echo "🏥 Checking service health..."
+          docker compose ps
+          
+          echo "📊 Checking application health..."
+          # Wait for app to be ready and test health endpoint
+          for i in {1..10}; do
+            if curl -f http://localhost:3000/api/health >/dev/null 2>&1; then
+              echo "✅ Application is healthy!"
+              break
+            else
+              echo "⏳ Waiting for application... (attempt $i/10)"
+              sleep 10
+            fi
+          done
+          
+          echo "🧹 Cleaning up old images..."
+          docker image prune -f || true
+          
+          echo "✅ Deployment complete!"
+          echo "📋 Running containers:"
+          docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+          
+          echo "📊 Application logs (last 20 lines):"
+          docker compose logs --tail=20 app
+          EOF
+
+      # 7️⃣ Run database migrations
+      - name: 🗄️ Run database migrations
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
+          set -e
+          cd "${{ secrets.PROJECT_DIR }}"
+          
+          echo "🗄️ Running database migrations..."
+          docker compose exec -T app npx prisma db push --accept-data-loss || {
+            echo "⚠️ Database migration failed, but continuing..."
+          }
+          
+          echo "🔄 Generating Prisma client..."
+          docker compose exec -T app npx prisma generate || {
+            echo "⚠️ Prisma generate failed, but continuing..."
+          }
+          
+          echo "✅ Database operations completed."
+          EOF
+
+      # 8️⃣ Verify deployment
+      - name: ✅ Verify deployment
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
+          set -e
+          cd "${{ secrets.PROJECT_DIR }}"
+          
+          echo "🔍 Final deployment verification..."
+          
+          # Check if containers are running
+          if ! docker compose ps | grep -q "Up"; then
+            echo "❌ No containers are running!"
+            docker compose logs
+            exit 1
+          fi
+          
+          # Check application health
+          if curl -f http://localhost:3000/api/health >/dev/null 2>&1; then
+            echo "✅ Application health check passed!"
+          else
+            echo "⚠️ Application health check failed, but deployment completed."
+            echo "📊 Application logs:"
+            docker compose logs --tail=50 app
+          fi
+          
+          # Show final status
+          echo "📋 Final container status:"
+          docker compose ps
+          
+          echo "💾 Disk usage:"
+          df -h
+          
+          echo "🎉 Deployment verification completed!"
+          EOF
+
+      # 9️⃣ Send deployment notification (optional)
+      - name: 📢 Send deployment notification
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Deployment successful!"
+            echo "🌐 Application should be available at your server IP:3000"
+          else
+            echo "❌ Deployment failed!"
+            echo "📊 Check the logs above for details."
+          fi

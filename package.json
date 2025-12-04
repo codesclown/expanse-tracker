@@ -22,7 +22,11 @@
     "docker:studio": "docker-compose --profile tools up -d",
     "docker:stop": "docker-compose down && docker-compose -f docker-compose.dev.yml down",
     "docker:logs": "docker-compose logs -f",
-    "docker:clean": "docker-compose down -v --rmi all"
+    "docker:clean": "docker-compose down -v --rmi all",
+    "deploy:prod": "./scripts/deploy-production.sh deploy",
+    "deploy:verify": "./scripts/deploy-production.sh verify",
+    "deploy:logs": "./scripts/deploy-production.sh logs",
+    "deploy:stop": "./scripts/deploy-production.sh stop"
   },
   "dependencies": {
     "@prisma/client": "^5.20.0",
