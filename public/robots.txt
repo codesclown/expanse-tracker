@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: http://139.59.57.157:3000/sitemap.xml
