@@ -48,8 +48,8 @@ export default function AddIncomeModal({ isOpen, onClose, onSave }: AddIncomeMod
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-      <div className="glass w-full sm:max-w-lg rounded-3xl max-h-[85vh] flex flex-col border border-border shadow-premium-lg animate-scale-in">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-2 sm:p-4">
+      <div className="glass w-full sm:max-w-lg rounded-2xl sm:rounded-3xl max-h-[90vh] sm:max-h-[85vh] flex flex-col border border-border shadow-premium-lg animate-scale-in">
         <div className="flex-shrink-0 glass-premium border-b border-border px-6 py-5 flex justify-between items-center rounded-t-3xl">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">

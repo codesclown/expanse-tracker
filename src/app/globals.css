@@ -138,6 +138,10 @@
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom);
   }
+  
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
 }
 
 /* --------------------------------------------------
@@ -861,20 +865,61 @@ button, input, textarea, select {
 /* Currency Symbol Enhancements */
 .currency-symbol {
   @apply inline-block font-bold;
-  font-size: 1.1em;
+  font-size: 1.3em;
   margin-right: 0.1em;
 }
 
 .currency-symbol-large {
   @apply inline-block font-bold;
-  font-size: 1.2em;
+  font-size: 1.4em;
   margin-right: 0.15em;
 }
 
 .currency-symbol-xl {
   @apply inline-block font-bold;
-  font-size: 1.3em;
+  font-size: 1.5em;
   margin-right: 0.2em;
+}
+
+/* Currency Symbol with better contrast */
+.currency-symbol-primary {
+  @apply inline-block font-bold text-primary;
+  font-size: 1.4em;
+  margin-right: 0.15em;
+}
+
+/* Payment Method Icons */
+.payment-icon {
+  @apply inline-flex items-center justify-center w-4 h-4 rounded;
+}
+
+.payment-icon-cash {
+  @apply text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400;
+}
+
+.payment-icon-card {
+  @apply text-blue-600 bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400;
+}
+
+.payment-icon-upi {
+  @apply text-purple-600 bg-purple-100 dark:bg-purple-900/30 dark:text-purple-400;
+}
+
+/* Tooltip Animations */
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tooltip Styles */
+.tooltip-premium {
+  @apply bg-gray-900/95 dark:bg-gray-800/95 backdrop-blur-md border border-gray-700/50 dark:border-gray-600/50 shadow-premium text-white;
 }
 
 /* Button Text - Consistent button typography */
@@ -1019,6 +1064,31 @@ button, input, textarea, select {
   .shadow-premium-lg {
     @apply shadow-xl;
   }
+  
+  /* Mobile-specific improvements */
+  .glass {
+    @apply p-3;
+  }
+  
+  /* Better mobile button spacing */
+  button, .btn-premium {
+    @apply min-h-[48px];
+  }
+  
+  /* Mobile-optimized grid gaps */
+  .grid {
+    @apply gap-3;
+  }
+  
+  /* Mobile card improvements */
+  .card-premium {
+    @apply p-4 rounded-xl;
+  }
+  
+  /* Mobile input improvements */
+  .input-premium {
+    @apply min-h-[48px] text-base;
+  }
 }
 
 /* Safe area handling for devices with notches */
@@ -1072,6 +1142,38 @@ button, input, textarea, select {
   }
 }
 
+/* Tablet optimizations */
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* Tablet-specific spacing */
+  .glass-premium {
+    @apply p-5;
+  }
+  
+  /* Tablet typography */
+  .heading-page {
+    @apply text-3xl;
+  }
+  
+  /* Tablet grid improvements */
+  .tablet-grid-2 {
+    @apply grid-cols-2;
+  }
+  
+  .tablet-grid-3 {
+    @apply grid-cols-3;
+  }
+  
+  /* Tablet card sizing */
+  .card-premium {
+    @apply p-5;
+  }
+  
+  /* Tablet button sizing */
+  .btn-premium {
+    @apply px-5 py-3;
+  }
+}
+
 /* Enhanced mobile button states */
 @media (max-width: 768px) {
   .btn-premium:active {
@@ -1080,6 +1182,98 @@ button, input, textarea, select {
   
   .glass:active {
     @apply scale-[0.98];
+  }
+  
+  /* Mobile-specific hover states (for touch devices) */
+  .mobile-touch-feedback:active {
+    @apply bg-secondary/50 scale-[0.98];
+    transition: all 0.1s ease;
+  }
+  
+  /* Better mobile navigation */
+  .mobile-nav-item {
+    @apply min-h-[56px] min-w-[56px];
+  }
+  
+  /* Mobile-optimized modal */
+  .mobile-modal {
+    @apply mx-2 my-4 max-h-[90vh] overflow-y-auto;
+  }
+  
+  /* Mobile-friendly tooltips */
+  .mobile-tooltip {
+    @apply text-sm p-3 max-w-[280px];
+  }
+  
+  /* Premium mobile navigation */
+  .mobile-top-nav {
+    backdrop-filter: blur(20px) saturate(180%);
+    background: rgba(255, 255, 255, 0.85);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  .dark .mobile-top-nav {
+    background: rgba(15, 15, 20, 0.9);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .mobile-bottom-nav {
+    backdrop-filter: blur(24px) saturate(200%);
+    background: rgba(255, 255, 255, 0.9);
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  
+  .dark .mobile-bottom-nav {
+    background: rgba(10, 10, 15, 0.95);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  
+  /* Minimal premium navigation improvements */
+  .nav-button-minimal {
+    @apply w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200;
+    @apply bg-secondary/40 text-muted-foreground hover:bg-secondary/60 hover:text-foreground;
+  }
+  
+  .nav-button-minimal.active {
+    @apply bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-sm;
+  }
+  
+  .nav-item-minimal {
+    @apply flex flex-col items-center justify-center py-1.5 px-2 transition-all duration-200;
+  }
+  
+  .nav-icon-minimal {
+    @apply w-7 h-7 rounded-lg flex items-center justify-center transition-all duration-200;
+  }
+  
+  .nav-icon-minimal.active {
+    @apply bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-sm;
+  }
+  
+  /* Minimal top navigation */
+  .top-nav-minimal {
+    backdrop-filter: blur(20px) saturate(180%);
+    background: rgba(255, 255, 255, 0.98);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    height: 64px;
+  }
+  
+  .dark .top-nav-minimal {
+    background: rgba(10, 10, 15, 0.98);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  /* Minimal bottom navigation */
+  .bottom-nav-minimal {
+    backdrop-filter: blur(20px) saturate(180%);
+    background: rgba(255, 255, 255, 0.98);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    height: 80px;
+  }
+  
+  .dark .bottom-nav-minimal {
+    background: rgba(10, 10, 15, 0.98);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
   }
 }
 /* --------------------------------------------------

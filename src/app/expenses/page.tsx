@@ -13,6 +13,7 @@ import {
 } from '@/components/Skeleton'
 import { useExpenses } from '@/hooks/useExpenses'
 import { useIncomes } from '@/hooks/useIncomes'
+import { InfoTooltip, TipTooltip } from '@/components/Tooltip'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useNotification } from '@/contexts/NotificationContext'
 
@@ -191,7 +192,7 @@ export default function Expenses() {
   if (loading) {
     return (
       <>
-        <div className="min-h-screen bg-premium-mesh pb-32 md:pb-8 md:pl-64 lg:pl-72">
+        <div className="min-h-screen bg-premium-mesh pt-16 pb-20 md:pt-0 md:pb-8 md:pl-64 lg:pl-72">
           {/* Header Skeleton */}
           <HeaderSkeleton />
 
@@ -238,9 +239,9 @@ export default function Expenses() {
 
   return (
     <>
-      <div className="min-h-screen bg-premium-mesh pb-32 md:pb-8 md:pl-64 lg:pl-72">
-        {/* Modern Header */}
-        <header className="relative overflow-hidden">
+      <div className="min-h-screen bg-premium-mesh pt-20 pb-20 md:pt-0 md:pb-8 md:pl-64 lg:pl-72">
+        {/* Clean Mobile Header */}
+        <header className="md:block hidden relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-600" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
           <div
@@ -274,8 +275,10 @@ export default function Expenses() {
                         Expenses
                       </span>
                       <span className="w-1 h-1 bg-white/60 rounded-full"></span>
-                      <span className="text-xs text-white/60">
-                        {stats.count} transactions • <span className="currency-symbol">₹</span>{stats.total.toLocaleString()} total
+                      <span className="text-xs text-white/60 flex items-center gap-1">
+                        <span>{stats.count} transactions •</span>
+                        <span className="currency-symbol-large text-white/80">₹</span>
+                        <span>{stats.total.toLocaleString()} total</span>
                       </span>
                     </div>
                     <h1 className="heading-page">
@@ -333,82 +336,67 @@ export default function Expenses() {
           </div>
         </header>
 
+        {/* Mobile Simple Header */}
+        <div className="md:hidden fixed top-12 left-0 right-0 z-40 px-4 py-3 bg-background/95 backdrop-blur-xl border-b border-border/10">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-lg font-bold text-foreground">Expenses</h1>
+              <p className="text-xs text-muted-foreground">
+                {stats.count} transactions • ₹{stats.total.toLocaleString()}
+              </p>
+            </div>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
         {/* Content */}
-        <main className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 -mt-12 pb-safe relative z-10 space-y-6">
-          {/* Compact Premium Statistics Cards */}
+        <main className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 mt-4 md:-mt-12 pb-safe relative z-10 space-y-6">
+          {/* Mobile-Friendly Statistics Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 animate-slide-in">
-            <div className="glass-premium rounded-2xl p-4 border border-border/20 shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 transition-all duration-200 group">
-              <div className="flex items-center justify-between mb-2">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                  </svg>
+            {/* Total Spent - Most Important */}
+            <div className="md:col-span-2 glass-premium rounded-2xl p-4 border border-border/20 shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 transition-all duration-200 group">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+                  <span className="text-white font-bold text-xl">₹</span>
                 </div>
-                <span className="text-xs px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded font-medium">
-                  Total
-                </span>
-              </div>
-              <div>
-                <p className="metric-value text-emerald-600">
-                  <span className="currency-symbol">₹</span>{stats.total.toLocaleString()}
-                </p>
-                <p className="text-xs text-muted-foreground">Total Spent</p>
+                <div className="flex-1">
+                  <p className="text-2xl md:text-3xl font-bold text-red-600 flex items-center gap-1">
+                    <span>₹{stats.total.toLocaleString()}</span>
+                  </p>
+                  <p className="text-sm text-muted-foreground">Total Spent • {stats.count} transactions</p>
+                </div>
               </div>
             </div>
 
+            {/* Average */}
             <div className="glass-premium rounded-2xl p-4 border border-border/20 shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 transition-all duration-200 group">
-              <div className="flex items-center justify-between mb-2">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
-                </div>
-                <span className="text-xs px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded font-medium">
-                  Count
-                </span>
-              </div>
-              <div>
-                <p className="metric-value text-blue-600">
-                  {stats.count}
-                </p>
-                <p className="text-xs text-muted-foreground">Transactions</p>
-              </div>
-            </div>
-
-            <div className="glass-premium rounded-2xl p-4 border border-border/20 shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 transition-all duration-200 group">
-              <div className="flex items-center justify-between mb-2">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="text-center">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mx-auto mb-2 shadow-sm group-hover:scale-105 transition-transform">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                   </svg>
                 </div>
-                <span className="text-xs px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded font-medium">
-                  Avg
-                </span>
-              </div>
-              <div>
-                <p className="metric-value text-amber-600">
-                  <span className="currency-symbol">₹</span>{Math.round(stats.average).toLocaleString()}
-                </p>
+                <p className="text-lg font-bold text-amber-600">₹{Math.round(stats.average).toLocaleString()}</p>
                 <p className="text-xs text-muted-foreground">Average</p>
               </div>
             </div>
 
+            {/* Highest */}
             <div className="glass-premium rounded-2xl p-4 border border-border/20 shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 transition-all duration-200 group">
-              <div className="flex items-center justify-between mb-2">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="text-center">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center mx-auto mb-2 shadow-sm group-hover:scale-105 transition-transform">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                   </svg>
                 </div>
-                <span className="text-xs px-1.5 py-0.5 bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 rounded font-medium">
-                  Peak
-                </span>
-              </div>
-              <div>
-                <p className="metric-value text-rose-600">
-                  <span className="currency-symbol">₹</span>{stats.highest.toLocaleString()}
-                </p>
+                <p className="text-lg font-bold text-rose-600">₹{stats.highest.toLocaleString()}</p>
                 <p className="text-xs text-muted-foreground">Highest</p>
               </div>
             </div>
@@ -492,19 +480,10 @@ export default function Expenses() {
             )}
           </div>
 
-          {/* Compact Advanced Filters */}
+          {/* Mobile-Friendly Filters */}
           <div className="glass-premium rounded-2xl p-4 border border-border/20 shadow-premium animate-slide-in">
             <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-sm">
-                  <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                  </svg>
-                </div>
-                <h3 className="text-sm font-semibold text-foreground">Filters</h3>
-              </div>
-              
-              {/* Clear Filters */}
+              <h3 className="text-sm font-semibold text-foreground">Quick Filters</h3>
               <button
                 onClick={() => {
                   setCategoryFilter('All')
@@ -515,25 +494,21 @@ export default function Expenses() {
                   setSortBy('date')
                   setSortOrder('desc')
                 }}
-                className="px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground bg-secondary/50 hover:bg-secondary rounded-lg transition-all duration-200 hover:scale-105"
+                className="px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground bg-secondary/50 hover:bg-secondary rounded-lg transition-all duration-200"
               >
                 Clear All
               </button>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            {/* Mobile: Show only most important filters */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {/* Category Filter */}
-              <div className="space-y-1.5">
-                <label className="flex items-center gap-1.5 text-xs font-medium text-foreground">
-                  <svg className="w-3 h-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                  </svg>
-                  Category
-                </label>
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-foreground">Category</label>
                 <select
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="input-premium w-full px-3 py-2 text-xs font-medium"
+                  className="input-premium w-full px-3 py-2.5 text-sm font-medium"
                 >
                   {categories.map(cat => (
                     <option key={cat} value={cat}>{cat}</option>
@@ -542,17 +517,12 @@ export default function Expenses() {
               </div>
 
               {/* Date Filter */}
-              <div className="space-y-1.5">
-                <label className="flex items-center gap-1.5 text-xs font-medium text-foreground">
-                  <svg className="w-3 h-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  Date
-                </label>
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-foreground">Time Period</label>
                 <select
                   value={dateFilter}
                   onChange={(e) => setDateFilter(e.target.value)}
-                  className="input-premium w-full px-3 py-2 text-xs font-medium"
+                  className="input-premium w-full px-3 py-2.5 text-sm font-medium"
                 >
                   <option value="All">All Time</option>
                   <option value="Today">Today</option>
@@ -563,17 +533,12 @@ export default function Expenses() {
               </div>
 
               {/* Amount Filter */}
-              <div className="space-y-1.5">
-                <label className="flex items-center gap-1.5 text-xs font-medium text-foreground">
-                  <svg className="w-3 h-3 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                  </svg>
-                  Amount
-                </label>
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-foreground">Amount Range</label>
                 <select
                   value={amountFilter}
                   onChange={(e) => setAmountFilter(e.target.value)}
-                  className="input-premium w-full px-3 py-2 text-xs font-medium"
+                  className="input-premium w-full px-3 py-2.5 text-sm font-medium"
                 >
                   <option value="All">All Amounts</option>
                   <option value="Under ₹100">Under ₹100</option>
@@ -582,64 +547,42 @@ export default function Expenses() {
                   <option value="Over ₹1000">Over ₹1000</option>
                 </select>
               </div>
-
-              {/* Bank Filter */}
-              <div className="space-y-1.5">
-                <label className="flex items-center gap-1.5 text-xs font-medium text-foreground">
-                  <svg className="w-3 h-3 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                  </svg>
-                  Bank
-                </label>
-                <select
-                  value={bankFilter}
-                  onChange={(e) => setBankFilter(e.target.value)}
-                  className="input-premium w-full px-3 py-2 text-xs font-medium"
-                >
-                  {banks.map(bank => (
-                    <option key={bank} value={bank}>{bank}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Sort By */}
-              <div className="space-y-1.5">
-                <label className="flex items-center gap-1.5 text-xs font-medium text-foreground">
-                  <svg className="w-3 h-3 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
-                  </svg>
-                  Sort
-                </label>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="input-premium w-full px-3 py-2 text-xs font-medium"
-                >
-                  <option value="date">Date</option>
-                  <option value="amount">Amount</option>
-                  <option value="title">Title</option>
-                  <option value="category">Category</option>
-                </select>
-              </div>
-
-              {/* Sort Order */}
-              <div className="space-y-1.5">
-                <label className="flex items-center gap-1.5 text-xs font-medium text-foreground">
-                  <svg className="w-3 h-3 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                  </svg>
-                  Order
-                </label>
-                <select
-                  value={sortOrder}
-                  onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
-                  className="input-premium w-full px-3 py-2 text-xs font-medium"
-                >
-                  <option value="desc">Newest First</option>
-                  <option value="asc">Oldest First</option>
-                </select>
-              </div>
             </div>
+
+            {/* Collapsible Advanced Filters for Mobile */}
+            <details className="md:hidden mt-4">
+              <summary className="text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
+                More Filters
+              </summary>
+              <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-border/20">
+                {/* Bank Filter */}
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-foreground">Payment Method</label>
+                  <select
+                    value={bankFilter}
+                    onChange={(e) => setBankFilter(e.target.value)}
+                    className="input-premium w-full px-3 py-2 text-sm font-medium"
+                  >
+                    {banks.map(bank => (
+                      <option key={bank} value={bank}>{bank}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Sort Order */}
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-foreground">Sort Order</label>
+                  <select
+                    value={sortOrder}
+                    onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
+                    className="input-premium w-full px-3 py-2 text-sm font-medium"
+                  >
+                    <option value="desc">Newest First</option>
+                    <option value="asc">Oldest First</option>
+                  </select>
+                </div>
+              </div>
+            </details>
           </div>
 
           {/* Premium Compact Expenses List */}
@@ -713,12 +656,22 @@ export default function Expenses() {
                           <div className="flex items-center gap-2 ml-4">
                             {/* Amount */}
                             <div className="text-right">
-                              <p className="font-bold text-sm text-red-500">
-                                -<span className="currency-symbol">₹</span>{expense.amount.toLocaleString()}
+                              <p className="font-bold text-base text-red-500 flex items-center justify-end gap-1">
+                                <span className="currency-symbol-large text-red-600">₹</span>
+                                <span>{expense.amount.toLocaleString()}</span>
                               </p>
-                              <p className="text-xs text-muted-foreground">
-                                {expense.paymentMode || 'Cash'}
-                              </p>
+                              <div className="flex items-center justify-end gap-1 text-xs text-muted-foreground">
+                                {(expense.paymentMode || 'Cash') === 'Cash' ? (
+                                  <svg className="w-3 h-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                                  </svg>
+                                ) : (
+                                  <svg className="w-3 h-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                  </svg>
+                                )}
+                                <span>{expense.paymentMode || 'Cash'}</span>
+                              </div>
                             </div>
 
                             {/* Actions */}

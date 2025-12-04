@@ -6,6 +6,7 @@ import { useTheme } from '@/contexts/ThemeContext'
 import { HeaderSkeleton, CardSkeleton } from '@/components/Skeleton'
 import { useExpenses } from '@/hooks/useExpenses'
 import { useIncomes } from '@/hooks/useIncomes'
+import { InfoTooltip } from '@/components/Tooltip'
 import { useState } from 'react'
 
 export default function Reports() {
@@ -24,7 +25,7 @@ export default function Reports() {
   if (expensesLoading || incomesLoading) {
     return (
       <>
-        <div className="min-h-screen bg-premium-mesh pb-32 md:pb-8 md:pl-64 lg:pl-72">
+        <div className="min-h-screen bg-premium-mesh pt-16 pb-20 md:pt-0 md:pb-8 md:pl-64 lg:pl-72">
           {/* Header Skeleton */}
           <HeaderSkeleton />
 
@@ -72,9 +73,9 @@ export default function Reports() {
 
   return (
     <>
-      <div className="min-h-screen bg-premium-mesh pb-32 md:pb-8 md:pl-64 lg:pl-72">
-        {/* Modern Header */}
-        <header className="relative overflow-hidden">
+      <div className="min-h-screen bg-premium-mesh pt-20 pb-20 md:pt-0 md:pb-8 md:pl-64 lg:pl-72">
+        {/* Desktop Header */}
+        <header className="md:block hidden relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
           <div
@@ -167,6 +168,26 @@ export default function Reports() {
           </div>
         </header>
 
+        {/* Mobile Simple Header */}
+        <div className="md:hidden fixed top-12 left-0 right-0 z-40 px-4 py-3 bg-background/95 backdrop-blur-xl border-b border-border/10">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-lg font-bold text-foreground">Reports</h1>
+              <p className="text-xs text-muted-foreground">
+                Export & Analyze • {expenses.length + incomes.length} transactions
+              </p>
+            </div>
+            <button
+              onClick={handleOpenReports}
+              className="w-10 h-10 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
         <main className="max-w-4xl mx-auto px-4 md:px-6 lg:px-8 -mt-12 pb-safe relative z-10 space-y-8">
           {/* Quick Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-slide-in">
@@ -177,7 +198,13 @@ export default function Reports() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
                   </svg>
                 </div>
-                <span className="text-sm font-medium text-foreground">Total Income</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-sm font-medium text-foreground">Total Income</span>
+                  <InfoTooltip 
+                    content="Sum of all income transactions recorded"
+                    iconSize="w-2.5 h-2.5"
+                  />
+                </div>
               </div>
               <p className="text-2xl font-bold text-emerald-600"><span className="currency-symbol-large">₹</span>{incomes.reduce((sum, i) => sum + i.amount, 0).toLocaleString()}</p>
               <p className="text-xs text-muted-foreground">{incomes.length} transactions</p>
@@ -190,7 +217,13 @@ export default function Reports() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 13l-5 5m0 0l-5-5m5 5V6" />
                   </svg>
                 </div>
-                <span className="text-sm font-medium text-foreground">Total Expenses</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-sm font-medium text-foreground">Total Expenses</span>
+                  <InfoTooltip 
+                    content="Sum of all expense transactions recorded"
+                    iconSize="w-2.5 h-2.5"
+                  />
+                </div>
               </div>
               <p className="text-2xl font-bold text-rose-600"><span className="currency-symbol-large">₹</span>{expenses.reduce((sum, e) => sum + e.amount, 0).toLocaleString()}</p>
               <p className="text-xs text-muted-foreground">{expenses.length} transactions</p>
@@ -203,7 +236,13 @@ export default function Reports() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
-                <span className="text-sm font-medium text-foreground">Net Savings</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-sm font-medium text-foreground">Net Savings</span>
+                  <InfoTooltip 
+                    content="Total income minus total expenses (positive = savings, negative = deficit)"
+                    iconSize="w-2.5 h-2.5"
+                  />
+                </div>
               </div>
               <p className="text-2xl font-bold text-violet-600"><span className="currency-symbol-large">₹</span>{(incomes.reduce((sum, i) => sum + i.amount, 0) - expenses.reduce((sum, e) => sum + e.amount, 0)).toLocaleString()}</p>
               <p className="text-xs text-muted-foreground">Available balance</p>

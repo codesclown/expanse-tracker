@@ -6,6 +6,7 @@ import AddUdharModal from '@/components/AddUdharModal'
 import { HeaderSkeleton, CardSkeleton, ListItemSkeleton } from '@/components/Skeleton'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { useTheme } from '@/contexts/ThemeContext'
+import { InfoTooltip } from '@/components/Tooltip'
 
 export default function Udhar() {
   const [udhars, setUdhars] = useLocalStorage<any[]>('udhars', [])
@@ -21,7 +22,7 @@ export default function Udhar() {
   if (!mounted) {
     return (
       <>
-        <div className="min-h-screen bg-premium-mesh pb-32 md:pb-8 md:pl-64 lg:pl-72">
+        <div className="min-h-screen bg-premium-mesh pt-16 pb-20 md:pt-0 md:pb-8 md:pl-64 lg:pl-72">
           {/* Header Skeleton */}
           <HeaderSkeleton />
 
@@ -74,9 +75,9 @@ export default function Udhar() {
 
   return (
     <>
-      <div className="min-h-screen bg-premium-mesh pb-32 md:pb-8 md:pl-64 lg:pl-72">
-        {/* Modern Header */}
-        <header className="relative overflow-hidden">
+      <div className="min-h-screen bg-premium-mesh pt-20 pb-20 md:pt-0 md:pb-8 md:pl-64 lg:pl-72">
+        {/* Desktop Header */}
+        <header className="md:block hidden relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
           <div
@@ -169,7 +170,27 @@ export default function Udhar() {
           </div>
         </header>
 
-        <main className="max-w-4xl mx-auto px-4 md:px-6 lg:px-8 -mt-12 pb-safe relative z-10 space-y-8">
+        {/* Mobile Simple Header */}
+        <div className="md:hidden fixed top-12 left-0 right-0 z-40 px-4 py-3 bg-background/95 backdrop-blur-xl border-b border-border/10">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-lg font-bold text-foreground">Udhar</h1>
+              <p className="text-xs text-muted-foreground">
+                {udhars.length} loans • Net: ₹{Math.abs(netBalance).toLocaleString()}
+              </p>
+            </div>
+            <button
+              onClick={() => setShowModal(true)}
+              className="w-10 h-10 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <main className="max-w-4xl mx-auto px-4 md:px-6 lg:px-8 mt-4 md:-mt-12 pb-safe relative z-10 space-y-8">
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div className="glass rounded-2xl p-4 border border-border shadow-lg animate-slide-in">
@@ -180,7 +201,13 @@ export default function Udhar() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Money Given</p>
+                  <div className="flex items-center gap-1 mb-1">
+                    <p className="text-xs text-muted-foreground">Money Given</p>
+                    <InfoTooltip 
+                      content="Total amount you have lent to others"
+                      iconSize="w-2.5 h-2.5"
+                    />
+                  </div>
                   <p className="metric-value text-emerald-600 dark:text-emerald-400"><span className="currency-symbol">₹</span>{totalGiven.toLocaleString()}</p>
                 </div>
               </div>
@@ -194,7 +221,13 @@ export default function Udhar() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Money Taken</p>
+                  <div className="flex items-center gap-1 mb-1">
+                    <p className="text-xs text-muted-foreground">Money Taken</p>
+                    <InfoTooltip 
+                      content="Total amount you have borrowed from others"
+                      iconSize="w-2.5 h-2.5"
+                    />
+                  </div>
                   <p className="metric-value text-red-500 dark:text-red-400"><span className="currency-symbol">₹</span>{totalTaken.toLocaleString()}</p>
                 </div>
               </div>
@@ -212,7 +245,13 @@ export default function Udhar() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Net Balance</p>
+                  <div className="flex items-center gap-1 mb-1">
+                    <p className="text-xs text-muted-foreground">Net Balance</p>
+                    <InfoTooltip 
+                      content={netBalance >= 0 ? "You are owed this amount (Money Given - Money Taken)" : "You owe this amount (Money Taken - Money Given)"}
+                      iconSize="w-2.5 h-2.5"
+                    />
+                  </div>
                   <p className={`metric-value ${
                     netBalance >= 0 
                       ? 'text-blue-600 dark:text-blue-400' 

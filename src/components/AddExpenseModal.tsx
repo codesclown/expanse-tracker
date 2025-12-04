@@ -58,8 +58,8 @@ export default function AddExpenseModal({ isOpen, onClose, onSave }: AddExpenseM
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-      <div className="glass w-full sm:max-w-lg rounded-3xl max-h-[85vh] flex flex-col border border-border shadow-premium-lg animate-scale-in">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-2 sm:p-4">
+      <div className="glass w-full sm:max-w-lg rounded-2xl sm:rounded-3xl max-h-[90vh] sm:max-h-[85vh] flex flex-col border border-border shadow-premium-lg animate-scale-in">
         <div className="flex-shrink-0 glass-premium border-b border-border px-6 py-5 flex justify-between items-center rounded-t-3xl">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center shadow-lg">
@@ -107,7 +107,7 @@ export default function AddExpenseModal({ isOpen, onClose, onSave }: AddExpenseM
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block label-text text-foreground mb-3">Category</label>
               <select
@@ -137,7 +137,7 @@ export default function AddExpenseModal({ isOpen, onClose, onSave }: AddExpenseM
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block label-text text-foreground mb-3">Bank</label>
               <select

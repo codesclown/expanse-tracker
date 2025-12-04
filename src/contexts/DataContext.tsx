@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { api } from '@/lib/api'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface DataContextType {
   refreshTrigger: number
@@ -15,6 +16,7 @@ const DataContext = createContext<DataContextType | undefined>(undefined)
 export function DataProvider({ children }: { children: ReactNode }) {
   const [refreshTrigger, setRefreshTrigger] = useState(0)
   const [financialSummary, setFinancialSummary] = useState<any>(null)
+  const { user, loading } = useAuth()
 
   const triggerRefresh = () => {
     console.log('🔄 Triggering global data refresh...')
@@ -22,6 +24,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }
 
   const refreshFinancialSummary = async () => {
+    // Only fetch data if user is authenticated
+    if (!user) {
+      console.log('👤 No authenticated user, skipping financial summary fetch')
+      setFinancialSummary(null)
+      return
+    }
+
     try {
       console.log('📊 Refreshing financial summary...')
       const summary = await api.getFinancialSummary()
@@ -29,12 +38,16 @@ export function DataProvider({ children }: { children: ReactNode }) {
       console.log('✅ Financial summary updated:', summary)
     } catch (error) {
       console.error('❌ Failed to fetch financial summary:', error)
+      setFinancialSummary(null)
     }
   }
 
   useEffect(() => {
-    refreshFinancialSummary()
-  }, [refreshTrigger])
+    // Only refresh when auth loading is complete
+    if (!loading) {
+      refreshFinancialSummary()
+    }
+  }, [refreshTrigger, user, loading])
 
   return (
     <DataContext.Provider value={{ 

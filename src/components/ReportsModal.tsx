@@ -180,8 +180,8 @@ export default function ReportsModal({ isOpen, onClose, expenses, incomes, categ
   const { filteredExpenses, filteredIncomes } = getFilteredData()
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="glass rounded-2xl shadow-premium-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-border">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50">
+      <div className="glass rounded-2xl sm:rounded-3xl shadow-premium-lg p-4 sm:p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-border">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
@@ -221,7 +221,7 @@ export default function ReportsModal({ isOpen, onClose, expenses, incomes, categ
             </div>
 
             {useCustomRange ? (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-foreground mb-2">From Date</label>
                   <input
@@ -242,7 +242,7 @@ export default function ReportsModal({ isOpen, onClose, expenses, incomes, categ
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-foreground mb-2">Report Type</label>
                   <select
@@ -286,7 +286,7 @@ export default function ReportsModal({ isOpen, onClose, expenses, incomes, categ
           {/* Preview */}
           <div className="bg-secondary/20 rounded-xl p-4">
             <h4 className="text-sm font-semibold text-foreground mb-2">📊 Preview</h4>
-            <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="text-muted-foreground">Period:</span>
                 <p className="font-medium text-foreground">{getPeriodDescription()}</p>

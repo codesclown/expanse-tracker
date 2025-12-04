@@ -13,6 +13,8 @@ import {
 } from '@/components/Skeleton'
 import { useExpenses } from '@/hooks/useExpenses'
 import { useIncomes } from '@/hooks/useIncomes'
+import { calculateFinancialHealthScore, getHealthScoreStatus } from '@/lib/healthScore'
+import { InfoTooltip, TipTooltip } from '@/components/Tooltip'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useData } from '@/contexts/DataContext'
 import { api } from '@/lib/api'
@@ -32,7 +34,8 @@ export default function Dashboard() {
   const totalExpense = financialSummary?.totalExpenses || expenses.reduce((sum: number, e: any) => sum + e.amount, 0)
   const totalIncome = financialSummary?.totalIncome || incomes.reduce((sum: number, i: any) => sum + i.amount, 0)
   const savings = financialSummary?.savings || (totalIncome - totalExpense)
-  const smartScore = totalIncome > 0 ? Math.round((savings / totalIncome) * 100) : 0
+  const smartScore = calculateFinancialHealthScore(expenses, incomes)
+  const healthStatus = getHealthScoreStatus(smartScore)
 
   // Category breakdown
   const categoryData = useMemo(() => {
@@ -122,7 +125,10 @@ export default function Dashboard() {
             <div key={category} className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="font-medium text-foreground">{category}</span>
-                <span className="text-muted-foreground"><span className="currency-symbol">₹</span>{amount.toLocaleString()}</span>
+                <span className="text-muted-foreground flex items-center gap-1">
+                  <span className="currency-symbol-large text-foreground">₹</span>
+                  <span>{amount.toLocaleString()}</span>
+                </span>
               </div>
               <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
                 <div 
@@ -181,7 +187,7 @@ export default function Dashboard() {
   if (expensesLoading || incomesLoading) {
     return (
       <>
-        <div className="min-h-screen bg-premium-mesh pb-32 md:pb-8 md:pl-64 lg:pl-72">
+        <div className="min-h-screen bg-premium-mesh pt-16 pb-20 md:pt-0 md:pb-8 md:pl-64 lg:pl-72">
           {/* Header Skeleton */}
           <HeaderSkeleton />
 
@@ -253,7 +259,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <div className="min-h-screen bg-premium-mesh pb-32 md:pb-8 md:pl-64 lg:pl-72">
+      <div className="min-h-screen bg-premium-mesh pt-16 pb-20 md:pt-0 md:pb-8 md:pl-64 lg:pl-72">
         {/* Header */}
         <header className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600" />
@@ -264,7 +270,7 @@ export default function Dashboard() {
               backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23FFFFFF' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
             }}
           />
-          <div className="relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8">
+          <div className="relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8 mt-0 md:mt-0">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="text-white space-y-2">
                 <div className="flex items-center gap-3 md:gap-4">
@@ -416,9 +422,15 @@ export default function Dashboard() {
                     />
                   </svg>
                 </div>
-                <span className="text-xs px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30 text-emerald-700 dark:text-emerald-300 font-semibold border border-emerald-200/50 dark:border-emerald-800/50">
-                  Income
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30 text-emerald-700 dark:text-emerald-300 font-semibold border border-emerald-200/50 dark:border-emerald-800/50">
+                    Income
+                  </span>
+                  <InfoTooltip 
+                    content="Total money earned from all sources including salary, freelance, investments, and other income streams."
+                    position="left"
+                  />
+                </div>
               </div>
               <div className="space-y-2">
                 <p className="metric-value-large text-gradient-success">
@@ -450,9 +462,15 @@ export default function Dashboard() {
                     />
                   </svg>
                 </div>
-                <span className="text-xs px-3 py-1.5 rounded-full bg-gradient-to-r from-rose-50 to-pink-50 dark:from-rose-900/30 dark:to-pink-900/30 text-rose-700 dark:text-rose-300 font-semibold border border-rose-200/50 dark:border-rose-800/50">
-                  Expenses
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs px-3 py-1.5 rounded-full bg-gradient-to-r from-rose-50 to-pink-50 dark:from-rose-900/30 dark:to-pink-900/30 text-rose-700 dark:text-rose-300 font-semibold border border-rose-200/50 dark:border-rose-800/50">
+                    Expenses
+                  </span>
+                  <InfoTooltip 
+                    content="Total money spent across all categories including food, transport, shopping, bills, and other expenses."
+                    position="left"
+                  />
+                </div>
               </div>
               <div className="space-y-2">
                 <p className="metric-value-large text-gradient-danger">
@@ -470,13 +488,7 @@ export default function Dashboard() {
             <div className="glass rounded-3xl p-6 border border-border shadow-premium hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1 group">
               <div className="flex items-center justify-between mb-4">
                 <div
-                  className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 ${
-                    smartScore >= 70
-                      ? 'bg-gradient-to-br from-violet-500 via-purple-600 to-indigo-600'
-                      : smartScore >= 40
-                      ? 'bg-gradient-to-br from-amber-500 via-orange-600 to-yellow-600'
-                      : 'bg-gradient-to-br from-red-500 via-rose-600 to-pink-600'
-                  }`}
+                  className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 ${healthStatus.bgClass}`}
                 >
                   <svg
                     className="w-6 h-6 text-white"
@@ -492,39 +504,29 @@ export default function Dashboard() {
                     />
                   </svg>
                 </div>
-                <span
-                  className={`text-xs px-3 py-1.5 rounded-full font-semibold border ${
-                    smartScore >= 70
-                      ? 'bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-900/30 dark:to-purple-900/30 text-violet-700 dark:text-violet-300 border-violet-200/50 dark:border-violet-800/50'
-                      : smartScore >= 40
-                      ? 'bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/30 dark:to-orange-900/30 text-amber-700 dark:text-amber-300 border-amber-200/50 dark:border-amber-800/50'
-                      : 'bg-gradient-to-r from-red-50 to-rose-50 dark:from-red-900/30 dark:to-rose-900/30 text-red-700 dark:text-red-300 border-red-200/50 dark:border-red-800/50'
-                  }`}
-                >
-                  Health Score
-                </span>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`text-xs px-3 py-1.5 rounded-full font-semibold border ${healthStatus.badgeClass}`}
+                  >
+                    Health Score
+                  </span>
+                  <InfoTooltip 
+                    content="Comprehensive financial wellness score based on savings rate (40%), income stability (20%), expense tracking (20%), budget adherence (10%), and spending diversity (10%)."
+                    position="left"
+                  />
+                </div>
               </div>
               <div className="space-y-2">
                 <p
-                  className={`metric-value-large ${
-                    smartScore >= 70
-                      ? 'text-gradient-primary'
-                      : smartScore >= 40
-                      ? 'text-gradient-warning'
-                      : 'text-gradient-danger'
-                  }`}
+                  className={`metric-value-large ${healthStatus.metricClass}`}
                 >
                   {smartScore}%
                 </p>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-muted-foreground">Financial health</span>
                   <div className="w-1 h-1 bg-muted-foreground/50 rounded-full"></div>
-                  <span className={`text-xs font-medium ${
-                    smartScore >= 70 ? 'text-violet-600 dark:text-violet-400' : 
-                    smartScore >= 40 ? 'text-amber-600 dark:text-amber-400' : 
-                    'text-red-600 dark:text-red-400'
-                  }`}>
-                    {smartScore >= 70 ? 'Excellent' : smartScore >= 40 ? 'Good' : 'Needs attention'}
+                  <span className={`text-xs font-medium ${healthStatus.colorClass}`}>
+                    {healthStatus.text}
                   </span>
                 </div>
               </div>
@@ -752,8 +754,9 @@ export default function Dashboard() {
                             <span className="text-sm font-medium text-foreground">
                               {category}
                             </span>
-                            <span className="text-sm font-semibold text-foreground">
-                              <span className="currency-symbol">₹</span>{amount.toLocaleString()}
+                            <span className="text-sm font-semibold text-foreground flex items-center gap-1">
+                              <span className="currency-symbol-large">₹</span>
+                              <span>{amount.toLocaleString()}</span>
                             </span>
                           </div>
                           <div className="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
@@ -859,7 +862,7 @@ export default function Dashboard() {
                           ? 'text-emerald-500 dark:text-emerald-400' 
                           : 'text-red-500 dark:text-red-400'
                       }`}>
-                        {transaction.type === 'income' ? '+' : '-'}<span className="currency-symbol">₹</span>{transaction.amount.toLocaleString()}
+{transaction.type === 'income' ? '+' : '-'}<span className="currency-symbol-large">₹</span>{transaction.amount.toLocaleString()}
                       </p>
                     </div>
                   ))}

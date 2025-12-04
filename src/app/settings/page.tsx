@@ -121,9 +121,9 @@ export default function Settings() {
 
   return (
     <>
-      <div className="min-h-screen bg-premium-mesh pb-32 md:pb-8 md:pl-64 lg:pl-72">
-        {/* Modern Header */}
-        <header className="relative overflow-hidden">
+      <div className="min-h-screen bg-premium-mesh pt-16 pb-20 md:pt-0 md:pb-8 md:pl-64 lg:pl-72">
+        {/* Desktop Header */}
+        <header className="md:block hidden relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
           <div
@@ -221,6 +221,46 @@ export default function Settings() {
             </div>
           </div>
         </header>
+
+        {/* Mobile Simple Header */}
+        <div className="md:hidden px-4 py-3 bg-background/95 backdrop-blur-xl border-b border-border/10">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-lg font-bold text-foreground">Settings</h1>
+              <p className="text-xs text-muted-foreground">
+                Account & Preferences
+              </p>
+            </div>
+            <button
+              onClick={toggleTheme}
+              disabled={isTransitioning}
+              className="w-10 h-10 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md disabled:opacity-50"
+            >
+              <div className="relative w-5 h-5">
+                <svg
+                  className={`absolute inset-0 w-5 h-5 text-white transition-all duration-300 ${
+                    theme === 'light' ? 'opacity-100 rotate-0' : 'opacity-0 rotate-180'
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+                <svg
+                  className={`absolute inset-0 w-5 h-5 text-white transition-all duration-300 ${
+                    theme === 'dark' ? 'opacity-100 rotate-0' : 'opacity-0 -rotate-180'
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              </div>
+            </button>
+          </div>
+        </div>
 
         <main className="max-w-3xl mx-auto px-4 md:px-6 lg:px-8 -mt-12 pb-safe relative z-10 space-y-6">
           {/* Slick Profile Card */}
