@@ -228,7 +228,7 @@ export default function Analytics() {
 
   return (
     <>
-      <div className="min-h-screen bg-premium-mesh pt-20 pb-20 md:pt-0 md:pb-8 md:pl-64 lg:pl-72">
+      <div className="min-h-screen bg-premium-mesh pt-16 pb-20 md:pt-0 md:pb-8 md:pl-64 lg:pl-72">
         {/* Desktop Header */}
         <header className="md:block hidden relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600" />
@@ -349,59 +349,91 @@ export default function Analytics() {
         </div>
 
         <main className="max-w-7xl mx-auto px-3 md:px-6 lg:px-8 mt-16 md:-mt-12 pb-safe relative z-10 space-y-4 md:space-y-8">
-          {/* Mobile-Friendly Key Metrics */}
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 animate-slide-in">
-            {/* Health Score - Most Important */}
-            <div className="col-span-2 md:col-span-2 lg:col-span-1 glass-premium rounded-xl md:rounded-2xl p-3 md:p-6 border border-border/20 shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 transition-all duration-200 group text-center">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center mx-auto mb-3 shadow-lg group-hover:scale-105 transition-transform">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
+          {/* Key Metrics Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 animate-slide-in">
+            {/* Financial Health */}
+            <div className="col-span-2 md:col-span-1 glass-premium rounded-xl p-4 md:p-5 border border-border/20 shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 transition-all duration-200 group">
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+                  <svg className="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-xs px-1.5 py-0.5 bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 rounded font-medium">Health</span>
+                  <InfoTooltip 
+                    content="Comprehensive financial wellness score based on savings rate, income stability, expense tracking, and spending patterns"
+                    iconSize="w-2.5 h-2.5"
+                  />
+                </div>
               </div>
-              <p className="text-3xl font-bold text-violet-600 mb-1">{analyticsData.healthScore}%</p>
-              <p className="text-sm text-muted-foreground">Financial Health</p>
-            </div>
-
-            {/* Income */}
-            <div className="glass-premium rounded-2xl p-4 border border-border/20 shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 transition-all duration-200 group">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-                  <span className="text-white font-bold text-lg">₹</span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-lg font-bold text-emerald-600">₹{incomes.reduce((sum, i) => sum + i.amount, 0).toLocaleString()}</p>
-                  <p className="text-xs text-muted-foreground">Total Income</p>
-                </div>
+              <div>
+                <p className="text-lg md:text-xl font-bold text-violet-600 mb-1">{analyticsData.healthScore}%</p>
+                <p className="text-xs text-muted-foreground">Financial Health</p>
               </div>
             </div>
 
-            {/* Expenses */}
-            <div className="glass-premium rounded-2xl p-4 border border-border/20 shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 transition-all duration-200 group">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 to-pink-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {/* Total Income */}
+            <div className="glass-premium rounded-xl p-4 md:p-5 border border-border/20 shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 transition-all duration-200 group">
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+                  <span className="text-white font-bold text-sm md:text-base">₹</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-xs px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded font-medium">Income</span>
+                  <InfoTooltip 
+                    content="Total money earned from all sources including salary, freelance, investments, and other income streams"
+                    iconSize="w-2.5 h-2.5"
+                  />
+                </div>
+              </div>
+              <div>
+                <p className="text-lg md:text-xl font-bold text-emerald-600 mb-1">₹{incomes.reduce((sum, i) => sum + i.amount, 0).toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground">Total Income</p>
+              </div>
+            </div>
+
+            {/* Total Expenses */}
+            <div className="glass-premium rounded-xl p-4 md:p-5 border border-border/20 shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 transition-all duration-200 group">
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-red-500 to-pink-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+                  <svg className="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                   </svg>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-lg font-bold text-red-600">₹{expenses.reduce((sum, e) => sum + e.amount, 0).toLocaleString()}</p>
-                  <p className="text-xs text-muted-foreground">Total Expenses</p>
+                <div className="flex items-center gap-1">
+                  <span className="text-xs px-1.5 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded font-medium">Expense</span>
+                  <InfoTooltip 
+                    content="Total money spent across all categories including food, transport, shopping, bills, and other expenses"
+                    iconSize="w-2.5 h-2.5"
+                  />
                 </div>
+              </div>
+              <div>
+                <p className="text-lg md:text-xl font-bold text-red-600 mb-1">₹{expenses.reduce((sum, e) => sum + e.amount, 0).toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground">Total Expenses</p>
               </div>
             </div>
 
-            {/* Savings */}
-            <div className="glass-premium rounded-2xl p-4 border border-border/20 shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 transition-all duration-200 group">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {/* Net Savings */}
+            <div className="glass-premium rounded-xl p-4 md:p-5 border border-border/20 shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 transition-all duration-200 group">
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+                  <svg className="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                   </svg>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-lg font-bold text-blue-600">₹{(incomes.reduce((sum, i) => sum + i.amount, 0) - expenses.reduce((sum, e) => sum + e.amount, 0)).toLocaleString()}</p>
-                  <p className="text-xs text-muted-foreground">Net Savings</p>
+                <div className="flex items-center gap-1">
+                  <span className="text-xs px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded font-medium">Savings</span>
+                  <InfoTooltip 
+                    content="Total income minus total expenses (positive = savings, negative = deficit)"
+                    iconSize="w-2.5 h-2.5"
+                  />
                 </div>
+              </div>
+              <div>
+                <p className="text-lg md:text-xl font-bold text-blue-600 mb-1">₹{(incomes.reduce((sum, i) => sum + i.amount, 0) - expenses.reduce((sum, e) => sum + e.amount, 0)).toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground">Net Savings</p>
               </div>
             </div>
           </div>
