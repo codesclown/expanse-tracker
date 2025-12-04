@@ -144,7 +144,7 @@ export default function Subscriptions() {
         </header>
 
         {/* Mobile Simple Header */}
-        <div className="md:hidden fixed top-12 left-0 right-0 z-40 px-4 py-3 bg-background/95 backdrop-blur-xl border-b border-border/10">
+        <div className="md:hidden fixed top-16 left-0 right-0 z-40 px-3 py-2 bg-background/98 backdrop-blur-xl border-b border-border/5">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-lg font-bold text-foreground">Subscriptions</h1>
@@ -171,7 +171,7 @@ export default function Subscriptions() {
           </div>
         </div>
 
-        <main className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 mt-4 md:-mt-12 pb-safe relative z-10 space-y-8">
+        <main className="max-w-7xl mx-auto px-3 md:px-6 lg:px-8 mt-16 md:-mt-12 pb-safe relative z-10 space-y-4 md:space-y-8">
           {/* Premium Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-slide-in">
             <div className="glass-premium rounded-2xl p-4 border border-border/20 shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 transition-all duration-200 group">

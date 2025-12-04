@@ -89,7 +89,7 @@ export default function BottomNav() {
           {/* Home Button */}
           <Link
             href="/dashboard"
-            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 ${
+            className={`w-8 h-8 md:w-9 md:h-9 rounded-lg md:rounded-xl flex items-center justify-center transition-all duration-200 ${
               isActive('/dashboard')
                 ? 'bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-sm'
                 : 'bg-secondary/40 text-muted-foreground hover:bg-secondary/60 hover:text-foreground'
@@ -113,7 +113,7 @@ export default function BottomNav() {
           {/* Settings Button */}
           <Link
             href="/settings"
-            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 ${
+            className={`w-8 h-8 md:w-9 md:h-9 rounded-lg md:rounded-xl flex items-center justify-center transition-all duration-200 ${
               isActive('/settings')
                 ? 'bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-sm'
                 : 'bg-secondary/40 text-muted-foreground hover:bg-secondary/60 hover:text-foreground'
@@ -141,7 +141,7 @@ export default function BottomNav() {
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                <div className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all duration-200 ${
+                <div className={`w-6 h-6 md:w-7 md:h-7 rounded-lg flex items-center justify-center transition-all duration-200 ${
                   isActive(item.path) 
                     ? 'bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-sm' 
                     : 'group-hover:bg-secondary/30'

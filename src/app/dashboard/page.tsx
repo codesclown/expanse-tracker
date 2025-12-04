@@ -192,7 +192,7 @@ export default function Dashboard() {
           <HeaderSkeleton />
 
           {/* Main Content Skeleton */}
-          <main className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 -mt-8 pb-safe relative z-10 space-y-6">
+          <main className="max-w-7xl mx-auto px-3 md:px-6 lg:px-8 mt-16 md:-mt-8 pb-safe relative z-10 space-y-4 md:space-y-6">
             {/* Balance Card Skeleton */}
             <BalanceCardSkeleton />
 
@@ -260,8 +260,8 @@ export default function Dashboard() {
   return (
     <>
       <div className="min-h-screen bg-premium-mesh pt-16 pb-20 md:pt-0 md:pb-8 md:pl-64 lg:pl-72">
-        {/* Header */}
-        <header className="relative overflow-hidden">
+        {/* Desktop Header */}
+        <header className="md:block hidden relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
           <div
@@ -289,10 +289,10 @@ export default function Dashboard() {
                         {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
                       </span>
                     </div>
-                    <h1 className="heading-page">Financial Overview</h1>
+                    <h1 className="text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold">Financial Overview</h1>
                   </div>
                 </div>
-                <p className="text-sm md:text-base text-white/80 max-w-md">
+                <p className="text-xs md:text-sm text-white/80 max-w-md">
                   Track your spending, monitor your savings, and achieve your financial goals.
                 </p>
               </div>
@@ -302,13 +302,13 @@ export default function Dashboard() {
                 onClick={toggleTheme}
                 disabled={isTransitioning}
                 aria-label="Toggle theme"
-                className={`theme-toggle-btn flex-shrink-0 p-3 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all duration-300 shadow-lg hover:shadow-xl ${
+                className={`theme-toggle-btn flex-shrink-0 p-2 md:p-3 rounded-xl md:rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all duration-300 shadow-lg hover:shadow-xl ${
                   isTransitioning ? 'animate-theme-toggle' : ''
                 } disabled:opacity-50`}
               >
-                <div className="relative w-5 h-5 md:w-6 md:h-6">
+                <div className="relative w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6">
                   <svg
-                    className={`absolute inset-0 w-5 h-5 md:w-6 md:h-6 text-white transition-all duration-300 ${
+                    className={`absolute inset-0 w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-white transition-all duration-300 ${
                       theme === 'light' ? 'opacity-100 rotate-0' : 'opacity-0 rotate-180'
                     }`}
                     fill="none"
@@ -323,7 +323,7 @@ export default function Dashboard() {
                     />
                   </svg>
                   <svg
-                    className={`absolute inset-0 w-5 h-5 md:w-6 md:h-6 text-white transition-all duration-300 ${
+                    className={`absolute inset-0 w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-white transition-all duration-300 ${
                       theme === 'dark' ? 'opacity-100 rotate-0' : 'opacity-0 -rotate-180'
                     }`}
                     fill="none"
@@ -343,29 +343,82 @@ export default function Dashboard() {
           </div>
         </header>
 
+        {/* Mobile Simple Header */}
+        <div className="md:hidden fixed top-16 left-0 right-0 z-40 px-3 py-2 bg-background/98 backdrop-blur-xl border-b border-border/5">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-base font-bold text-foreground">Dashboard</h1>
+              <p className="text-xs text-muted-foreground">
+                Balance: ₹{Math.abs(savings).toLocaleString()} • {expenses.length + incomes.length} transactions
+              </p>
+            </div>
+            <button
+              onClick={toggleTheme}
+              disabled={isTransitioning}
+              aria-label="Toggle theme"
+              className={`w-9 h-9 rounded-xl glass border border-border transition-all hover:shadow-premium ${
+                isTransitioning ? 'animate-theme-toggle' : ''
+              } disabled:opacity-50 flex items-center justify-center`}
+            >
+              <div className="relative w-4 h-4">
+                <svg
+                  className={`absolute inset-0 w-4 h-4 text-foreground transition-all duration-300 ${
+                    theme === 'light' ? 'opacity-100 rotate-0' : 'opacity-0 rotate-180'
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                  />
+                </svg>
+                <svg
+                  className={`absolute inset-0 w-4 h-4 text-foreground transition-all duration-300 ${
+                    theme === 'dark' ? 'opacity-100 rotate-0' : 'opacity-0 -rotate-180'
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
+                </svg>
+              </div>
+            </button>
+          </div>
+        </div>
+
         {/* MAIN CONTENT */}
-        <main className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 -mt-8 pb-safe relative z-10 space-y-6">
+        <main className="max-w-7xl mx-auto px-3 md:px-6 lg:px-8 mt-16 md:-mt-8 pb-safe relative z-10 space-y-4 md:space-y-6">
           {/* BALANCE CARD */}
-          <section className="glass rounded-3xl border border-border shadow-premium p-6 md:p-8 animate-slide-in">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-              <div className="space-y-4">
-                <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-gradient-to-r from-emerald-50 to-cyan-50 dark:from-emerald-900/30 dark:to-cyan-900/30 border border-emerald-200/50 dark:border-emerald-800/50">
+          <section className="glass rounded-2xl md:rounded-3xl border border-border shadow-premium p-4 md:p-6 lg:p-8 animate-slide-in">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 md:gap-6">
+              <div className="space-y-3 md:space-y-4">
+                <div className="inline-flex items-center gap-2 md:gap-3 px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-gradient-to-r from-emerald-50 to-cyan-50 dark:from-emerald-900/30 dark:to-cyan-900/30 border border-emerald-200/50 dark:border-emerald-800/50">
                   <div className="relative">
-                    <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse block" />
-                    <span className="absolute inset-0 w-3 h-3 rounded-full bg-emerald-400 animate-ping" />
+                    <span className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-emerald-500 animate-pulse block" />
+                    <span className="absolute inset-0 w-2 h-2 md:w-3 md:h-3 rounded-full bg-emerald-400 animate-ping" />
                   </div>
-                  <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">
+                  <span className="text-xs md:text-sm font-semibold text-emerald-700 dark:text-emerald-300">
                     Current Balance
                   </span>
                 </div>
                 <div>
-                  <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+                  <p className="text-xs md:text-sm lg:text-base text-muted-foreground leading-relaxed">
                     {savings >= 0
                       ? 'Available funds for your spending and investments.'
                       : 'You are currently over your budget limit.'}
                   </p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <div className={`w-2 h-2 rounded-full ${savings >= 0 ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                  <div className="flex items-center gap-2 mt-1 md:mt-2">
+                    <div className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${savings >= 0 ? 'bg-emerald-500' : 'bg-red-500'}`} />
                     <span className="text-xs text-muted-foreground">
                       {savings >= 0 ? 'Healthy financial status' : 'Budget exceeded'}
                     </span>
@@ -374,23 +427,23 @@ export default function Dashboard() {
               </div>
 
               <div className="text-center lg:text-right">
-                <div className="space-y-2">
+                <div className="space-y-1 md:space-y-2">
                   <p
-                    className={`metric-value-xl ${
+                    className={`text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight ${
                       savings >= 0
                         ? 'text-gradient-balance-positive'
                         : 'text-gradient-balance-negative'
                     }`}
                   >
-                    <span className="currency-symbol-xl">₹</span>{Math.abs(savings).toLocaleString()}
+                    <span className="text-lg md:text-2xl lg:text-3xl xl:text-4xl">₹</span>{Math.abs(savings).toLocaleString()}
                   </p>
-                  <div className="flex items-center justify-center lg:justify-end gap-2">
-                    <span className={`text-sm font-medium ${
+                  <div className="flex items-center justify-center lg:justify-end gap-1 md:gap-2">
+                    <span className={`text-xs md:text-sm font-medium ${
                       savings >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'
                     }`}>
                       {savings >= 0 ? 'Available' : 'Over budget'}
                     </span>
-                    <svg className={`w-4 h-4 ${
+                    <svg className={`w-3 h-3 md:w-4 md:h-4 ${
                       savings >= 0 ? 'text-emerald-500' : 'text-red-500'
                     }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
@@ -405,11 +458,11 @@ export default function Dashboard() {
           {/* TOP METRIC CARDS */}
           <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* INCOME */}
-            <div className="glass rounded-3xl p-6 border border-border shadow-premium hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1 group">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+            <div className="glass rounded-2xl md:rounded-3xl p-4 md:p-6 border border-border shadow-premium hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1 group">
+              <div className="flex items-center justify-between mb-3 md:mb-4">
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                   <svg
-                    className="w-6 h-6 text-white"
+                    className="w-4 h-4 md:w-6 md:h-6 text-white"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -445,11 +498,11 @@ export default function Dashboard() {
             </div>
 
             {/* EXPENSES */}
-            <div className="glass rounded-3xl p-6 border border-border shadow-premium hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1 group">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-500 via-pink-600 to-red-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+            <div className="glass rounded-2xl md:rounded-3xl p-4 md:p-6 border border-border shadow-premium hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1 group">
+              <div className="flex items-center justify-between mb-3 md:mb-4">
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-gradient-to-br from-rose-500 via-pink-600 to-red-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                   <svg
-                    className="w-6 h-6 text-white"
+                    className="w-4 h-4 md:w-6 md:h-6 text-white"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -485,13 +538,13 @@ export default function Dashboard() {
             </div>
 
             {/* SMART SCORE */}
-            <div className="glass rounded-3xl p-6 border border-border shadow-premium hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1 group">
-              <div className="flex items-center justify-between mb-4">
+            <div className="glass rounded-2xl md:rounded-3xl p-4 md:p-6 border border-border shadow-premium hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1 group">
+              <div className="flex items-center justify-between mb-3 md:mb-4">
                 <div
-                  className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 ${healthStatus.bgClass}`}
+                  className={`w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 ${healthStatus.bgClass}`}
                 >
                   <svg
-                    className="w-6 h-6 text-white"
+                    className="w-4 h-4 md:w-6 md:h-6 text-white"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -538,7 +591,7 @@ export default function Dashboard() {
             {/* Add Expense Card */}
             <button
               onClick={() => setShowExpenseModal(true)}
-              className="group relative w-full rounded-2xl sm:rounded-3xl bg-gradient-to-br from-rose-500 via-pink-600 to-fuchsia-600 text-white p-4 sm:p-6 lg:p-8 shadow-2xl hover:shadow-rose-500/25 hover:-translate-y-2 sm:hover:-translate-y-3 transition-all duration-500 overflow-hidden border border-white/10 min-h-[140px] sm:min-h-[160px]"
+              className="group relative w-full rounded-lg md:rounded-xl lg:rounded-2xl bg-gradient-to-br from-rose-500 via-pink-600 to-fuchsia-600 text-white p-2 md:p-3 lg:p-4 shadow-2xl hover:shadow-rose-500/25 hover:-translate-y-1 md:hover:-translate-y-2 transition-all duration-500 overflow-hidden border border-white/10 min-h-[80px] md:min-h-[100px] lg:min-h-[120px]"
             >
               {/* Animated Background Pattern */}
               <div className="absolute inset-0 opacity-10">
@@ -816,54 +869,105 @@ export default function Dashboard() {
                   {recentTransactions.map((transaction: any) => (
                     <div
                       key={transaction.id}
-                      className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors"
+                      className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors group"
                     >
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                        transaction.type === 'income' 
-                          ? 'bg-gradient-to-br from-emerald-400 to-emerald-600' 
-                          : 'bg-gradient-to-br from-red-400 to-red-600'
-                      }`}>
-                        <svg
-                          className="w-5 h-5 text-white"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d={transaction.type === 'income' 
-                              ? "M7 11l5-5m0 0l5 5m-5-5v12" 
-                              : "M17 13l-5 5m0 0l-5-5m5 5V6"
-                            }
-                          />
-                        </svg>
+                      {/* Compact Icon */}
+                      <div className="flex-shrink-0 mt-0.5">
+                        <div className={`w-8 h-8 md:w-9 md:h-9 rounded-lg flex items-center justify-center shadow-sm group-hover:scale-105 transition-all duration-200 ${
+                          transaction.type === 'income' 
+                            ? 'bg-gradient-to-br from-emerald-500 to-teal-600' 
+                            : 'bg-gradient-to-br from-rose-500 to-pink-600'
+                        }`}>
+                          <svg
+                            className="w-3.5 h-3.5 md:w-4 md:h-4 text-white"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2.5}
+                              d={transaction.type === 'income' 
+                                ? "M7 11l5-5m0 0l5 5m-5-5v12" 
+                                : "M17 13l-5 5m0 0l-5-5m5 5V6"
+                              }
+                            />
+                          </svg>
+                        </div>
                       </div>
+
+                      {/* Content */}
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-foreground truncate">
-                          {transaction.title}
-                        </p>
-                        <p className="text-[11px] text-muted-foreground">
-                          {transaction.category} •{' '}
-                          {transaction.createdAt 
-                            ? new Date(transaction.createdAt).toLocaleString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })
-                            : new Date(transaction.date).toLocaleDateString()
-                          }
-                        </p>
+                        {/* Top Row: Title and Date */}
+                        <div className="flex items-start justify-between gap-2 mb-1">
+                          <h3 className="font-semibold text-sm md:text-base text-foreground truncate group-hover:text-primary transition-colors pr-2">
+                            {transaction.title}
+                          </h3>
+                          <span className="text-xs text-muted-foreground flex-shrink-0">
+                            {transaction.createdAt
+                              ? `${new Date(transaction.createdAt).toLocaleDateString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric'
+                                })} ${new Date(transaction.createdAt).toLocaleTimeString('en-US', {
+                                  hour: 'numeric',
+                                  minute: '2-digit',
+                                  hour12: true
+                                })}`
+                              : `${new Date(transaction.date).toLocaleDateString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric'
+                                })} ${new Date(transaction.date).toLocaleTimeString('en-US', {
+                                  hour: 'numeric',
+                                  minute: '2-digit',
+                                  hour12: true
+                                })}`
+                            }
+                          </span>
+                        </div>
+
+                        {/* Bottom Row: Category and Amount */}
+                        <div className="flex items-center justify-between">
+                          {/* Left: Category */}
+                          <div className="flex items-center gap-2">
+                            <span className={`inline-flex items-center px-1.5 py-0.5 text-xs font-medium rounded ${
+                              transaction.type === 'income'
+                                ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
+                                : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                            }`}>
+                              {transaction.category}
+                            </span>
+                            
+                            {/* Payment Method Icon - Hidden on mobile, shown on desktop */}
+                            {!transaction.type && (
+                              <div className="hidden md:flex items-center gap-1 text-xs text-muted-foreground">
+                                {(transaction.paymentMode || 'Cash') === 'Cash' ? (
+                                  <svg className="w-3 h-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                                  </svg>
+                                ) : (
+                                  <svg className="w-3 h-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                  </svg>
+                                )}
+                                <span>{transaction.paymentMode || 'Cash'}</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Right: Amount */}
+                          <div className="text-right">
+                            <p className={`font-bold text-sm md:text-base flex items-center justify-end gap-0.5 ${
+                              transaction.type === 'income' 
+                                ? 'text-emerald-500 dark:text-emerald-400' 
+                                : 'text-red-500 dark:text-red-400'
+                            }`}>
+                              <span>{transaction.type === 'income' ? '+' : '-'}₹</span>
+                              <span>{transaction.amount.toLocaleString()}</span>
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                      <p className={`text-sm font-bold ${
-                        transaction.type === 'income' 
-                          ? 'text-emerald-500 dark:text-emerald-400' 
-                          : 'text-red-500 dark:text-red-400'
-                      }`}>
-{transaction.type === 'income' ? '+' : '-'}<span className="currency-symbol-large">₹</span>{transaction.amount.toLocaleString()}
-                      </p>
                     </div>
                   ))}
                 </div>

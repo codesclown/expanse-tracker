@@ -182,7 +182,7 @@ export default function Register() {
             <button
               type="submit"
               disabled={loading}
-              className="btn-premium w-full bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-premium hover:shadow-premium-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 group mt-4 py-3 btn-text"
+              className="btn-premium w-full bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-premium hover:shadow-premium-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 group mt-4 py-2 md:py-3 text-sm md:text-base"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-3">

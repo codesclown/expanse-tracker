@@ -13,7 +13,7 @@ import {
 } from '@/components/Skeleton'
 import { useExpenses } from '@/hooks/useExpenses'
 import { useIncomes } from '@/hooks/useIncomes'
-import { InfoTooltip, TipTooltip } from '@/components/Tooltip'
+import { InfoTooltip } from '@/components/Tooltip'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useNotification } from '@/contexts/NotificationContext'
 
@@ -197,7 +197,7 @@ export default function Expenses() {
           <HeaderSkeleton />
 
           {/* Content Skeleton */}
-          <main className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 -mt-12 pb-safe relative z-10 space-y-6">
+          <main className="max-w-7xl mx-auto px-3 md:px-6 lg:px-8 mt-16 md:-mt-12 pb-safe relative z-10 space-y-4 md:space-y-6">
             {/* Statistics Cards Skeleton */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 animate-slide-in">
               <CardSkeleton />
@@ -239,7 +239,7 @@ export default function Expenses() {
 
   return (
     <>
-      <div className="min-h-screen bg-premium-mesh pt-20 pb-20 md:pt-0 md:pb-8 md:pl-64 lg:pl-72">
+      <div className="min-h-screen bg-premium-mesh pt-24 pb-24 md:pt-0 md:pb-8 md:pl-64 lg:pl-72">
         {/* Clean Mobile Header */}
         <header className="md:block hidden relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-600" />
@@ -337,73 +337,73 @@ export default function Expenses() {
         </header>
 
         {/* Mobile Simple Header */}
-        <div className="md:hidden fixed top-12 left-0 right-0 z-40 px-4 py-3 bg-background/95 backdrop-blur-xl border-b border-border/10">
+        <div className="md:hidden fixed top-16 left-0 right-0 z-40 px-3 py-2 bg-background/98 backdrop-blur-xl border-b border-border/5">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-lg font-bold text-foreground">Expenses</h1>
+              <h1 className="text-base font-bold text-foreground">Expenses</h1>
               <p className="text-xs text-muted-foreground">
                 {stats.count} transactions • ₹{stats.total.toLocaleString()}
               </p>
             </div>
             <button
               onClick={() => setShowAddModal(true)}
-              className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md"
+              className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
               </svg>
             </button>
           </div>
         </div>
 
         {/* Content */}
-        <main className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 mt-4 md:-mt-12 pb-safe relative z-10 space-y-6">
+        <main className="max-w-7xl mx-auto px-3 md:px-6 lg:px-8 mt-16 md:-mt-12 pb-safe relative z-10 space-y-4 md:space-y-6">
           {/* Mobile-Friendly Statistics Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 animate-slide-in">
             {/* Total Spent - Most Important */}
-            <div className="md:col-span-2 glass-premium rounded-2xl p-4 border border-border/20 shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 transition-all duration-200 group">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
-                  <span className="text-white font-bold text-xl">₹</span>
+            <div className="col-span-2 md:col-span-2 glass-premium rounded-xl md:rounded-2xl p-3 md:p-4 border border-border/20 shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 transition-all duration-200 group">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+                  <span className="text-white font-bold text-lg md:text-xl">₹</span>
                 </div>
-                <div className="flex-1">
-                  <p className="text-2xl md:text-3xl font-bold text-red-600 flex items-center gap-1">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xl md:text-2xl lg:text-3xl font-bold text-red-600 flex items-center gap-1">
                     <span>₹{stats.total.toLocaleString()}</span>
                   </p>
-                  <p className="text-sm text-muted-foreground">Total Spent • {stats.count} transactions</p>
+                  <p className="text-xs md:text-sm text-muted-foreground truncate">Total Spent • {stats.count} transactions</p>
                 </div>
               </div>
             </div>
 
             {/* Average */}
-            <div className="glass-premium rounded-2xl p-4 border border-border/20 shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 transition-all duration-200 group">
+            <div className="glass-premium rounded-xl md:rounded-2xl p-3 md:p-4 border border-border/20 shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 transition-all duration-200 group">
               <div className="text-center">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mx-auto mb-2 shadow-sm group-hover:scale-105 transition-transform">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mx-auto mb-1 md:mb-2 shadow-sm group-hover:scale-105 transition-transform">
+                  <svg className="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                   </svg>
                 </div>
-                <p className="text-lg font-bold text-amber-600">₹{Math.round(stats.average).toLocaleString()}</p>
+                <p className="text-sm md:text-lg font-bold text-amber-600">₹{Math.round(stats.average).toLocaleString()}</p>
                 <p className="text-xs text-muted-foreground">Average</p>
               </div>
             </div>
 
             {/* Highest */}
-            <div className="glass-premium rounded-2xl p-4 border border-border/20 shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 transition-all duration-200 group">
+            <div className="glass-premium rounded-xl md:rounded-2xl p-3 md:p-4 border border-border/20 shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 transition-all duration-200 group">
               <div className="text-center">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center mx-auto mb-2 shadow-sm group-hover:scale-105 transition-transform">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center mx-auto mb-1 md:mb-2 shadow-sm group-hover:scale-105 transition-transform">
+                  <svg className="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                   </svg>
                 </div>
-                <p className="text-lg font-bold text-rose-600">₹{stats.highest.toLocaleString()}</p>
+                <p className="text-sm md:text-lg font-bold text-rose-600">₹{stats.highest.toLocaleString()}</p>
                 <p className="text-xs text-muted-foreground">Highest</p>
               </div>
             </div>
           </div>
 
           {/* Compact Search and Controls */}
-          <div className="glass-premium rounded-2xl p-4 border border-border/20 shadow-premium animate-slide-in">
+          <div className="glass-premium rounded-xl md:rounded-2xl p-3 md:p-4 border border-border/20 shadow-premium animate-slide-in">
             <div className="flex flex-col lg:flex-row gap-4">
               {/* Compact Search */}
               <div className="flex-1 relative group">
@@ -481,7 +481,7 @@ export default function Expenses() {
           </div>
 
           {/* Mobile-Friendly Filters */}
-          <div className="glass-premium rounded-2xl p-4 border border-border/20 shadow-premium animate-slide-in">
+          <div className="glass-premium rounded-xl md:rounded-2xl p-3 md:p-4 border border-border/20 shadow-premium animate-slide-in">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-semibold text-foreground">Quick Filters</h3>
               <button
@@ -586,20 +586,20 @@ export default function Expenses() {
           </div>
 
           {/* Premium Compact Expenses List */}
-          <div className="glass-premium rounded-2xl border border-border/20 shadow-premium overflow-hidden animate-slide-in">
+          <div className="glass-premium rounded-xl md:rounded-2xl border border-border/20 shadow-premium overflow-hidden animate-slide-in">
             {filteredAndSortedExpenses.length > 0 ? (
               <div className="divide-y divide-border/10">
                 {filteredAndSortedExpenses.map((expense, index) => (
                   <div
                     key={expense.id}
-                    className="px-4 py-3 hover:bg-secondary/10 transition-all duration-200 group"
+                    className="px-3 md:px-4 py-2.5 md:py-3 hover:bg-secondary/10 transition-all duration-200 group"
                     style={{ animationDelay: `${(index + 3) * 30}ms` }}
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-start gap-3">
                       {/* Compact Icon */}
-                      <div className="flex-shrink-0">
-                        <div className="w-10 h-10 bg-gradient-to-br from-rose-500 to-pink-600 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-105 transition-all duration-200">
-                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="flex-shrink-0 mt-0.5">
+                        <div className="w-8 h-8 md:w-9 md:h-9 bg-gradient-to-br from-rose-500 to-pink-600 rounded-lg flex items-center justify-center shadow-sm group-hover:scale-105 transition-all duration-200">
+                          <svg className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                           </svg>
                         </div>
@@ -607,36 +607,58 @@ export default function Expenses() {
 
                       {/* Content */}
                       <div className="flex-1 min-w-0">
+                        {/* Top Row: Title and Date */}
+                        <div className="flex items-start justify-between mb-1">
+                          <h3 className="font-semibold text-sm md:text-base text-foreground truncate group-hover:text-primary transition-colors pr-2">
+                            {expense.title}
+                          </h3>
+                          <span className="text-xs text-muted-foreground flex-shrink-0">
+                            {expense.createdAt
+                              ? `${new Date(expense.createdAt).toLocaleDateString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric'
+                                })} ${new Date(expense.createdAt).toLocaleTimeString('en-US', {
+                                  hour: 'numeric',
+                                  minute: '2-digit',
+                                  hour12: true
+                                })}`
+                              : `${new Date(expense.date).toLocaleDateString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric'
+                                })} ${new Date(expense.date).toLocaleTimeString('en-US', {
+                                  hour: 'numeric',
+                                  minute: '2-digit',
+                                  hour12: true
+                                })}`
+                            }
+                          </span>
+                        </div>
+
+                        {/* Bottom Row: Category, Amount, and Actions */}
                         <div className="flex items-center justify-between">
-                          {/* Left: Title and Meta */}
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-sm text-foreground truncate group-hover:text-primary transition-colors">
-                              {expense.title}
-                            </h3>
-                            <div className="flex items-center gap-2 mt-0.5">
-                              <span className="inline-flex items-center px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-medium rounded">
-                                {expense.category}
-                              </span>
-                              <span className="text-xs text-muted-foreground">
-                                {expense.createdAt
-                                  ? new Date(expense.createdAt).toLocaleDateString('en-US', {
-                                      month: 'short',
-                                      day: 'numeric',
-                                      hour: '2-digit',
-                                      minute: '2-digit'
-                                    })
-                                  : new Date(expense.date).toLocaleDateString()
-                                }
-                              </span>
-                              <span className="text-xs text-muted-foreground">•</span>
-                              <span className="text-xs text-muted-foreground">
-                                {expense.paymentMode || 'Cash'}
-                              </span>
-                            </div>
+                          {/* Left: Category and Payment Method */}
+                          <div className="flex items-center gap-2">
+                            <span className="inline-flex items-center px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-medium rounded">
+                              {expense.category}
+                            </span>
                             
+                            {/* Payment Method Icon - Hidden on mobile, shown on desktop */}
+                            <div className="hidden md:flex items-center gap-1 text-xs text-muted-foreground">
+                              {(expense.paymentMode || 'Cash') === 'Cash' ? (
+                                <svg className="w-3 h-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                              ) : (
+                                <svg className="w-3 h-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                </svg>
+                              )}
+                              <span>{expense.paymentMode || 'Cash'}</span>
+                            </div>
+
                             {/* Tags */}
                             {expense.tags && expense.tags.length > 0 && (
-                              <div className="flex items-center gap-1 mt-1">
+                              <div className="flex items-center gap-1">
                                 {expense.tags.slice(0, 1).map((tag: string, i: number) => (
                                   <span key={i} className="inline-flex items-center gap-1 px-1 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-xs rounded">
                                     <span className="w-1 h-1 bg-emerald-500 rounded-full"></span>
@@ -653,44 +675,32 @@ export default function Expenses() {
                           </div>
 
                           {/* Right: Amount and Actions */}
-                          <div className="flex items-center gap-2 ml-4">
+                          <div className="flex items-center gap-2">
                             {/* Amount */}
                             <div className="text-right">
-                              <p className="font-bold text-base text-red-500 flex items-center justify-end gap-1">
-                                <span className="currency-symbol-large text-red-600">₹</span>
+                              <p className="font-bold text-sm md:text-base text-red-500 flex items-center justify-end gap-0.5">
+                                <span className="text-red-600">₹</span>
                                 <span>{expense.amount.toLocaleString()}</span>
                               </p>
-                              <div className="flex items-center justify-end gap-1 text-xs text-muted-foreground">
-                                {(expense.paymentMode || 'Cash') === 'Cash' ? (
-                                  <svg className="w-3 h-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                                  </svg>
-                                ) : (
-                                  <svg className="w-3 h-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                  </svg>
-                                )}
-                                <span>{expense.paymentMode || 'Cash'}</span>
-                              </div>
                             </div>
 
                             {/* Actions */}
-                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="flex gap-0.5 opacity-70 md:opacity-0 group-hover:opacity-100 transition-opacity">
                               <button
                                 onClick={() => handleEditExpense(expense)}
-                                className="p-1.5 text-amber-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg transition-all duration-200 hover:scale-110"
+                                className="p-1 text-amber-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded transition-all duration-200 hover:scale-110"
                                 title="Edit expense"
                               >
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
                               </button>
                               <button
                                 onClick={() => handleDeleteExpense(expense.id)}
-                                className="p-1.5 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200 hover:scale-110"
+                                className="p-1 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-all duration-200 hover:scale-110"
                                 title="Delete expense"
                               >
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                 </svg>
                               </button>
@@ -762,11 +772,11 @@ export default function Expenses() {
       {/* Premium Floating Action Button - Mobile Only */}
       <button
         onClick={() => setShowAddModal(true)}
-        className="md:hidden fixed bottom-24 right-4 w-14 h-14 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-600 text-white rounded-2xl shadow-2xl hover:shadow-blue-500/25 flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 z-40 group border border-white/10"
+        className="md:hidden fixed bottom-28 right-3 w-12 h-12 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-600 text-white rounded-xl shadow-2xl hover:shadow-blue-500/25 flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 z-40 group border border-white/10"
       >
         <div className="relative">
           <div className="absolute inset-0 bg-white/20 rounded-lg group-hover:scale-110 transition-transform duration-300"></div>
-          <svg className="w-6 h-6 relative z-10 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 relative z-10 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
           </svg>
         </div>

@@ -29,14 +29,14 @@ export default function Home() {
 
       {/* NAVBAR */}
       <header className="relative z-20">
-        <nav className="flex items-center justify-between p-5 md:p-8">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <nav className="flex items-center justify-between p-3 md:p-8">
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
+              <svg className="w-4 h-4 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
             </div>
-            <span className="text-xl font-bold text-foreground tracking-tight">FinanceTracker</span>
+            <span className="text-lg md:text-xl font-bold text-foreground tracking-tight">FinanceTracker</span>
           </div>
 
           {/* Theme Toggle */}
@@ -44,7 +44,7 @@ export default function Home() {
             <button
               onClick={toggleTheme}
               disabled={isTransitioning}
-              className={`theme-toggle-btn p-3 rounded-2xl glass border border-border transition-all hover:shadow-premium ${
+              className={`theme-toggle-btn p-2 md:p-3 rounded-xl md:rounded-2xl glass border border-border transition-all hover:shadow-premium ${
                 isTransitioning ? 'animate-theme-toggle' : ''
               } disabled:opacity-50`}
               aria-label="Toggle theme"

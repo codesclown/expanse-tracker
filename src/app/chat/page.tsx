@@ -219,7 +219,7 @@ export default function Chat() {
               onClick={toggleTheme}
               disabled={isTransitioning}
               aria-label="Toggle theme"
-              className={`theme-toggle-btn flex-shrink-0 p-3 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all duration-300 shadow-lg hover:shadow-xl ${
+              className={`theme-toggle-btn flex-shrink-0 p-2 md:p-3 rounded-xl md:rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all duration-300 shadow-lg hover:shadow-xl ${
                 isTransitioning ? 'animate-theme-toggle' : ''
               } disabled:opacity-50`}
             >
@@ -261,10 +261,10 @@ export default function Chat() {
       </header>
 
       {/* Mobile Simple Header */}
-      <div className="md:hidden px-4 py-3 bg-background/95 backdrop-blur-xl border-b border-border/10 flex-shrink-0">
+      <div className="md:hidden fixed top-16 left-0 right-0 z-40 px-3 py-2 bg-background/98 backdrop-blur-xl border-b border-border/5 flex-shrink-0">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-lg font-bold text-foreground">AI Assistant</h1>
+            <h1 className="text-base font-bold text-foreground">AI Assistant</h1>
             <p className="text-xs text-muted-foreground">
               Smart & Helpful • Financial Insights
             </p>
@@ -272,11 +272,14 @@ export default function Chat() {
           <button
             onClick={toggleTheme}
             disabled={isTransitioning}
-            className="w-10 h-10 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md disabled:opacity-50"
+            aria-label="Toggle theme"
+            className={`w-9 h-9 rounded-xl glass border border-border transition-all hover:shadow-premium ${
+              isTransitioning ? 'animate-theme-toggle' : ''
+            } disabled:opacity-50 flex items-center justify-center`}
           >
-            <div className="relative w-5 h-5">
+            <div className="relative w-4 h-4">
               <svg
-                className={`absolute inset-0 w-5 h-5 text-white transition-all duration-300 ${
+                className={`absolute inset-0 w-4 h-4 text-foreground transition-all duration-300 ${
                   theme === 'light' ? 'opacity-100 rotate-0' : 'opacity-0 rotate-180'
                 }`}
                 fill="none"
@@ -286,7 +289,7 @@ export default function Chat() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
               </svg>
               <svg
-                className={`absolute inset-0 w-5 h-5 text-white transition-all duration-300 ${
+                className={`absolute inset-0 w-4 h-4 text-foreground transition-all duration-300 ${
                   theme === 'dark' ? 'opacity-100 rotate-0' : 'opacity-0 -rotate-180'
                 }`}
                 fill="none"
@@ -301,7 +304,7 @@ export default function Chat() {
       </div>
 
       {/* Chat Container */}
-      <div className="flex-1 max-w-4xl mx-auto px-4 md:px-6 lg:px-8 -mt-8 relative z-10 w-full min-h-0 pb-32 md:pb-8">
+      <div className="flex-1 max-w-4xl mx-auto px-3 md:px-6 lg:px-8 mt-16 md:-mt-8 relative z-10 w-full min-h-0 pb-20 md:pb-8">
         <div className="glass rounded-3xl border border-border shadow-premium h-full flex flex-col overflow-hidden">
           {/* Chat Messages */}
           <div className="flex-1 p-4 md:p-6 overflow-y-auto min-h-0">
@@ -398,12 +401,12 @@ export default function Chat() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
                 placeholder="Ask me anything about your finances..."
-                className="flex-1 px-4 py-3 text-base bg-background/50 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all duration-300 placeholder:text-muted-foreground"
+                className="flex-1 px-3 md:px-4 py-2 md:py-3 text-sm md:text-base bg-background/50 border border-border rounded-xl md:rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all duration-300 placeholder:text-muted-foreground"
               />
               <button
                 onClick={handleSend}
                 disabled={!input.trim() || isTyping}
-                className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-premium hover:shadow-premium-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center hover:scale-105 transition-all duration-300 rounded-2xl"
+                className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-premium hover:shadow-premium-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center hover:scale-105 transition-all duration-300 rounded-xl md:rounded-2xl"
               >
                 {isTyping ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>

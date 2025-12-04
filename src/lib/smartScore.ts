@@ -101,7 +101,7 @@ export async function storeSmartScore(userId: string, year: number, month: numbe
 
   return prisma.smartScore.upsert({
     where: { userId_year_month: { userId, year, month } },
-    create: { userId, year, month, score, summary, metrics },
-    update: { score, summary, metrics },
+    create: { userId, year, month, score, summary, metrics: metrics as any },
+    update: { score, summary, metrics: metrics as any },
   })
 }

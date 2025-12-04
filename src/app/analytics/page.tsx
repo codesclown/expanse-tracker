@@ -67,7 +67,7 @@ export default function Analytics() {
   }
 
   function generateCategoryData() {
-    const categories = {}
+    const categories: Record<string, number> = {}
     expenses.forEach(expense => {
       categories[expense.category] = (categories[expense.category] || 0) + expense.amount
     })
@@ -112,7 +112,7 @@ export default function Analytics() {
   }
 
   function generatePaymentMethodData() {
-    const methods = {}
+    const methods: Record<string, number> = {}
     expenses.forEach(expense => {
       const method = expense.paymentMode || 'Cash'
       methods[method] = (methods[method] || 0) + expense.amount
@@ -328,10 +328,10 @@ export default function Analytics() {
         </header>
 
         {/* Mobile Simple Header */}
-        <div className="md:hidden fixed top-12 left-0 right-0 z-40 px-4 py-3 bg-background/95 backdrop-blur-xl border-b border-border/10">
+        <div className="md:hidden fixed top-16 left-0 right-0 z-40 px-3 py-2 bg-background/98 backdrop-blur-xl border-b border-border/5">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-lg font-bold text-foreground">Analytics</h1>
+              <h1 className="text-base font-bold text-foreground">Analytics</h1>
               <p className="text-xs text-muted-foreground">
                 Health Score: {analyticsData.healthScore}% • {expenses.length + incomes.length} transactions
               </p>
@@ -339,20 +339,20 @@ export default function Analytics() {
             <button
               onClick={() => handleExport('excel')}
               disabled={exportLoading}
-              className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white shadow-md disabled:opacity-50"
+              className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white shadow-md disabled:opacity-50"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </button>
           </div>
         </div>
 
-        <main className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 mt-4 md:-mt-12 pb-safe relative z-10 space-y-8">
+        <main className="max-w-7xl mx-auto px-3 md:px-6 lg:px-8 mt-16 md:-mt-12 pb-safe relative z-10 space-y-4 md:space-y-8">
           {/* Mobile-Friendly Key Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 animate-slide-in">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 animate-slide-in">
             {/* Health Score - Most Important */}
-            <div className="md:col-span-2 lg:col-span-1 glass-premium rounded-2xl p-6 border border-border/20 shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 transition-all duration-200 group text-center">
+            <div className="col-span-2 md:col-span-2 lg:col-span-1 glass-premium rounded-xl md:rounded-2xl p-3 md:p-6 border border-border/20 shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 transition-all duration-200 group text-center">
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center mx-auto mb-3 shadow-lg group-hover:scale-105 transition-transform">
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -407,9 +407,9 @@ export default function Analytics() {
           </div>
 
           {/* Charts Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
             {/* Monthly Trend Chart */}
-            <div className="glass-premium rounded-2xl p-6 border border-border/20 shadow-premium">
+            <div className="glass-premium rounded-xl md:rounded-2xl p-3 md:p-6 border border-border/20 shadow-premium">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h3 className="text-lg font-bold text-foreground">Monthly Trend</h3>
@@ -483,7 +483,7 @@ export default function Analytics() {
           </div>
 
           {/* More Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
             {/* Income vs Expense Comparison */}
             <div className="glass-premium rounded-2xl p-6 border border-border/20 shadow-premium">
               <div className="flex items-center justify-between mb-6">
@@ -532,10 +532,8 @@ export default function Analytics() {
               <ResponsiveContainer width="100%" height={300}>
                 <RadialBarChart cx="50%" cy="50%" innerRadius="20%" outerRadius="90%" data={analyticsData.paymentMethods}>
                   <RadialBar
-                    minAngle={15}
                     label={{ position: 'insideStart', fill: '#fff' }}
                     background
-                    clockWise
                     dataKey="value"
                     fill="#8884d8"
                   />
@@ -552,7 +550,7 @@ export default function Analytics() {
           </div>
 
           {/* Daily Spending Pattern & Savings Rate */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
             {/* Daily Spending Pattern */}
             <div className="glass-premium rounded-2xl p-6 border border-border/20 shadow-premium">
               <div className="flex items-center justify-between mb-6">
@@ -647,7 +645,7 @@ export default function Analytics() {
           </div>
 
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6">
             <div className="glass-premium rounded-2xl p-6 border border-border/20 shadow-premium text-center">
               <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

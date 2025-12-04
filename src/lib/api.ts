@@ -64,8 +64,9 @@ export class ApiClient {
 
   // Expenses
   async getExpenses(filters?: any) {
+    const filteredEntries = Object.entries(filters || {}).filter(([_, v]) => v != null)
     const params = new URLSearchParams(
-      Object.fromEntries(Object.entries(filters || {}).filter(([_, v]) => v != null))
+      filteredEntries.map(([k, v]) => [k, String(v)])
     ).toString()
     return this.request(`/expenses${params ? `?${params}` : ''}`)
   }
@@ -92,8 +93,9 @@ export class ApiClient {
 
   // Incomes
   async getIncomes(filters?: any) {
+    const filteredEntries = Object.entries(filters || {}).filter(([_, v]) => v != null)
     const params = new URLSearchParams(
-      Object.fromEntries(Object.entries(filters || {}).filter(([_, v]) => v != null))
+      filteredEntries.map(([k, v]) => [k, String(v)])
     ).toString()
     return this.request(`/incomes${params ? `?${params}` : ''}`)
   }

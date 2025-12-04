@@ -79,10 +79,10 @@ export const POST = withAuth(async (request: NextRequest, { userId }) => {
                 - Average Daily Spending: ₹${financialContext.avgExpensePerDay.toLocaleString()}
                 
                 Top Spending Categories:
-                ${financialContext.topCategories.map(cat => `- ${cat.category}: ₹${cat.amount.toLocaleString()}`).join('\n')}
+                ${financialContext.topCategories.map((cat: any) => `- ${cat.category}: ₹${cat.amount.toLocaleString()}`).join('\n')}
                 
                 Recent Expenses:
-                ${financialContext.recentExpenses.map(exp => `- ${exp.title}: ₹${exp.amount.toLocaleString()} (${exp.category})`).join('\n')}
+                ${financialContext.recentExpenses.map((exp: any) => `- ${exp.title}: ₹${exp.amount.toLocaleString()} (${exp.category})`).join('\n')}
                 
                 Provide helpful, personalized financial advice and insights. Use Indian Rupee (₹) currency format. Be conversational and encouraging. If asked about specific data, use the exact numbers provided above.`
               },

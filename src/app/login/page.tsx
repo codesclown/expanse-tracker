@@ -71,10 +71,10 @@ export default function Login() {
               <span className="metric-value text-foreground">FinanceTracker</span>
             </div>
             
-            <h1 className="heading-page text-foreground mb-2">
+            <h1 className="text-lg md:text-xl lg:text-2xl font-bold text-foreground mb-2">
               Welcome Back
             </h1>
-            <p className="text-muted-foreground text-sm md:text-base">
+            <p className="text-muted-foreground text-xs md:text-sm">
               Continue your financial journey with us
             </p>
           </div>
@@ -137,7 +137,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="btn-premium w-full bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-premium hover:shadow-premium-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 group py-4 btn-text-lg"
+              className="btn-premium w-full bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-premium hover:shadow-premium-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 group py-3 md:py-4 text-sm md:text-base"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-3">

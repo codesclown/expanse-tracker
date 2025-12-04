@@ -30,7 +30,7 @@ export default function Reports() {
           <HeaderSkeleton />
 
           {/* Content Skeleton */}
-          <main className="max-w-4xl mx-auto px-4 md:px-6 lg:px-8 -mt-12 pb-safe relative z-10 space-y-8">
+          <main className="max-w-4xl mx-auto px-3 md:px-6 lg:px-8 mt-16 md:-mt-12 pb-safe relative z-10 space-y-4 md:space-y-8">
             {/* Quick Stats Skeleton */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-slide-in">
               <CardSkeleton />
@@ -169,28 +169,28 @@ export default function Reports() {
         </header>
 
         {/* Mobile Simple Header */}
-        <div className="md:hidden fixed top-12 left-0 right-0 z-40 px-4 py-3 bg-background/95 backdrop-blur-xl border-b border-border/10">
+        <div className="md:hidden fixed top-16 left-0 right-0 z-40 px-3 py-2 bg-background/98 backdrop-blur-xl border-b border-border/5">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-lg font-bold text-foreground">Reports</h1>
+              <h1 className="text-base font-bold text-foreground">Reports</h1>
               <p className="text-xs text-muted-foreground">
                 Export & Analyze • {expenses.length + incomes.length} transactions
               </p>
             </div>
             <button
               onClick={handleOpenReports}
-              className="w-10 h-10 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md"
+              className="w-9 h-9 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </button>
           </div>
         </div>
 
-        <main className="max-w-4xl mx-auto px-4 md:px-6 lg:px-8 -mt-12 pb-safe relative z-10 space-y-8">
+        <main className="max-w-4xl mx-auto px-3 md:px-6 lg:px-8 mt-16 md:-mt-12 pb-safe relative z-10 space-y-4 md:space-y-8">
           {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-slide-in">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6 animate-slide-in">
             <div className="glass rounded-2xl p-6 border border-border shadow-premium">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
