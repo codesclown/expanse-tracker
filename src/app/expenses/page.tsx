@@ -7,6 +7,8 @@ import AddIncomeModal from '@/components/AddIncomeModal'
 import EditExpenseModal from '@/components/EditExpenseModal'
 import EditIncomeModal from '@/components/EditIncomeModal'
 import ReportsModal from '@/components/ReportsModal'
+import AdvancedFilterPanel from '@/components/AdvancedFilterPanel'
+import AdvancedSearchBar from '@/components/AdvancedSearchBar'
 import { 
   HeaderSkeleton, 
   CardSkeleton, 
@@ -15,6 +17,7 @@ import {
 } from '@/components/Skeleton'
 import { useExpenses } from '@/hooks/useExpenses'
 import { useIncomes } from '@/hooks/useIncomes'
+import { useAdvancedFilters } from '@/hooks/useAdvancedFilters'
 import { InfoTooltip } from '@/components/Tooltip'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useNotification } from '@/contexts/NotificationContext'
@@ -32,14 +35,32 @@ export default function Expenses() {
   const [showReportsModal, setShowReportsModal] = useState(false)
   const [editingExpense, setEditingExpense] = useState<any>(null)
   const [editingIncome, setEditingIncome] = useState<any>(null)
-  const [search, setSearch] = useState('')
-  const [categoryFilter, setCategoryFilter] = useState('All')
-  const [dateFilter, setDateFilter] = useState('All')
-  const [amountFilter, setAmountFilter] = useState('All')
-  const [bankFilter, setBankFilter] = useState('All')
-  const [typeFilter, setTypeFilter] = useState('All')
-  const [sortBy, setSortBy] = useState('date')
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+
+  // Combine expenses and incomes for advanced filtering
+  const allTransactions = useMemo(() => [
+    ...expenses.map(expense => ({ ...expense, type: 'expense' })),
+    ...incomes.map(income => ({ 
+      ...income, 
+      type: 'income',
+      title: income.source || 'Income',
+      category: income.source || 'Income',
+      bank: 'Cash',
+      tags: []
+    }))
+  ], [expenses, incomes])
+
+  // Use advanced filtering hook
+  const {
+    filters,
+    sort,
+    filteredTransactions,
+    resultCount,
+    totalCount,
+    setFilters,
+    setSort,
+    clearAllFilters,
+    searchSuggestions
+  } = useAdvancedFilters({ transactions: allTransactions })
 
   const handleAddExpense = async (expense: any) => {
     await addExpense(expense)
@@ -115,120 +136,8 @@ export default function Expenses() {
     }
   }
 
-  // Advanced filtering and sorting for combined transactions
-  const filteredAndSortedTransactions = useMemo(() => {
-    // Combine expenses and incomes into a single array with type indicator
-    const allTransactions = [
-      ...expenses.map(expense => ({ ...expense, type: 'expense' })),
-      ...incomes.map(income => ({ 
-        ...income, 
-        type: 'income',
-        title: income.source || 'Income',
-        category: income.source || 'Income',
-        bank: 'Cash', // Income doesn't have paymentMode in schema
-        tags: []
-      }))
-    ]
-
-    let filtered = allTransactions.filter(transaction => {
-      // Type filter
-      if (typeFilter !== 'All' && transaction.type !== typeFilter) return false
-      
-      // Category filter
-      if (categoryFilter !== 'All' && transaction.category !== categoryFilter) return false
-      
-      // Bank filter  
-      if (bankFilter !== 'All' && transaction.bank !== bankFilter) return false
-      
-      // Date filter
-      if (dateFilter !== 'All') {
-        const transactionDate = new Date(transaction.date)
-        const now = new Date()
-        
-        switch (dateFilter) {
-          case 'Today':
-            if (transactionDate.toDateString() !== now.toDateString()) return false
-            break
-          case 'This Week':
-            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-            if (transactionDate < weekAgo) return false
-            break
-          case 'This Month':
-            if (transactionDate.getMonth() !== now.getMonth() || transactionDate.getFullYear() !== now.getFullYear()) return false
-            break
-          case 'This Year':
-            if (transactionDate.getFullYear() !== now.getFullYear()) return false
-            break
-        }
-      }
-      
-      // Amount filter
-      if (amountFilter !== 'All') {
-        const amount = transaction.amount
-        switch (amountFilter) {
-          case 'Under ₹100':
-            if (amount >= 100) return false
-            break
-          case '₹100-₹500':
-            if (amount < 100 || amount > 500) return false
-            break
-          case '₹500-₹1000':
-            if (amount < 500 || amount > 1000) return false
-            break
-          case 'Over ₹1000':
-            if (amount <= 1000) return false
-            break
-        }
-      }
-      
-      // Search filter
-      if (search.trim()) {
-        const searchTerm = search.toLowerCase().trim()
-        return (
-          transaction.title.toLowerCase().includes(searchTerm) ||
-          transaction.category.toLowerCase().includes(searchTerm) ||
-          (transaction.bank && transaction.bank.toLowerCase().includes(searchTerm)) ||
-          (transaction.tags && transaction.tags.some((tag: string) => tag.toLowerCase().includes(searchTerm))) ||
-          (transaction.notes && transaction.notes.toLowerCase().includes(searchTerm))
-        )
-      }
-      
-      return true
-    })
-    
-    // Sorting
-    filtered.sort((a, b) => {
-      let aValue, bValue
-      
-      switch (sortBy) {
-        case 'amount':
-          aValue = a.amount
-          bValue = b.amount
-          break
-        case 'title':
-          aValue = a.title.toLowerCase()
-          bValue = b.title.toLowerCase()
-          break
-        case 'category':
-          aValue = a.category.toLowerCase()
-          bValue = b.category.toLowerCase()
-          break
-        case 'date':
-        default:
-          aValue = new Date(a.date).getTime()
-          bValue = new Date(b.date).getTime()
-          break
-      }
-      
-      if (sortOrder === 'asc') {
-        return aValue > bValue ? 1 : -1
-      } else {
-        return aValue < bValue ? 1 : -1
-      }
-    })
-    
-    return filtered
-  }, [expenses, incomes, categoryFilter, bankFilter, dateFilter, amountFilter, typeFilter, search, sortBy, sortOrder])
+  // Use filtered transactions from the advanced filtering hook
+  const filteredAndSortedTransactions = filteredTransactions
 
   // Get unique values for filters
   const categories = ['All', ...Array.from(new Set([
@@ -255,11 +164,11 @@ export default function Expenses() {
       totalIncome,
       average, 
       highest, 
-      count: filteredAndSortedTransactions.length,
+      count: resultCount,
       expenseCount: expenseTransactions.length,
       incomeCount: incomeTransactions.length
     }
-  }, [filteredAndSortedTransactions])
+  }, [filteredAndSortedTransactions, resultCount])
 
   // Reports function
   const handleOpenReports = () => {
@@ -532,33 +441,16 @@ export default function Expenses() {
             </div>
           </div>
 
-          {/* Compact Search and Controls */}
+          {/* Advanced Search Bar */}
           <div className="glass-premium rounded-xl md:rounded-2xl p-3 md:p-4 border border-border/20 shadow-premium animate-slide-in">
             <div className="flex flex-col lg:flex-row gap-4">
-              {/* Compact Search */}
-              <div className="flex-1 relative group">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none group-focus-within:text-primary transition-colors">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-                {search && (
-                  <button
-                    onClick={() => setSearch('')}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-secondary/50 flex items-center justify-center"
-                    aria-label="Clear search"
-                  >
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                )}
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search expenses..."
-                  className="input-premium w-full pl-10 pr-8 py-2.5 text-sm font-medium placeholder:text-muted-foreground/70"
+              {/* Advanced Search */}
+              <div className="flex-1">
+                <AdvancedSearchBar
+                  value={filters.search || ''}
+                  onChange={(value) => setFilters({ ...filters, search: value || undefined })}
+                  suggestions={searchSuggestions}
+                  onSuggestionSelect={(suggestion) => setFilters({ ...filters, search: suggestion })}
                 />
               </div>
               
@@ -610,243 +502,20 @@ export default function Expenses() {
                 </button>
               </div>
             </div>
-            
-            {search && (
-              <div className="mt-3 p-2 bg-primary/5 border border-primary/20 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <svg className="w-3.5 h-3.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span className="text-xs font-medium text-primary">
-                    Found {stats.count} transaction{stats.count !== 1 ? 's' : ''} matching "{search}"
-                  </span>
-                </div>
-              </div>
-            )}
           </div>
 
-          {/* Advanced Filters - Responsive Design */}
-          <div className="glass-premium rounded-xl md:rounded-2xl p-3 md:p-4 border border-border/20 shadow-premium animate-slide-in">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm md:text-base font-semibold text-foreground">Filters & Sorting</h3>
-              <button
-                onClick={() => {
-                  setTypeFilter('All')
-                  setCategoryFilter('All')
-                  setDateFilter('All')
-                  setAmountFilter('All')
-                  setBankFilter('All')
-                  setSearch('')
-                  setSortBy('date')
-                  setSortOrder('desc')
-                }}
-                className="px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground bg-secondary/50 hover:bg-secondary rounded-lg transition-all duration-200"
-              >
-                Clear All
-              </button>
-            </div>
-
-            {/* Desktop: Show all filters in a grid */}
-            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-6 gap-4">
-              {/* Type Filter */}
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-foreground">Type</label>
-                <select
-                  value={typeFilter}
-                  onChange={(e) => setTypeFilter(e.target.value)}
-                  className="input-premium w-full px-3 py-2.5 text-sm font-medium"
-                >
-                  <option value="All">All</option>
-                  <option value="expense">Expenses</option>
-                  <option value="income">Income</option>
-                </select>
-              </div>
-
-              {/* Category Filter */}
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-foreground">Category</label>
-                <select
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="input-premium w-full px-3 py-2.5 text-sm font-medium"
-                >
-                  {categories.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Date Filter */}
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-foreground">Time Period</label>
-                <select
-                  value={dateFilter}
-                  onChange={(e) => setDateFilter(e.target.value)}
-                  className="input-premium w-full px-3 py-2.5 text-sm font-medium"
-                >
-                  <option value="All">All Time</option>
-                  <option value="Today">Today</option>
-                  <option value="This Week">This Week</option>
-                  <option value="This Month">This Month</option>
-                  <option value="This Year">This Year</option>
-                </select>
-              </div>
-
-              {/* Amount Filter */}
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-foreground">Amount Range</label>
-                <select
-                  value={amountFilter}
-                  onChange={(e) => setAmountFilter(e.target.value)}
-                  className="input-premium w-full px-3 py-2.5 text-sm font-medium"
-                >
-                  <option value="All">All Amounts</option>
-                  <option value="Under ₹100">Under ₹100</option>
-                  <option value="₹100-₹500">₹100-₹500</option>
-                  <option value="₹500-₹1000">₹500-₹1000</option>
-                  <option value="Over ₹1000">Over ₹1000</option>
-                </select>
-              </div>
-
-              {/* Bank Filter */}
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-foreground">Payment Method</label>
-                <select
-                  value={bankFilter}
-                  onChange={(e) => setBankFilter(e.target.value)}
-                  className="input-premium w-full px-3 py-2.5 text-sm font-medium"
-                >
-                  {banks.map(bank => (
-                    <option key={bank} value={bank}>{bank}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Sort Options */}
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-foreground">Sort By</label>
-                <div className="flex gap-2">
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="input-premium flex-1 px-3 py-2.5 text-sm font-medium"
-                  >
-                    <option value="date">Date</option>
-                    <option value="amount">Amount</option>
-                    <option value="title">Title</option>
-                    <option value="category">Category</option>
-                  </select>
-                  <button
-                    onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                    className="px-3 py-2.5 bg-secondary hover:bg-secondary/80 rounded-xl transition-colors"
-                    title={`Sort ${sortOrder === 'asc' ? 'Descending' : 'Ascending'}`}
-                  >
-                    <svg className={`w-4 h-4 transition-transform ${sortOrder === 'desc' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Mobile: Show only most important filters */}
-            <div className="md:hidden grid grid-cols-2 gap-3">
-              {/* Type Filter */}
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-foreground">Type</label>
-                <select
-                  value={typeFilter}
-                  onChange={(e) => setTypeFilter(e.target.value)}
-                  className="input-premium w-full px-3 py-2.5 text-sm font-medium"
-                >
-                  <option value="All">All</option>
-                  <option value="expense">Expenses</option>
-                  <option value="income">Income</option>
-                </select>
-              </div>
-
-              {/* Category Filter */}
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-foreground">Category</label>
-                <select
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="input-premium w-full px-3 py-2.5 text-sm font-medium"
-                >
-                  {categories.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Date Filter */}
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-foreground">Time Period</label>
-                <select
-                  value={dateFilter}
-                  onChange={(e) => setDateFilter(e.target.value)}
-                  className="input-premium w-full px-3 py-2.5 text-sm font-medium"
-                >
-                  <option value="All">All Time</option>
-                  <option value="Today">Today</option>
-                  <option value="This Week">This Week</option>
-                  <option value="This Month">This Month</option>
-                  <option value="This Year">This Year</option>
-                </select>
-              </div>
-
-              {/* Amount Filter */}
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-foreground">Amount Range</label>
-                <select
-                  value={amountFilter}
-                  onChange={(e) => setAmountFilter(e.target.value)}
-                  className="input-premium w-full px-3 py-2.5 text-sm font-medium"
-                >
-                  <option value="All">All Amounts</option>
-                  <option value="Under ₹100">Under ₹100</option>
-                  <option value="₹100-₹500">₹100-₹500</option>
-                  <option value="₹500-₹1000">₹500-₹1000</option>
-                  <option value="Over ₹1000">Over ₹1000</option>
-                </select>
-              </div>
-
-              {/* Collapsible Advanced Filters for Mobile */}
-              <details className="mt-2">
-                <summary className="text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
-                  More Filters
-                </summary>
-                <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-border/20">
-                  {/* Bank Filter */}
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium text-foreground">Payment Method</label>
-                    <select
-                      value={bankFilter}
-                      onChange={(e) => setBankFilter(e.target.value)}
-                      className="input-premium w-full px-3 py-2 text-sm font-medium"
-                    >
-                      {banks.map(bank => (
-                        <option key={bank} value={bank}>{bank}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Sort Order */}
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium text-foreground">Sort Order</label>
-                    <select
-                      value={sortOrder}
-                      onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
-                      className="input-premium w-full px-3 py-2 text-sm font-medium"
-                    >
-                      <option value="desc">Newest First</option>
-                      <option value="asc">Oldest First</option>
-                    </select>
-                  </div>
-                </div>
-              </details>
-            </div>
-          </div>
+          {/* Advanced Filter Panel */}
+          <AdvancedFilterPanel
+            filters={filters}
+            sort={sort}
+            onFiltersChange={setFilters}
+            onSortChange={setSort}
+            onClearAll={clearAllFilters}
+            categories={categories}
+            banks={banks}
+            resultCount={resultCount}
+            totalCount={totalCount}
+          />
 
           {/* Responsive Transactions List - Card layout for mobile, enhanced for desktop */}
           <div className="glass-premium rounded-xl md:rounded-2xl border border-border/20 shadow-premium overflow-hidden animate-slide-in">
@@ -1002,13 +671,13 @@ export default function Expenses() {
                 </div>
                 <div className="space-y-3">
                   <h3 className="heading-card">
-                    {search || categoryFilter !== 'All' || dateFilter !== 'All' || amountFilter !== 'All' || bankFilter !== 'All'
+                    {resultCount < totalCount
                       ? 'No matching transactions found'
                       : 'No transactions yet'
                     }
                   </h3>
                   <p className="text-muted-foreground max-w-md mx-auto text-sm leading-relaxed">
-                    {search || categoryFilter !== 'All' || dateFilter !== 'All' || amountFilter !== 'All' || bankFilter !== 'All'
+                    {resultCount < totalCount
                       ? 'Try adjusting your search or filter criteria to find what you\'re looking for.'
                       : 'Start tracking your finances by adding your first expense or income.'
                     }
@@ -1022,23 +691,14 @@ export default function Expenses() {
                     <svg className="w-4 h-4 mr-1.5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                     </svg>
-                    {search || categoryFilter !== 'All' || dateFilter !== 'All' || amountFilter !== 'All' || bankFilter !== 'All'
+                    {resultCount < totalCount
                       ? 'Add New Transaction'
                       : 'Add Your First Transaction'
                     }
                   </button>
-                  {(search || categoryFilter !== 'All' || dateFilter !== 'All' || amountFilter !== 'All' || bankFilter !== 'All') && (
+                  {resultCount < totalCount && (
                     <button
-                      onClick={() => {
-                        setTypeFilter('All')
-                        setCategoryFilter('All')
-                        setDateFilter('All')
-                        setAmountFilter('All')
-                        setBankFilter('All')
-                        setSearch('')
-                        setSortBy('date')
-                        setSortOrder('desc')
-                      }}
+                      onClick={clearAllFilters}
                       className="px-4 py-2 text-muted-foreground hover:text-foreground bg-secondary/50 hover:bg-secondary rounded-xl text-sm font-medium transition-all duration-200 hover:scale-105"
                     >
                       Clear All Filters

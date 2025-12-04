@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: expense-tracker-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: financetracker
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - expense-tracker-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d financetracker"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Next.js Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: expense-tracker-app
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:postgres123@postgres:5432/financetracker
+      - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+      # Optional: Add your email and OpenAI credentials
+      # - GMAIL_USER=your-email@gmail.com
+      # - GMAIL_APP_PASSWORD=your-gmail-app-password
+      # - OPENAI_API_KEY=sk-proj-your-openai-api-key-here
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - expense-tracker-network
+    volumes:
+      - ./uploads:/app/uploads
+    command: >
+      sh -c "
+        echo 'Waiting for database to be ready...' &&
+        npx prisma db push --accept-data-loss &&
+        echo 'Database schema updated successfully!' &&
+        node server.js
+      "
+
+  # Optional: Prisma Studio for database management
+  prisma-studio:
+    build:
+      context: .
+      dockerfile: Dockerfile.prisma-studio
+    container_name: expense-tracker-prisma-studio
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres123@postgres:5432/financetracker
+    ports:
+      - "5555:5555"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - expense-tracker-network
+    profiles:
+      - tools
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  expense-tracker-network:
+    driver: bridge
