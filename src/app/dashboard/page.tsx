@@ -1,26 +1,37 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import BottomNav from '@/components/BottomNav'
 import AddExpenseModal from '@/components/AddExpenseModal'
 import AddIncomeModal from '@/components/AddIncomeModal'
+import ReportsModal from '@/components/ReportsModal'
+import { 
+  HeaderSkeleton, 
+  BalanceCardSkeleton, 
+  CardSkeleton, 
+  QuickActionSkeleton 
+} from '@/components/Skeleton'
 import { useExpenses } from '@/hooks/useExpenses'
 import { useIncomes } from '@/hooks/useIncomes'
 import { useTheme } from '@/contexts/ThemeContext'
+import { useData } from '@/contexts/DataContext'
+import { api } from '@/lib/api'
 
 export default function Dashboard() {
   const { expenses, addExpense, loading: expensesLoading } = useExpenses()
   const { incomes, addIncome, loading: incomesLoading } = useIncomes()
   const { theme, toggleTheme, isTransitioning } = useTheme()
+  const { financialSummary } = useData()
 
   const [showExpenseModal, setShowExpenseModal] = useState(false)
   const [showIncomeModal, setShowIncomeModal] = useState(false)
+  const [showReportsModal, setShowReportsModal] = useState(false)
   const [view, setView] = useState<'day' | 'week' | 'month' | 'year'>('month')
 
-  // Calculate financial metrics
-  const totalExpense = expenses.reduce((sum: number, e: any) => sum + e.amount, 0)
-  const totalIncome = incomes.reduce((sum: number, i: any) => sum + i.amount, 0)
-  const savings = totalIncome - totalExpense
+  // Calculate financial metrics - use context data if available, fallback to local calculation
+  const totalExpense = financialSummary?.totalExpenses || expenses.reduce((sum: number, e: any) => sum + e.amount, 0)
+  const totalIncome = financialSummary?.totalIncome || incomes.reduce((sum: number, i: any) => sum + i.amount, 0)
+  const savings = financialSummary?.savings || (totalIncome - totalExpense)
   const smartScore = totalIncome > 0 ? Math.round((savings / totalIncome) * 100) : 0
 
   // Category breakdown
@@ -91,6 +102,13 @@ export default function Dashboard() {
     setShowIncomeModal(false)
   }
 
+  const handleOpenReports = () => {
+    setShowReportsModal(true)
+  }
+
+  // Get unique categories for reports modal
+  const categories = ['All', ...Array.from(new Set(expenses.map(e => e.category)))]
+
   // Chart component for category breakdown
   const CategoryChart = ({ data }: { data: [string, number][] }) => {
     const total = data.reduce((sum, [, amount]) => sum + amount, 0)
@@ -104,7 +122,7 @@ export default function Dashboard() {
             <div key={category} className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="font-medium text-foreground">{category}</span>
-                <span className="text-muted-foreground">₹{amount.toLocaleString()}</span>
+                <span className="text-muted-foreground"><span className="currency-symbol">₹</span>{amount.toLocaleString()}</span>
               </div>
               <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
                 <div 
@@ -162,12 +180,74 @@ export default function Dashboard() {
   // Show loading state to prevent hydration issues
   if (expensesLoading || incomesLoading) {
     return (
-      <div className="min-h-screen bg-premium-mesh pb-32 md:pb-8 md:pl-64 lg:pl-72 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading your financial data...</p>
+      <>
+        <div className="min-h-screen bg-premium-mesh pb-32 md:pb-8 md:pl-64 lg:pl-72">
+          {/* Header Skeleton */}
+          <HeaderSkeleton />
+
+          {/* Main Content Skeleton */}
+          <main className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 -mt-8 pb-safe relative z-10 space-y-6">
+            {/* Balance Card Skeleton */}
+            <BalanceCardSkeleton />
+
+            {/* Top Metric Cards Skeleton */}
+            <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <CardSkeleton />
+              <CardSkeleton />
+              <CardSkeleton />
+            </section>
+
+            {/* Quick Actions Skeleton */}
+            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-slide-in">
+              <QuickActionSkeleton />
+              <QuickActionSkeleton />
+              <QuickActionSkeleton />
+              <QuickActionSkeleton />
+            </section>
+
+            {/* Analytics Section Skeleton */}
+            <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="glass rounded-2xl p-5 md:p-6 border border-border shadow-premium-sm animate-pulse">
+                <div className="flex items-center justify-between mb-5">
+                  <div className="w-32 h-6 bg-muted/50 rounded animate-pulse"></div>
+                  <div className="w-24 h-8 bg-muted/50 rounded-full animate-pulse"></div>
+                </div>
+                <div className="space-y-4">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="space-y-2">
+                      <div className="flex justify-between">
+                        <div className="w-20 h-4 bg-muted/50 rounded animate-pulse"></div>
+                        <div className="w-16 h-4 bg-muted/50 rounded animate-pulse"></div>
+                      </div>
+                      <div className="w-full h-2 bg-muted/30 rounded-full animate-pulse"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="glass rounded-2xl p-5 md:p-6 border border-border shadow-premium-sm animate-pulse">
+                <div className="flex items-center justify-between mb-5">
+                  <div className="w-28 h-6 bg-muted/50 rounded animate-pulse"></div>
+                  <div className="w-16 h-4 bg-muted/50 rounded animate-pulse"></div>
+                </div>
+                <div className="space-y-3">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-4 p-3 rounded-xl">
+                      <div className="w-10 h-10 bg-muted/50 rounded-lg animate-pulse"></div>
+                      <div className="flex-1">
+                        <div className="w-24 h-4 bg-muted/50 rounded mb-1 animate-pulse"></div>
+                        <div className="w-32 h-3 bg-muted/50 rounded animate-pulse"></div>
+                      </div>
+                      <div className="w-16 h-4 bg-muted/50 rounded animate-pulse"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          </main>
         </div>
-      </div>
+        <BottomNav />
+      </>
     )
   }
 
@@ -203,7 +283,7 @@ export default function Dashboard() {
                         {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
                       </span>
                     </div>
-                    <h1 className="text-xl md:text-2xl lg:text-3xl font-bold">Financial Overview</h1>
+                    <h1 className="heading-page">Financial Overview</h1>
                   </div>
                 </div>
                 <p className="text-sm md:text-base text-white/80 max-w-md">
@@ -290,13 +370,13 @@ export default function Dashboard() {
               <div className="text-center lg:text-right">
                 <div className="space-y-2">
                   <p
-                    className={`text-4xl md:text-5xl lg:text-6xl font-bold leading-tight ${
+                    className={`metric-value-xl ${
                       savings >= 0
-                        ? 'bg-gradient-to-r from-emerald-600 to-cyan-600 bg-clip-text text-transparent'
-                        : 'bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent'
+                        ? 'text-gradient-balance-positive'
+                        : 'text-gradient-balance-negative'
                     }`}
                   >
-                    ₹{Math.abs(savings).toLocaleString()}
+                    <span className="currency-symbol-xl">₹</span>{Math.abs(savings).toLocaleString()}
                   </p>
                   <div className="flex items-center justify-center lg:justify-end gap-2">
                     <span className={`text-sm font-medium ${
@@ -341,8 +421,8 @@ export default function Dashboard() {
                 </span>
               </div>
               <div className="space-y-2">
-                <p className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                  ₹{totalIncome.toLocaleString()}
+                <p className="metric-value-large text-gradient-success">
+                  <span className="currency-symbol-large">₹</span>{totalIncome.toLocaleString()}
                 </p>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-muted-foreground">This month</span>
@@ -375,8 +455,8 @@ export default function Dashboard() {
                 </span>
               </div>
               <div className="space-y-2">
-                <p className="text-3xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent">
-                  ₹{totalExpense.toLocaleString()}
+                <p className="metric-value-large text-gradient-danger">
+                  <span className="currency-symbol-large">₹</span>{totalExpense.toLocaleString()}
                 </p>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-muted-foreground">This month</span>
@@ -426,12 +506,12 @@ export default function Dashboard() {
               </div>
               <div className="space-y-2">
                 <p
-                  className={`text-3xl font-bold ${
+                  className={`metric-value-large ${
                     smartScore >= 70
-                      ? 'bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent'
+                      ? 'text-gradient-primary'
                       : smartScore >= 40
-                      ? 'bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent'
-                      : 'bg-gradient-to-r from-red-600 to-rose-600 bg-clip-text text-transparent'
+                      ? 'text-gradient-warning'
+                      : 'text-gradient-danger'
                   }`}
                 >
                   {smartScore}%
@@ -451,97 +531,187 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* QUICK ACTIONS */}
-          <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* PREMIUM QUICK ACTIONS */}
+          <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-slide-in">
+            {/* Add Expense Card */}
             <button
               onClick={() => setShowExpenseModal(true)}
-              className="group w-full rounded-3xl bg-gradient-to-br from-rose-500 via-pink-600 to-fuchsia-600 text-white p-6 md:p-8 flex items-center justify-between shadow-premium-lg hover:shadow-premium-lg hover:-translate-y-2 transition-all duration-300 relative overflow-hidden"
+              className="group relative w-full rounded-2xl sm:rounded-3xl bg-gradient-to-br from-rose-500 via-pink-600 to-fuchsia-600 text-white p-4 sm:p-6 lg:p-8 shadow-2xl hover:shadow-rose-500/25 hover:-translate-y-2 sm:hover:-translate-y-3 transition-all duration-500 overflow-hidden border border-white/10 min-h-[140px] sm:min-h-[160px]"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="flex items-center gap-5 relative z-10">
-                <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                  <svg
-                    className="w-7 h-7"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2.5}
-                      d="M12 4v16m8-8H4"
-                    />
-                  </svg>
+              {/* Animated Background Pattern */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-0 left-0 w-20 h-20 sm:w-32 sm:h-32 bg-white rounded-full -translate-x-10 -translate-y-10 sm:-translate-x-16 sm:-translate-y-16 group-hover:scale-150 transition-transform duration-700"></div>
+                <div className="absolute bottom-0 right-0 w-16 h-16 sm:w-24 sm:h-24 bg-white rounded-full translate-x-8 translate-y-8 sm:translate-x-12 sm:translate-y-12 group-hover:scale-125 transition-transform duration-700 delay-100"></div>
+              </div>
+              
+              {/* Hover Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              
+              {/* Content */}
+              <div className="relative z-10 flex flex-col h-full">
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-xl sm:rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 border border-white/20">
+                    <svg className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                    </svg>
+                  </div>
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:translate-x-1 transition-transform duration-300">
+                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </div>
                 </div>
-                <div className="text-left">
-                  <p className="text-lg md:text-xl font-bold mb-1">
+                
+                <div className="flex-1">
+                  <h3 className="text-base sm:text-lg lg:text-xl font-bold mb-1 sm:mb-2 group-hover:translate-x-1 transition-transform duration-300">
                     Add Expense
-                  </p>
-                  <p className="text-sm md:text-base text-white/90">
+                  </h3>
+                  <p className="text-xs sm:text-sm lg:text-base text-white/80 leading-relaxed group-hover:translate-x-1 transition-transform duration-300 delay-75">
                     Track your spending
                   </p>
                 </div>
+                
+                <div className="mt-2 sm:mt-4 flex items-center text-xs text-white/60">
+                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white/40 rounded-full mr-2"></div>
+                  Quick Action
+                </div>
               </div>
-              <svg
-                className="w-7 h-7 group-hover:translate-x-2 group-hover:scale-110 transition-all duration-300 relative z-10"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2.5}
-                  d="M13 7l5 5m0 0l-5 5m5-5H6"
-                />
-              </svg>
             </button>
 
+            {/* Add Income Card */}
             <button
               onClick={() => setShowIncomeModal(true)}
-              className="group w-full rounded-3xl bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 text-white p-6 md:p-8 flex items-center justify-between shadow-premium-lg hover:shadow-premium-lg hover:-translate-y-2 transition-all duration-300 relative overflow-hidden"
+              className="group relative w-full rounded-2xl sm:rounded-3xl bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 text-white p-4 sm:p-6 lg:p-8 shadow-2xl hover:shadow-emerald-500/25 hover:-translate-y-2 sm:hover:-translate-y-3 transition-all duration-500 overflow-hidden border border-white/10 min-h-[140px] sm:min-h-[160px]"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="flex items-center gap-5 relative z-10">
-                <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                  <svg
-                    className="w-7 h-7"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2.5}
-                      d="M12 4v16m8-8H4"
-                    />
-                  </svg>
+              {/* Animated Background Pattern */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-0 right-0 w-18 h-18 sm:w-28 sm:h-28 bg-white rounded-full translate-x-9 -translate-y-9 sm:translate-x-14 sm:-translate-y-14 group-hover:scale-150 transition-transform duration-700"></div>
+                <div className="absolute bottom-0 left-0 w-12 h-12 sm:w-20 sm:h-20 bg-white rounded-full -translate-x-6 translate-y-6 sm:-translate-x-10 sm:translate-y-10 group-hover:scale-125 transition-transform duration-700 delay-150"></div>
+              </div>
+              
+              {/* Hover Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              
+              {/* Content */}
+              <div className="relative z-10 flex flex-col h-full">
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-xl sm:rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 border border-white/20">
+                    <svg className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                    </svg>
+                  </div>
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:translate-x-1 transition-transform duration-300">
+                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </div>
                 </div>
-                <div className="text-left">
-                  <p className="text-lg md:text-xl font-bold mb-1">
+                
+                <div className="flex-1">
+                  <h3 className="text-base sm:text-lg lg:text-xl font-bold mb-1 sm:mb-2 group-hover:translate-x-1 transition-transform duration-300">
                     Add Income
-                  </p>
-                  <p className="text-sm md:text-base text-white/90">
+                  </h3>
+                  <p className="text-xs sm:text-sm lg:text-base text-white/80 leading-relaxed group-hover:translate-x-1 transition-transform duration-300 delay-75">
                     Record earnings
                   </p>
                 </div>
+                
+                <div className="mt-2 sm:mt-4 flex items-center text-xs text-white/60">
+                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white/40 rounded-full mr-2"></div>
+                  Quick Action
+                </div>
               </div>
-              <svg
-                className="w-7 h-7 group-hover:translate-x-2 group-hover:scale-110 transition-all duration-300 relative z-10"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2.5}
-                  d="M13 7l5 5m0 0l-5 5m5-5H6"
-                />
-              </svg>
             </button>
+
+            {/* Reports Card */}
+            <button
+              onClick={handleOpenReports}
+              className="group relative w-full rounded-2xl sm:rounded-3xl bg-gradient-to-br from-violet-500 via-purple-600 to-indigo-600 text-white p-4 sm:p-6 lg:p-8 shadow-2xl hover:shadow-violet-500/25 hover:-translate-y-2 sm:hover:-translate-y-3 transition-all duration-500 overflow-hidden border border-white/10 min-h-[140px] sm:min-h-[160px]"
+            >
+              {/* Animated Background Pattern */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-1/2 left-1/2 w-24 h-24 sm:w-36 sm:h-36 bg-white rounded-full -translate-x-12 -translate-y-12 sm:-translate-x-18 sm:-translate-y-18 group-hover:scale-125 transition-transform duration-700"></div>
+                <div className="absolute bottom-0 right-0 w-10 h-10 sm:w-16 sm:h-16 bg-white rounded-full translate-x-5 translate-y-5 sm:translate-x-8 sm:translate-y-8 group-hover:scale-150 transition-transform duration-700 delay-200"></div>
+              </div>
+              
+              {/* Hover Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              
+              {/* Content */}
+              <div className="relative z-10 flex flex-col h-full">
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-xl sm:rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 border border-white/20">
+                    <svg className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:translate-x-1 transition-transform duration-300">
+                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </div>
+                </div>
+                
+                <div className="flex-1">
+                  <h3 className="text-base sm:text-lg lg:text-xl font-bold mb-1 sm:mb-2 group-hover:translate-x-1 transition-transform duration-300">
+                    Reports
+                  </h3>
+                  <p className="text-xs sm:text-sm lg:text-base text-white/80 leading-relaxed group-hover:translate-x-1 transition-transform duration-300 delay-75">
+                    Export & Email
+                  </p>
+                </div>
+                
+                <div className="mt-2 sm:mt-4 flex items-center text-xs text-white/60">
+                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white/40 rounded-full mr-2"></div>
+                  Analytics
+                </div>
+              </div>
+            </button>
+
+            {/* Manage Udhar Card */}
+            <a
+              href="/udhar"
+              className="group relative w-full rounded-2xl sm:rounded-3xl bg-gradient-to-br from-amber-500 via-orange-600 to-yellow-600 text-white p-4 sm:p-6 lg:p-8 shadow-2xl hover:shadow-amber-500/25 hover:-translate-y-2 sm:hover:-translate-y-3 transition-all duration-500 overflow-hidden border border-white/10 block min-h-[140px] sm:min-h-[160px]"
+            >
+              {/* Animated Background Pattern */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-0 left-1/2 w-20 h-20 sm:w-30 sm:h-30 bg-white rounded-full -translate-x-10 -translate-y-10 sm:-translate-x-15 sm:-translate-y-15 group-hover:scale-125 transition-transform duration-700"></div>
+                <div className="absolute bottom-0 left-0 w-12 h-12 sm:w-18 sm:h-18 bg-white rounded-full -translate-x-6 translate-y-6 sm:-translate-x-9 sm:translate-y-9 group-hover:scale-150 transition-transform duration-700 delay-100"></div>
+              </div>
+              
+              {/* Hover Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              
+              {/* Content */}
+              <div className="relative z-10 flex flex-col h-full">
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-xl sm:rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 border border-white/20">
+                    <svg className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                  </div>
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:translate-x-1 transition-transform duration-300">
+                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </div>
+                </div>
+                
+                <div className="flex-1">
+                  <h3 className="text-base sm:text-lg lg:text-xl font-bold mb-1 sm:mb-2 group-hover:translate-x-1 transition-transform duration-300">
+                    Manage Udhar
+                  </h3>
+                  <p className="text-xs sm:text-sm lg:text-base text-white/80 leading-relaxed group-hover:translate-x-1 transition-transform duration-300 delay-75">
+                    Track loans
+                  </p>
+                </div>
+                
+                <div className="mt-2 sm:mt-4 flex items-center text-xs text-white/60">
+                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white/40 rounded-full mr-2"></div>
+                  Management
+                </div>
+              </div>
+            </a>
           </section>
 
           {/* ANALYTICS + RECENT ACTIVITY */}
@@ -549,7 +719,7 @@ export default function Dashboard() {
             {/* CATEGORY BREAKDOWN */}
             <div className="glass rounded-2xl p-5 md:p-6 border border-border shadow-premium-sm">
               <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-                <h2 className="text-base md:text-lg font-semibold text-foreground">
+                <h2 className="heading-section">
                   Spending by Category
                 </h2>
                 <div className="flex items-center gap-1 rounded-full bg-slate-100/80 dark:bg-slate-800/80 px-1 py-1">
@@ -583,7 +753,7 @@ export default function Dashboard() {
                               {category}
                             </span>
                             <span className="text-sm font-semibold text-foreground">
-                              ₹{amount.toLocaleString()}
+                              <span className="currency-symbol">₹</span>{amount.toLocaleString()}
                             </span>
                           </div>
                           <div className="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
@@ -630,7 +800,7 @@ export default function Dashboard() {
             {/* RECENT ACTIVITY */}
             <div className="glass rounded-2xl p-5 md:p-6 border border-border shadow-premium-sm">
               <div className="flex items-center justify-between mb-5">
-                <h2 className="text-base md:text-lg font-semibold text-foreground">
+                <h2 className="heading-section">
                   Recent Activity
                 </h2>
                 <span className="text-xs text-muted-foreground">
@@ -689,7 +859,7 @@ export default function Dashboard() {
                           ? 'text-emerald-500 dark:text-emerald-400' 
                           : 'text-red-500 dark:text-red-400'
                       }`}>
-                        {transaction.type === 'income' ? '+' : '-'}₹{transaction.amount.toLocaleString()}
+                        {transaction.type === 'income' ? '+' : '-'}<span className="currency-symbol">₹</span>{transaction.amount.toLocaleString()}
                       </p>
                     </div>
                   ))}
@@ -735,6 +905,14 @@ export default function Dashboard() {
         isOpen={showIncomeModal}
         onClose={() => setShowIncomeModal(false)}
         onSave={handleAddIncome}
+      />
+
+      <ReportsModal
+        isOpen={showReportsModal}
+        onClose={() => setShowReportsModal(false)}
+        expenses={expenses}
+        incomes={incomes}
+        categories={categories}
       />
 
       <BottomNav />

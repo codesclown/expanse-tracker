@@ -1,43 +1,74 @@
 'use client'
 
 import BottomNav from '@/components/BottomNav'
+import ReportsModal from '@/components/ReportsModal'
 import { useTheme } from '@/contexts/ThemeContext'
+import { HeaderSkeleton, CardSkeleton } from '@/components/Skeleton'
+import { useExpenses } from '@/hooks/useExpenses'
+import { useIncomes } from '@/hooks/useIncomes'
 import { useState } from 'react'
 
 export default function Reports() {
   const { theme, toggleTheme, isTransitioning } = useTheme()
-  const [selectedPeriod, setSelectedPeriod] = useState('This Month')
-  const [generating, setGenerating] = useState(false)
+  const { expenses, loading: expensesLoading } = useExpenses()
+  const { incomes, loading: incomesLoading } = useIncomes()
+  const [showReportsModal, setShowReportsModal] = useState(false)
 
-  const handleGenerateReport = (type: 'pdf' | 'excel') => {
-    setGenerating(true)
-    // Simulate report generation
-    setTimeout(() => {
-      setGenerating(false)
-      alert(`${type.toUpperCase()} report generated successfully!`)
-    }, 2000)
+  // Get unique categories for reports modal
+  const categories = ['All', ...Array.from(new Set(expenses.map(e => e.category)))]
+
+  const handleOpenReports = () => {
+    setShowReportsModal(true)
   }
 
-  const reportTypes = [
-    {
-      title: 'Expense Summary',
-      description: 'Detailed breakdown of all expenses',
-      icon: '📊',
-      color: 'from-blue-500 to-blue-600'
-    },
-    {
-      title: 'Category Analysis',
-      description: 'Spending patterns by category',
-      icon: '🎯',
-      color: 'from-purple-500 to-purple-600'
-    },
-    {
-      title: 'Monthly Trends',
-      description: 'Month-over-month comparison',
-      icon: '📈',
-      color: 'from-emerald-500 to-emerald-600'
-    }
-  ]
+  if (expensesLoading || incomesLoading) {
+    return (
+      <>
+        <div className="min-h-screen bg-premium-mesh pb-32 md:pb-8 md:pl-64 lg:pl-72">
+          {/* Header Skeleton */}
+          <HeaderSkeleton />
+
+          {/* Content Skeleton */}
+          <main className="max-w-4xl mx-auto px-4 md:px-6 lg:px-8 -mt-12 pb-safe relative z-10 space-y-8">
+            {/* Quick Stats Skeleton */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-slide-in">
+              <CardSkeleton />
+              <CardSkeleton />
+              <CardSkeleton />
+            </div>
+
+            {/* Report Generator Skeleton */}
+            <div className="glass rounded-2xl p-6 border border-border shadow-premium animate-pulse">
+              <div className="text-center space-y-6">
+                <div className="w-16 h-16 bg-muted/50 rounded-2xl mx-auto animate-pulse"></div>
+                <div className="space-y-2">
+                  <div className="w-48 h-6 bg-muted/50 rounded mx-auto animate-pulse"></div>
+                  <div className="w-64 h-4 bg-muted/50 rounded mx-auto animate-pulse"></div>
+                </div>
+                <div className="w-40 h-12 bg-muted/50 rounded-2xl mx-auto animate-pulse"></div>
+              </div>
+            </div>
+
+            {/* Features Skeleton */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-slide-in">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="glass rounded-2xl p-6 border border-border shadow-premium text-center animate-pulse">
+                  <div className="w-12 h-12 bg-muted/50 rounded-xl mx-auto mb-4 animate-pulse"></div>
+                  <div className="space-y-2">
+                    <div className="w-24 h-5 bg-muted/50 rounded mx-auto animate-pulse"></div>
+                    <div className="w-32 h-4 bg-muted/50 rounded mx-auto animate-pulse"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </main>
+        </div>
+        <BottomNav />
+      </>
+    )
+  }
+
+
 
   return (
     <>
@@ -81,7 +112,7 @@ export default function Reports() {
                         Export & Analyze
                       </span>
                     </div>
-                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">
+                    <h1 className="heading-page">
                       Financial Reports
                     </h1>
                   </div>
@@ -137,116 +168,114 @@ export default function Reports() {
         </header>
 
         <main className="max-w-4xl mx-auto px-4 md:px-6 lg:px-8 -mt-12 pb-safe relative z-10 space-y-8">
-          {/* Report Generator */}
-          <div className="glass rounded-2xl p-6 border border-border shadow-lg mb-6 animate-slide-in">
-            <h2 className="text-xl font-bold text-foreground mb-4">Generate Report</h2>
-            
-            {/* Period Selection */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-foreground mb-2">Select Period</label>
-              <select 
-                value={selectedPeriod}
-                onChange={(e) => setSelectedPeriod(e.target.value)}
-                className="input-premium w-full"
-              >
-                <option>This Month</option>
-                <option>Last Month</option>
-                <option>Last 3 Months</option>
-                <option>This Year</option>
-                <option>Last Year</option>
-                <option>Custom Range</option>
-              </select>
-            </div>
-
-            {/* Export Buttons */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <button
-                onClick={() => handleGenerateReport('pdf')}
-                disabled={generating}
-                className="btn-premium bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              >
-                {generating ? (
-                  <>
-                    <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span>Generating...</span>
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <span>Generate PDF</span>
-                  </>
-                )}
-              </button>
-              
-              <button
-                onClick={() => handleGenerateReport('excel')}
-                disabled={generating}
-                className="btn-premium bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              >
-                {generating ? (
-                  <>
-                    <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span>Generating...</span>
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-                    </svg>
-                    <span>Export Excel</span>
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-
-          {/* Report Types */}
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-foreground mb-4">Report Types</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {reportTypes.map((report, index) => (
-                <div
-                  key={report.title}
-                  className="card-premium hover-lift p-4 group animate-slide-in"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <div className={`w-12 h-12 bg-gradient-to-br ${report.color} rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
-                    <span className="text-2xl">{report.icon}</span>
-                  </div>
-                  <h3 className="font-semibold text-foreground mb-1">{report.title}</h3>
-                  <p className="text-sm text-muted-foreground">{report.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Recent Reports */}
-          <div className="glass rounded-2xl border border-border shadow-lg overflow-hidden">
-            <div className="p-6">
-              <h2 className="text-xl font-bold text-foreground mb-4">Recent Reports</h2>
-              <div className="text-center py-12">
-                <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          {/* Quick Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-slide-in">
+            <div className="glass rounded-2xl p-6 border border-border shadow-premium">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
                   </svg>
                 </div>
-                <p className="text-lg font-semibold text-foreground mb-2">No reports generated yet</p>
-                <p className="text-muted-foreground text-sm">
-                  Generate your first report to see it here
-                </p>
+                <span className="text-sm font-medium text-foreground">Total Income</span>
               </div>
+              <p className="text-2xl font-bold text-emerald-600"><span className="currency-symbol-large">₹</span>{incomes.reduce((sum, i) => sum + i.amount, 0).toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground">{incomes.length} transactions</p>
+            </div>
+
+            <div className="glass rounded-2xl p-6 border border-border shadow-premium">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 bg-gradient-to-br from-rose-500 to-pink-600 rounded-xl flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 13l-5 5m0 0l-5-5m5 5V6" />
+                  </svg>
+                </div>
+                <span className="text-sm font-medium text-foreground">Total Expenses</span>
+              </div>
+              <p className="text-2xl font-bold text-rose-600"><span className="currency-symbol-large">₹</span>{expenses.reduce((sum, e) => sum + e.amount, 0).toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground">{expenses.length} transactions</p>
+            </div>
+
+            <div className="glass rounded-2xl p-6 border border-border shadow-premium">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <span className="text-sm font-medium text-foreground">Net Savings</span>
+              </div>
+              <p className="text-2xl font-bold text-violet-600"><span className="currency-symbol-large">₹</span>{(incomes.reduce((sum, i) => sum + i.amount, 0) - expenses.reduce((sum, e) => sum + e.amount, 0)).toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground">Available balance</p>
             </div>
           </div>
-        </div>
+
+          {/* Report Generator */}
+          <div className="glass rounded-2xl p-6 border border-border shadow-premium animate-slide-in">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold text-foreground mb-2">Generate Financial Reports</h2>
+              <p className="text-muted-foreground mb-6">Export your financial data with flexible filtering options</p>
+              
+              <button
+                onClick={handleOpenReports}
+                className="btn-premium bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-premium hover:shadow-premium-lg hover:-translate-y-1 px-8 py-4 text-lg font-semibold transition-all duration-200"
+              >
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Open Report Generator
+              </button>
+            </div>
+          </div>
+
+          {/* Features */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-slide-in">
+            <div className="glass rounded-2xl p-6 border border-border shadow-premium text-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-foreground mb-2">Excel Export</h3>
+              <p className="text-sm text-muted-foreground">Export your data to Excel with detailed formatting and summaries</p>
+            </div>
+
+            <div className="glass rounded-2xl p-6 border border-border shadow-premium text-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-foreground mb-2">Email Reports</h3>
+              <p className="text-sm text-muted-foreground">Send detailed financial reports directly to your email</p>
+            </div>
+
+            <div className="glass rounded-2xl p-6 border border-border shadow-premium text-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-violet-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-foreground mb-2">Flexible Filters</h3>
+              <p className="text-sm text-muted-foreground">Filter by date range, category, and custom periods</p>
+            </div>
+          </div>
+        </main>
       </div>
+
+      <ReportsModal
+        isOpen={showReportsModal}
+        onClose={() => setShowReportsModal(false)}
+        expenses={expenses}
+        incomes={incomes}
+        categories={categories}
+      />
+
       <BottomNav />
     </>
   )

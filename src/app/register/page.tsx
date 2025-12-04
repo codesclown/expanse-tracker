@@ -20,22 +20,28 @@ export default function Register() {
     setError('')
     setLoading(true)
 
+    // Basic validation
+    if (!name.trim() || !email.trim() || !password.trim()) {
+      setError('Please fill in all required fields.')
+      setLoading(false)
+      return
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long.')
+      setLoading(false)
+      return
+    }
+
     try {
       const salaryValue = salary ? parseInt(salary) : undefined
-      console.log('Registering with:', { name, email, salary: salaryValue })
       await register(name, email, password, salaryValue)
+      // Only navigate on successful registration (no error thrown)
       router.push('/dashboard')
     } catch (err: any) {
       console.error('Registration error:', err)
-      if (err.message?.includes('Database not configured')) {
-        setError('Database not available. The app will work in local storage mode. Redirecting to dashboard...')
-      } else {
-        setError(err.message || 'Registration failed. Using local storage mode.')
-      }
-      // Even if API fails, we can still use local storage
-      setTimeout(() => {
-        router.push('/dashboard')
-      }, 2000)
+      setError(err.message || 'Registration failed. Please try again.')
+      // Don't navigate on error
     } finally {
       setLoading(false)
     }
@@ -78,10 +84,10 @@ export default function Register() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                 </svg>
               </div>
-              <span className="text-xl font-bold text-foreground">FinanceTracker</span>
+              <span className="metric-value text-foreground">FinanceTracker</span>
             </div>
             
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+            <h1 className="heading-page text-foreground mb-2">
               Join FinanceTracker
             </h1>
             <p className="text-muted-foreground text-sm md:text-base">
@@ -176,7 +182,7 @@ export default function Register() {
             <button
               type="submit"
               disabled={loading}
-              className="btn-premium w-full bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-premium hover:shadow-premium-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 group mt-4 py-3 text-base font-semibold"
+              className="btn-premium w-full bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-premium hover:shadow-premium-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 group mt-4 py-3 btn-text"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-3">

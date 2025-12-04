@@ -64,16 +64,16 @@ export default function EditExpenseModal({ isOpen, onClose, onSave, expense }: E
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4">
-      <div className="glass w-full sm:max-w-lg sm:rounded-3xl rounded-t-3xl max-h-[90vh] overflow-y-auto border border-border shadow-premium-lg animate-scale-in">
-        <div className="sticky top-0 glass-premium border-b border-border px-6 py-5 flex justify-between items-center rounded-t-3xl">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+      <div className="glass w-full sm:max-w-lg rounded-3xl max-h-[85vh] flex flex-col border border-border shadow-premium-lg animate-scale-in">
+        <div className="flex-shrink-0 glass-premium border-b border-border px-6 py-5 flex justify-between items-center rounded-t-3xl">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg">
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-foreground">Edit Expense</h2>
+            <h2 className="heading-sub text-foreground">Edit Expense</h2>
           </div>
           <button 
             onClick={onClose} 
@@ -85,16 +85,16 @@ export default function EditExpenseModal({ isOpen, onClose, onSave, expense }: E
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-5">
           <div>
-            <label className="block text-sm font-semibold text-foreground mb-3">Amount *</label>
+            <label className="block label-text text-foreground mb-3">Amount *</label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">₹</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground nav-text">₹</span>
               <input
                 type="number"
                 value={formData.amount}
                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                className="input-premium w-full pl-8 pr-4 py-4 text-lg font-semibold"
+                className="input-premium w-full pl-8 pr-4 py-4 metric-value-sm"
                 placeholder="0"
                 required
               />
@@ -102,12 +102,12 @@ export default function EditExpenseModal({ isOpen, onClose, onSave, expense }: E
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-foreground mb-3">Title *</label>
+            <label className="block label-text text-foreground mb-3">Title *</label>
             <input
               type="text"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="input-premium w-full px-4 py-4"
+              className="input-premium w-full px-4 py-4 nav-text"
               placeholder="e.g., Lunch at restaurant"
               required
             />
@@ -115,11 +115,11 @@ export default function EditExpenseModal({ isOpen, onClose, onSave, expense }: E
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-3">Category</label>
+              <label className="block label-text text-foreground mb-3">Category</label>
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="input-premium w-full px-4 py-4"
+                className="input-premium w-full px-4 py-4 nav-text"
               >
                 <option>Food</option>
                 <option>Transport</option>
@@ -133,23 +133,23 @@ export default function EditExpenseModal({ isOpen, onClose, onSave, expense }: E
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-3">Date</label>
+              <label className="block label-text text-foreground mb-3">Date</label>
               <input
                 type="date"
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className="input-premium w-full px-4 py-4"
+                className="input-premium w-full px-4 py-4 nav-text"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-3">Bank</label>
+              <label className="block label-text text-foreground mb-3">Bank</label>
               <select
                 value={formData.bank}
                 onChange={(e) => setFormData({ ...formData, bank: e.target.value })}
-                className="input-premium w-full px-4 py-4"
+                className="input-premium w-full px-4 py-4 nav-text"
               >
                 <option>Cash</option>
                 <option>HDFC</option>
@@ -161,11 +161,11 @@ export default function EditExpenseModal({ isOpen, onClose, onSave, expense }: E
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-3">Payment Mode</label>
+              <label className="block label-text text-foreground mb-3">Payment Mode</label>
               <select
                 value={formData.paymentMode}
                 onChange={(e) => setFormData({ ...formData, paymentMode: e.target.value })}
-                className="input-premium w-full px-4 py-4"
+                className="input-premium w-full px-4 py-4 nav-text"
               >
                 <option>Cash</option>
                 <option>UPI</option>
@@ -176,22 +176,22 @@ export default function EditExpenseModal({ isOpen, onClose, onSave, expense }: E
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-foreground mb-3">Tags (comma separated)</label>
+            <label className="block label-text text-foreground mb-3">Tags (comma separated)</label>
             <input
               type="text"
               value={formData.tags}
               onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-              className="input-premium w-full px-4 py-4"
+              className="input-premium w-full px-4 py-4 nav-text"
               placeholder="e.g., work, lunch, team"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-foreground mb-3">Notes</label>
+            <label className="block label-text text-foreground mb-3">Notes</label>
             <textarea
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              className="input-premium w-full px-4 py-4 resize-none"
+              className="input-premium w-full px-4 py-4 resize-none nav-text"
               rows={3}
               placeholder="Add any additional details..."
             />
@@ -201,13 +201,13 @@ export default function EditExpenseModal({ isOpen, onClose, onSave, expense }: E
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-4 bg-secondary hover:bg-secondary/80 text-foreground rounded-2xl font-semibold transition-all duration-200 hover:scale-[0.98]"
+              className="flex-1 py-4 bg-secondary hover:bg-secondary/80 text-foreground rounded-2xl btn-text transition-all duration-200 hover:scale-[0.98]"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 py-4 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white rounded-2xl font-semibold transition-all duration-200 hover:scale-[0.98] shadow-lg hover:shadow-xl"
+              className="flex-1 py-4 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white rounded-2xl btn-text transition-all duration-200 hover:scale-[0.98] shadow-lg hover:shadow-xl"
             >
               Update Expense
             </button>

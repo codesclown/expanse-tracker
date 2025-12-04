@@ -33,15 +33,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const login = async (email: string, password: string) => {
-    const data = await api.login(email, password)
-    setUser(data.user)
-    localStorage.setItem('user', JSON.stringify(data.user))
+    try {
+      const data = await api.login(email, password)
+      setUser(data.user)
+      localStorage.setItem('user', JSON.stringify(data.user))
+      return data
+    } catch (error: any) {
+      // Clear any existing user data on login failure
+      setUser(null)
+      localStorage.removeItem('user')
+      localStorage.removeItem('token')
+      throw error
+    }
   }
 
   const register = async (name: string, email: string, password: string, salary?: number) => {
-    const data = await api.register(name, email, password, salary)
-    setUser(data.user)
-    localStorage.setItem('user', JSON.stringify(data.user))
+    try {
+      const data = await api.register(name, email, password, salary)
+      setUser(data.user)
+      localStorage.setItem('user', JSON.stringify(data.user))
+      return data
+    } catch (error: any) {
+      // Clear any existing user data on registration failure
+      setUser(null)
+      localStorage.removeItem('user')
+      localStorage.removeItem('token')
+      throw error
+    }
   }
 
   const logout = () => {

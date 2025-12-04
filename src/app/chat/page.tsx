@@ -1,49 +1,120 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import BottomNav from '@/components/BottomNav'
-import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { useTheme } from '@/contexts/ThemeContext'
+import { HeaderSkeleton, ChatMessageSkeleton } from '@/components/Skeleton'
+import { useExpenses } from '@/hooks/useExpenses'
+import { useIncomes } from '@/hooks/useIncomes'
+import { useData } from '@/contexts/DataContext'
+import { api } from '@/lib/api'
 
 export default function Chat() {
-  const [expenses] = useLocalStorage<any[]>('expenses', [])
-  const [incomes] = useLocalStorage<any[]>('incomes', [])
+  const { expenses, loading: expensesLoading } = useExpenses()
+  const { incomes, loading: incomesLoading } = useIncomes()
+  const { financialSummary } = useData()
   const [messages, setMessages] = useState<any[]>([])
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const { theme, toggleTheme, isTransitioning } = useTheme()
 
-  const handleSend = () => {
+  // Show loading state while data is being fetched
+  if (expensesLoading || incomesLoading) {
+    return (
+      <div className="h-screen bg-premium-mesh overflow-hidden md:pl-64 lg:pl-72 flex flex-col">
+        {/* Header Skeleton */}
+        <HeaderSkeleton />
+
+        {/* Chat Content Skeleton */}
+        <div className="flex-1 flex flex-col">
+          {/* Welcome Message Skeleton */}
+          <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
+            <div className="max-w-4xl mx-auto space-y-6">
+              {/* Welcome Card Skeleton */}
+              <div className="glass rounded-2xl p-6 border border-border shadow-premium animate-pulse">
+                <div className="text-center space-y-4">
+                  <div className="w-16 h-16 bg-muted/50 rounded-2xl mx-auto animate-pulse"></div>
+                  <div className="space-y-2">
+                    <div className="w-48 h-6 bg-muted/50 rounded mx-auto animate-pulse"></div>
+                    <div className="w-64 h-4 bg-muted/50 rounded mx-auto animate-pulse"></div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Sample Messages Skeleton */}
+              <div className="space-y-4">
+                <ChatMessageSkeleton />
+                <ChatMessageSkeleton isUser />
+                <ChatMessageSkeleton />
+                <ChatMessageSkeleton isUser />
+              </div>
+            </div>
+          </div>
+
+          {/* Input Skeleton */}
+          <div className="border-t border-border bg-background/80 backdrop-blur-sm p-4">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex gap-3">
+                <div className="flex-1 h-12 bg-muted/50 rounded-2xl animate-pulse"></div>
+                <div className="w-12 h-12 bg-muted/50 rounded-2xl animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const handleSend = async () => {
     if (!input.trim()) return
 
     const userMessage = { role: 'user', content: input, id: Date.now() }
     setMessages([...messages, userMessage])
+    const currentInput = input
     setInput('')
     setIsTyping(true)
 
-    const response = generateResponse(input.toLowerCase())
-    setTimeout(() => {
-      setMessages(prev => [...prev, { role: 'assistant', content: response, id: Date.now() + 1 }])
+    try {
+      // Use intelligent chat API with real data
+      const response = await api.intelligentChatQuery(currentInput)
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: response.response, 
+        id: Date.now() + 1,
+        source: response.source 
+      }])
+    } catch (error) {
+      console.error('Chat error:', error)
+      // Fallback to local response
+      const fallbackResponse = generateFallbackResponse(currentInput.toLowerCase())
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: fallbackResponse, 
+        id: Date.now() + 1,
+        source: 'fallback'
+      }])
+    } finally {
       setIsTyping(false)
-    }, 800)
+    }
   }
 
-  const generateResponse = (query: string) => {
-    const totalExpense = expenses.reduce((sum, e) => sum + e.amount, 0)
-    const totalIncome = incomes.reduce((sum, i) => sum + i.amount, 0)
-    const savings = totalIncome - totalExpense
+  const generateFallbackResponse = (query: string) => {
+    // Use real data from hooks and context
+    const totalExpense = financialSummary?.totalExpenses || expenses.reduce((sum, e) => sum + e.amount, 0)
+    const totalIncome = financialSummary?.totalIncome || incomes.reduce((sum, i) => sum + i.amount, 0)
+    const savings = financialSummary?.savings || (totalIncome - totalExpense)
     const smartScore = totalIncome > 0 ? Math.round((savings / totalIncome) * 100) : 0
 
     if (query.includes('spend') || query.includes('spent')) {
       if (query.includes('month')) {
-        return `You've spent ₹${totalExpense.toLocaleString()} this month across ${expenses.length} transactions.`
+        return `You've spent ₹${totalExpense.toLocaleString()} this month across ${expenses.length} transactions. Your average daily spending is ₹${Math.round(totalExpense / new Date().getDate()).toLocaleString()}.`
       }
       if (query.includes('food')) {
         const foodExpenses = expenses.filter(e => e.category === 'Food')
         const foodTotal = foodExpenses.reduce((sum, e) => sum + e.amount, 0)
-        return `You've spent ₹${foodTotal.toLocaleString()} on Food this month.`
+        return `You've spent ₹${foodTotal.toLocaleString()} on Food this month from ${foodExpenses.length} transactions.`
       }
-      return `Your total spending is ₹${totalExpense.toLocaleString()}.`
+      return `Your total spending is ₹${totalExpense.toLocaleString()} from ${expenses.length} transactions.`
     }
 
     if (query.includes('category') || query.includes('categories')) {
@@ -51,38 +122,46 @@ export default function Chat() {
         acc[e.category] = (acc[e.category] || 0) + e.amount
         return acc
       }, {})
-      const breakdown = Object.entries(categoryData)
+      const topCategories = Object.entries(categoryData)
+        .sort(([,a], [,b]) => (b as number) - (a as number))
+        .slice(0, 5)
+      const breakdown = topCategories
         .map(([cat, amt]: [string, any]) => `${cat}: ₹${amt.toLocaleString()}`)
         .join('\n')
-      return `Here's your spending by category:\n\n${breakdown}`
+      return `Here's your top spending categories:\n\n${breakdown}`
     }
 
     if (query.includes('score') || query.includes('smart')) {
-      return `Your Smart Spending Score is ${smartScore}/100. ${
-        smartScore >= 70 ? 'Great job! You\'re saving well.' :
-        smartScore >= 40 ? 'You\'re doing okay, but there\'s room for improvement.' :
-        'Try to reduce expenses and increase savings.'
+      return `Your Smart Spending Score is ${smartScore}%. ${
+        smartScore >= 70 ? 'Excellent! You\'re managing your finances very well.' :
+        smartScore >= 40 ? 'Good progress, but there\'s room for improvement.' :
+        'Consider reducing expenses and increasing your savings rate.'
       }`
     }
 
     if (query.includes('saving') || query.includes('save')) {
-      return `You've saved ₹${savings.toLocaleString()} this month. ${
-        savings > 0 ? 'Keep it up!' : 'Try to reduce expenses.'
+      const savingsRate = totalIncome > 0 ? Math.round((savings / totalIncome) * 100) : 0
+      return `You've ${savings >= 0 ? 'saved' : 'overspent by'} ₹${Math.abs(savings).toLocaleString()} this month. Your savings rate is ${savingsRate}%. ${
+        savingsRate >= 20 ? 'Keep up the excellent work!' : 
+        savingsRate >= 10 ? 'Good job, try to save a bit more.' : 
+        'Consider reducing expenses to improve your savings.'
       }`
     }
 
     if (query.includes('income')) {
-      return `Your total income is ₹${totalIncome.toLocaleString()}.`
+      return `Your total income this month is ₹${totalIncome.toLocaleString()} from ${incomes.length} sources.`
     }
 
-    return "I can help you with questions about your spending, categories, savings, and Smart Score. Try asking 'How much did I spend this month?' or 'What's my Smart Score?'"
+    return "I can help you analyze your real financial data! Try asking: 'How much did I spend this month?', 'What's my savings rate?', 'Show my spending by category', or 'Give me financial advice'."
   }
 
   const quickQuestions = [
     'How much did I spend this month?',
     'Show my spending by category',
-    "What's my Smart Score?",
-    'How much did I save?'
+    "What's my savings rate?",
+    'Give me financial advice based on my data',
+    'What are my top expense categories?',
+    'How can I improve my spending habits?'
   ]
 
   return (
@@ -126,7 +205,7 @@ export default function Chat() {
                       Smart & Helpful
                     </span>
                   </div>
-                  <h1 className="text-xl md:text-2xl lg:text-3xl font-bold">
+                  <h1 className="heading-page">
                     Financial Assistant
                   </h1>
                 </div>
@@ -193,10 +272,10 @@ export default function Chat() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                     </svg>
                   </div>
-                  <p className="text-2xl font-bold text-foreground mb-3">Hi! I'm your AI assistant</p>
+                  <p className="metric-value-large text-foreground mb-3">Hi! I'm your AI assistant</p>
                   <p className="text-muted-foreground mb-8 max-w-md mx-auto">Ask me anything about your spending and finances. I'm here to help you make smarter financial decisions.</p>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl mx-auto">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-w-4xl mx-auto">
                     {quickQuestions.map((q, i) => (
                       <button
                         key={i}
@@ -227,17 +306,41 @@ export default function Chat() {
                           ? 'bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white' 
                           : 'glass text-foreground border border-border'
                       }`}>
+                        {msg.role === 'assistant' && msg.source && (
+                          <div className="flex items-center gap-2 mb-2 text-xs text-muted-foreground">
+                            {msg.source === 'openai' ? (
+                              <>
+                                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                                <span>AI-Powered Response</span>
+                              </>
+                            ) : (
+                              <>
+                                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                <span>Smart Analysis</span>
+                              </>
+                            )}
+                          </div>
+                        )}
                         <p className="text-sm whitespace-pre-line">{msg.content}</p>
                       </div>
                     </div>
                   ))}
                   {isTyping && (
-                    <div className="flex justify-start animate-slide-in">
-                      <div className="glass border border-border px-5 py-4 rounded-2xl shadow-premium">
-                        <div className="flex space-x-2">
-                          <div className="w-2 h-2 bg-rose-500 rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                          <div className="w-2 h-2 bg-fuchsia-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                    <div className="flex gap-3 justify-start animate-slide-in">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600 flex items-center justify-center shadow-lg flex-shrink-0">
+                        <svg className="w-4 h-4 text-white animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                      </div>
+                      <div className="bg-gradient-to-r from-muted/20 via-muted/30 to-muted/20 rounded-2xl p-4 max-w-[80%] animate-shimmer bg-size-200">
+                        <div className="flex items-center gap-1 mb-2">
+                          <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                          <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                        </div>
+                        <div className="space-y-1">
+                          <div className="w-full h-2 bg-muted/40 rounded animate-pulse"></div>
+                          <div className="w-3/4 h-2 bg-muted/40 rounded animate-pulse" style={{ animationDelay: '0.1s' }}></div>
                         </div>
                       </div>
                     </div>
@@ -253,18 +356,22 @@ export default function Chat() {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
                 placeholder="Ask me anything about your finances..."
                 className="flex-1 px-4 py-3 text-base bg-background/50 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all duration-300 placeholder:text-muted-foreground"
               />
               <button
                 onClick={handleSend}
-                disabled={!input.trim()}
+                disabled={!input.trim() || isTyping}
                 className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-premium hover:shadow-premium-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center hover:scale-105 transition-all duration-300 rounded-2xl"
               >
-                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                </svg>
+                {isTyping ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                ) : (
+                  <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  </svg>
+                )}
               </button>
             </div>
           </div>

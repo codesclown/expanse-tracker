@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getUserIdFromRequest } from '@/lib/auth'
-import { detectSubscriptions } from '@/lib/subscriptions'
+import { detectSubscriptions } from '@/lib/database'
+import { withAuth } from '@/lib/auth'
 
-export async function POST(req: NextRequest) {
-  const userId = getUserIdFromRequest(req)
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  const subscriptions = await detectSubscriptions(userId)
-  return NextResponse.json({ subscriptions, count: subscriptions.length })
-}
+export const POST = withAuth(async (request: NextRequest, { userId }) => {
+  try {
+    const subscriptions = await detectSubscriptions(userId)
+    return NextResponse.json({ 
+      detected: subscriptions.length,
+      subscriptions 
+    })
+  } catch (error: any) {
+    console.error('Detect subscriptions error:', error)
+    return NextResponse.json(
+      { error: error.message || 'Failed to detect subscriptions' },
+      { status: 500 }
+    )
+  }
+})

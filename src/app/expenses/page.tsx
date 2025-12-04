@@ -4,18 +4,27 @@ import { useState, useMemo } from 'react'
 import BottomNav from '@/components/BottomNav'
 import AddExpenseModal from '@/components/AddExpenseModal'
 import EditExpenseModal from '@/components/EditExpenseModal'
+import ReportsModal from '@/components/ReportsModal'
+import { 
+  HeaderSkeleton, 
+  CardSkeleton, 
+  FilterSkeleton, 
+  ListItemSkeleton 
+} from '@/components/Skeleton'
 import { useExpenses } from '@/hooks/useExpenses'
+import { useIncomes } from '@/hooks/useIncomes'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useNotification } from '@/contexts/NotificationContext'
-import { exportToExcel, exportExpensesSummary } from '@/lib/exportUtils'
 
 export default function Expenses() {
   const { expenses, addExpense, updateExpense, deleteExpense, loading } = useExpenses()
+  const { incomes } = useIncomes()
   const { theme, toggleTheme, isTransitioning } = useTheme()
   const { addNotification } = useNotification()
   
   const [showAddModal, setShowAddModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
+  const [showReportsModal, setShowReportsModal] = useState(false)
   const [editingExpense, setEditingExpense] = useState<any>(null)
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('All')
@@ -41,7 +50,7 @@ export default function Expenses() {
     setEditingExpense(null)
   }
 
-  const handleDeleteExpense = async (id: number) => {
+  const handleDeleteExpense = async (id: string) => {
     if (confirm('Are you sure you want to delete this expense?')) {
       try {
         await deleteExpense(id)
@@ -174,55 +183,56 @@ export default function Expenses() {
     return { total, average, highest, count: filteredAndSortedExpenses.length }
   }, [filteredAndSortedExpenses])
 
-  // Export functions
-  const handleExportExcel = () => {
-    if (filteredAndSortedExpenses.length === 0) {
-      addNotification({
-        type: 'warning',
-        title: 'No Data to Export',
-        message: 'There are no expenses to export with the current filters.',
-        duration: 3000
-      })
-      return
-    }
-    
-    exportToExcel(filteredAndSortedExpenses, 'expenses')
-    addNotification({
-      type: 'success',
-      title: 'Export Successful',
-      message: `Exported ${filteredAndSortedExpenses.length} expenses to Excel.`,
-      duration: 4000
-    })
-  }
-
-  const handleExportSummary = () => {
-    if (filteredAndSortedExpenses.length === 0) {
-      addNotification({
-        type: 'warning',
-        title: 'No Data to Export',
-        message: 'There are no expenses to export with the current filters.',
-        duration: 3000
-      })
-      return
-    }
-    
-    exportExpensesSummary(filteredAndSortedExpenses)
-    addNotification({
-      type: 'success',
-      title: 'Summary Exported',
-      message: `Exported detailed summary with ${filteredAndSortedExpenses.length} expenses.`,
-      duration: 4000
-    })
+  // Reports function
+  const handleOpenReports = () => {
+    setShowReportsModal(true)
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-premium-mesh pb-32 md:pb-8 md:pl-64 lg:pl-72 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading your expenses...</p>
+      <>
+        <div className="min-h-screen bg-premium-mesh pb-32 md:pb-8 md:pl-64 lg:pl-72">
+          {/* Header Skeleton */}
+          <HeaderSkeleton />
+
+          {/* Content Skeleton */}
+          <main className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 -mt-12 pb-safe relative z-10 space-y-6">
+            {/* Statistics Cards Skeleton */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 animate-slide-in">
+              <CardSkeleton />
+              <CardSkeleton />
+              <CardSkeleton />
+              <CardSkeleton />
+            </div>
+
+            {/* Search and Controls Skeleton */}
+            <div className="glass-premium rounded-2xl p-4 border border-border/20 shadow-premium animate-pulse">
+              <div className="flex flex-col lg:flex-row gap-4">
+                <div className="flex-1 relative">
+                  <div className="w-full h-10 bg-muted/50 rounded-2xl animate-pulse"></div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="w-32 h-10 bg-muted/50 rounded-2xl animate-pulse"></div>
+                  <div className="w-24 h-10 bg-muted/50 rounded-2xl animate-pulse"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Filters Skeleton */}
+            <FilterSkeleton />
+
+            {/* Expenses List Skeleton */}
+            <div className="glass-premium rounded-2xl border border-border/20 shadow-premium overflow-hidden animate-pulse">
+              <div className="divide-y divide-border/10">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <ListItemSkeleton key={i} />
+                ))}
+              </div>
+            </div>
+          </main>
         </div>
-      </div>
+        <BottomNav />
+      </>
     )
   }
 
@@ -265,10 +275,10 @@ export default function Expenses() {
                       </span>
                       <span className="w-1 h-1 bg-white/60 rounded-full"></span>
                       <span className="text-xs text-white/60">
-                        {stats.count} transactions • ₹{stats.total.toLocaleString()} total
+                        {stats.count} transactions • <span className="currency-symbol">₹</span>{stats.total.toLocaleString()} total
                       </span>
                     </div>
-                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">
+                    <h1 className="heading-page">
                       Expense Tracker
                     </h1>
                   </div>
@@ -339,8 +349,8 @@ export default function Expenses() {
                 </span>
               </div>
               <div>
-                <p className="text-lg md:text-xl font-bold text-emerald-600">
-                  ₹{stats.total.toLocaleString()}
+                <p className="metric-value text-emerald-600">
+                  <span className="currency-symbol">₹</span>{stats.total.toLocaleString()}
                 </p>
                 <p className="text-xs text-muted-foreground">Total Spent</p>
               </div>
@@ -358,7 +368,7 @@ export default function Expenses() {
                 </span>
               </div>
               <div>
-                <p className="text-lg md:text-xl font-bold text-blue-600">
+                <p className="metric-value text-blue-600">
                   {stats.count}
                 </p>
                 <p className="text-xs text-muted-foreground">Transactions</p>
@@ -377,8 +387,8 @@ export default function Expenses() {
                 </span>
               </div>
               <div>
-                <p className="text-lg md:text-xl font-bold text-amber-600">
-                  ₹{Math.round(stats.average).toLocaleString()}
+                <p className="metric-value text-amber-600">
+                  <span className="currency-symbol">₹</span>{Math.round(stats.average).toLocaleString()}
                 </p>
                 <p className="text-xs text-muted-foreground">Average</p>
               </div>
@@ -396,8 +406,8 @@ export default function Expenses() {
                 </span>
               </div>
               <div>
-                <p className="text-lg md:text-xl font-bold text-rose-600">
-                  ₹{stats.highest.toLocaleString()}
+                <p className="metric-value text-rose-600">
+                  <span className="currency-symbol">₹</span>{stats.highest.toLocaleString()}
                 </p>
                 <p className="text-xs text-muted-foreground">Highest</p>
               </div>
@@ -435,25 +445,35 @@ export default function Expenses() {
               </div>
               
               {/* Compact Action Buttons */}
-              <div className="flex gap-2">
+              <div className="flex gap-3">
                 <button
                   onClick={() => setShowAddModal(true)}
-                  className="btn-premium bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-semibold whitespace-nowrap group transition-all duration-200"
+                  className="group relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-600 hover:from-blue-700 hover:via-blue-800 hover:to-indigo-700 text-white shadow-2xl hover:shadow-blue-500/25 hover:-translate-y-1 flex items-center justify-center gap-2 px-6 py-3 rounded-2xl font-semibold text-sm transition-all duration-300 border border-white/10"
                 >
-                  <svg className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-                  </svg>
-                  Add
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-lg bg-white/20 flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                      </svg>
+                    </div>
+                    <span className="group-hover:translate-x-0.5 transition-transform duration-300">Add Expense</span>
+                  </div>
                 </button>
                 
                 <button
-                  onClick={handleExportExcel}
-                  className="btn-premium bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-semibold whitespace-nowrap group transition-all duration-200"
+                  onClick={handleOpenReports}
+                  className="group relative overflow-hidden bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-700 hover:via-teal-700 hover:to-cyan-700 text-white shadow-2xl hover:shadow-emerald-500/25 hover:-translate-y-1 flex items-center justify-center gap-2 px-6 py-3 rounded-2xl font-semibold text-sm transition-all duration-300 border border-white/10"
                 >
-                  <svg className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  Export
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-lg bg-white/20 flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <span className="group-hover:translate-x-0.5 transition-transform duration-300">Reports</span>
+                  </div>
                 </button>
               </div>
             </div>
@@ -694,7 +714,7 @@ export default function Expenses() {
                             {/* Amount */}
                             <div className="text-right">
                               <p className="font-bold text-sm text-red-500">
-                                -₹{expense.amount.toLocaleString()}
+                                -<span className="currency-symbol">₹</span>{expense.amount.toLocaleString()}
                               </p>
                               <p className="text-xs text-muted-foreground">
                                 {expense.paymentMode || 'Cash'}
@@ -737,7 +757,7 @@ export default function Expenses() {
                   </svg>
                 </div>
                 <div className="space-y-3">
-                  <h3 className="text-lg font-bold text-foreground">
+                  <h3 className="heading-card">
                     {search || categoryFilter !== 'All' || dateFilter !== 'All' || amountFilter !== 'All' || bankFilter !== 'All'
                       ? 'No matching expenses found'
                       : 'No expenses yet'
@@ -786,14 +806,17 @@ export default function Expenses() {
         </main>
       </div>
 
-      {/* Compact Floating Action Button - Mobile Only */}
+      {/* Premium Floating Action Button - Mobile Only */}
       <button
         onClick={() => setShowAddModal(true)}
-        className="md:hidden fixed bottom-24 right-4 w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl shadow-premium hover:shadow-premium-lg flex items-center justify-center hover:scale-110 transition-all duration-200 z-40 group"
+        className="md:hidden fixed bottom-24 right-4 w-14 h-14 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-600 text-white rounded-2xl shadow-2xl hover:shadow-blue-500/25 flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 z-40 group border border-white/10"
       >
-        <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-        </svg>
+        <div className="relative">
+          <div className="absolute inset-0 bg-white/20 rounded-lg group-hover:scale-110 transition-transform duration-300"></div>
+          <svg className="w-6 h-6 relative z-10 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+          </svg>
+        </div>
       </button>
 
       <AddExpenseModal
@@ -808,6 +831,15 @@ export default function Expenses() {
         onSave={handleUpdateExpense}
         expense={editingExpense}
       />
+
+      <ReportsModal
+        isOpen={showReportsModal}
+        onClose={() => setShowReportsModal(false)}
+        expenses={expenses}
+        incomes={incomes}
+        categories={categories}
+      />
+
       <BottomNav />
     </>
   )

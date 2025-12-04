@@ -45,54 +45,28 @@ export class ApiClient {
 
   // Auth
   async login(email: string, password: string) {
-    try {
-      const data = await this.request('/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
-      })
-      this.setToken(data.token)
-      return data
-    } catch (error: any) {
-      console.error('API login error:', error)
-      // If API fails, check local storage
-      const localUser = localStorage.getItem('user')
-      if (localUser) {
-        const user = JSON.parse(localUser)
-        if (user.email === email) {
-          this.setToken(user.token)
-          return { token: user.token, user }
-        }
-      }
-      throw new Error('Login failed. Please register first.')
-    }
+    const data = await this.request('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    })
+    this.setToken(data.token)
+    return data
   }
 
   async register(name: string, email: string, password: string, salary?: number) {
-    try {
-      const data = await this.request('/auth/register', {
-        method: 'POST',
-        body: JSON.stringify({ name, email, password, salary }),
-      })
-      this.setToken(data.token)
-      return data
-    } catch (error: any) {
-      console.error('API register error:', error)
-      // If API fails, create a local user
-      const localUser = {
-        id: Date.now().toString(),
-        name,
-        email,
-        token: 'local-' + Date.now()
-      }
-      this.setToken(localUser.token)
-      localStorage.setItem('user', JSON.stringify(localUser))
-      return { token: localUser.token, user: localUser }
-    }
+    const data = await this.request('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ name, email, password, salary }),
+    })
+    this.setToken(data.token)
+    return data
   }
 
   // Expenses
   async getExpenses(filters?: any) {
-    const params = new URLSearchParams(filters).toString()
+    const params = new URLSearchParams(
+      Object.fromEntries(Object.entries(filters || {}).filter(([_, v]) => v != null))
+    ).toString()
     return this.request(`/expenses${params ? `?${params}` : ''}`)
   }
 
@@ -113,6 +87,93 @@ export class ApiClient {
   async deleteExpense(id: string) {
     return this.request(`/expenses/${id}`, {
       method: 'DELETE',
+    })
+  }
+
+  // Incomes
+  async getIncomes(filters?: any) {
+    const params = new URLSearchParams(
+      Object.fromEntries(Object.entries(filters || {}).filter(([_, v]) => v != null))
+    ).toString()
+    return this.request(`/incomes${params ? `?${params}` : ''}`)
+  }
+
+  async createIncome(income: any) {
+    return this.request('/incomes', {
+      method: 'POST',
+      body: JSON.stringify(income),
+    })
+  }
+
+  // Udhar
+  async getUdhars() {
+    return this.request('/udhar')
+  }
+
+  async createUdhar(udhar: any) {
+    return this.request('/udhar', {
+      method: 'POST',
+      body: JSON.stringify(udhar),
+    })
+  }
+
+  async updateUdhar(id: string, udhar: any) {
+    return this.request(`/udhar/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(udhar),
+    })
+  }
+
+  async deleteUdhar(id: string) {
+    return this.request(`/udhar/${id}`, {
+      method: 'DELETE',
+    })
+  }
+
+  // User Profile
+  async getUserProfile() {
+    return this.request('/user/profile')
+  }
+
+  async updateUserProfile(data: any) {
+    return this.request('/user/profile', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async updatePassword(currentPassword: string, newPassword: string) {
+    return this.request('/user/password', {
+      method: 'PUT',
+      body: JSON.stringify({ currentPassword, newPassword }),
+    })
+  }
+
+  // Analytics
+  async getFinancialSummary(year?: number, month?: number) {
+    const params = new URLSearchParams()
+    if (year) params.set('year', year.toString())
+    if (month) params.set('month', month.toString())
+    return this.request(`/analytics/summary${params.toString() ? `?${params}` : ''}`)
+  }
+
+  async generateMonthlyReport(year: number, month: number) {
+    return this.request('/reports/monthly', {
+      method: 'POST',
+      body: JSON.stringify({ year, month }),
+    })
+  }
+
+  async sendEmailReport(filters: {
+    dateFrom?: string
+    dateTo?: string
+    category?: string
+    type?: 'day' | 'month' | 'year'
+    reportType?: string
+  }) {
+    return this.request('/reports/email', {
+      method: 'POST',
+      body: JSON.stringify(filters),
     })
   }
 
@@ -142,6 +203,13 @@ export class ApiClient {
   // Chat
   async chatQuery(query: string) {
     return this.request('/chat/query', {
+      method: 'POST',
+      body: JSON.stringify({ query }),
+    })
+  }
+
+  async intelligentChatQuery(query: string) {
+    return this.request('/chat/intelligent', {
       method: 'POST',
       body: JSON.stringify({ query }),
     })

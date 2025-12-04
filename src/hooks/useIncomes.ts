@@ -1,23 +1,64 @@
 import { useState, useEffect } from 'react'
-import { useLocalStorage } from './useLocalStorage'
+import { api } from '@/lib/api'
+import { useNotification } from '@/contexts/NotificationContext'
+import { useData } from '@/contexts/DataContext'
 
 export function useIncomes() {
-  const [incomes, setIncomes] = useLocalStorage<any[]>('incomes', [])
-  const [loading, setLoading] = useState(false)
+  const [incomes, setIncomes] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const { addNotification } = useNotification()
+  const { triggerRefresh } = useData()
+
+  const fetchIncomes = async (filters?: any) => {
+    try {
+      setLoading(true)
+      const data = await api.getIncomes(filters)
+      setIncomes(data)
+    } catch (error: any) {
+      console.error('Failed to fetch incomes:', error)
+      addNotification({
+        type: 'error',
+        title: 'Error',
+        message: error.message || 'Failed to fetch incomes',
+        duration: 4000
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const addIncome = async (income: any) => {
-    const newIncome = { 
-      ...income, 
-      id: Date.now(), 
-      createdAt: new Date().toISOString(),
-      timestamp: Date.now() // Add timestamp for sorting
+    try {
+      const newIncome = await api.createIncome(income)
+      setIncomes(prev => [newIncome, ...prev])
+      triggerRefresh() // Trigger global data refresh
+      addNotification({
+        type: 'success',
+        title: 'Income Added',
+        message: `₹${income.amount.toLocaleString()} income has been recorded.`,
+        duration: 4000
+      })
+      return newIncome
+    } catch (error: any) {
+      console.error('Failed to add income:', error)
+      addNotification({
+        type: 'error',
+        title: 'Error',
+        message: error.message || 'Failed to add income',
+        duration: 4000
+      })
+      throw error
     }
-    setIncomes([...incomes, newIncome])
   }
 
-  const deleteIncome = async (id: string | number) => {
-    setIncomes(incomes.filter(i => i.id !== id))
-  }
+  useEffect(() => {
+    fetchIncomes()
+  }, [])
 
-  return { incomes, loading, addIncome, deleteIncome }
+  return {
+    incomes,
+    loading,
+    addIncome,
+    refetch: fetchIncomes,
+  }
 }

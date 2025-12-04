@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import BottomNav from '@/components/BottomNav'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
+import { HeaderSkeleton, CardSkeleton, ListItemSkeleton } from '@/components/Skeleton'
 import { detectSubscriptions } from '@/lib/subscriptionDetector'
 import { useTheme } from '@/contexts/ThemeContext'
 
@@ -76,7 +77,7 @@ export default function Subscriptions() {
                         {subscriptions.length} active
                       </span>
                     </div>
-                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">
+                    <h1 className="heading-page">
                       Subscriptions
                     </h1>
                   </div>
@@ -144,7 +145,7 @@ export default function Subscriptions() {
                   </div>
                   <div>
                     <p className="text-muted-foreground text-sm">Total Monthly Spending</p>
-                    <p className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">₹{totalMonthly.toLocaleString()}</p>
+                    <p className="metric-value-large text-gradient-primary"><span className="currency-symbol-large">₹</span>{totalMonthly.toLocaleString()}</p>
                   </div>
                 </div>
                 <p className="text-muted-foreground text-sm">
@@ -153,7 +154,7 @@ export default function Subscriptions() {
               </div>
               <div className="text-right">
                 <p className="text-sm text-muted-foreground">Yearly Cost</p>
-                <p className="text-lg font-semibold bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">₹{(totalMonthly * 12).toLocaleString()}</p>
+                <p className="metric-value text-gradient-primary"><span className="currency-symbol">₹</span>{(totalMonthly * 12).toLocaleString()}</p>
               </div>
             </div>
           </div>
@@ -163,7 +164,7 @@ export default function Subscriptions() {
             <button
               onClick={handleDetect}
               disabled={detecting}
-              className="btn-premium w-full bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-premium hover:shadow-premium-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 group py-4 text-lg font-semibold"
+              className="btn-premium w-full bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-premium hover:shadow-premium-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 group py-4 btn-text-lg"
             >
               {detecting ? (
                 <>
@@ -204,7 +205,7 @@ export default function Subscriptions() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <p className="font-semibold text-lg text-foreground">{sub.name}</p>
+                            <p className="metric-value text-foreground">{sub.name}</p>
                             <span className="text-xs bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/30 dark:to-orange-900/30 text-amber-700 dark:text-amber-300 px-3 py-1 rounded-full font-semibold border border-amber-200/50 dark:border-amber-800/50">
                               {sub.interval}
                             </span>
@@ -221,7 +222,7 @@ export default function Subscriptions() {
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="text-right">
-                          <p className="font-bold text-2xl bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">₹{sub.amount.toLocaleString()}</p>
+                          <p className="metric-value-large text-gradient-primary"><span className="currency-symbol-large">₹</span>{sub.amount.toLocaleString()}</p>
                           <p className="text-xs text-muted-foreground">per {sub.interval}</p>
                         </div>
                         <button
@@ -244,13 +245,13 @@ export default function Subscriptions() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
                 </div>
-                <p className="text-2xl font-bold text-foreground mb-3">No subscriptions found</p>
+                <p className="metric-value-large text-foreground mb-3">No subscriptions found</p>
                 <p className="text-muted-foreground mb-8 max-w-md mx-auto">
                   Add recurring expenses and click detect to find your subscriptions automatically
                 </p>
                 <button
                   onClick={handleDetect}
-                  className="btn-premium bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-premium hover:shadow-premium-lg px-8 py-4 text-lg font-semibold"
+                  className="btn-premium bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-premium hover:shadow-premium-lg px-8 py-4 btn-text-lg"
                 >
                   Detect Subscriptions
                 </button>

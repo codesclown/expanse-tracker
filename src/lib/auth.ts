@@ -1,34 +1,38 @@
-import jwt from 'jsonwebtoken'
-import bcrypt from 'bcryptjs'
 import { NextRequest } from 'next/server'
+import { verifyToken } from './database'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-change-me'
-
-export async function hashPassword(password: string): Promise<string> {
-  return bcrypt.hash(password, 10)
-}
-
-export async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  return bcrypt.compare(password, hash)
-}
-
-export function signToken(userId: string): string {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '30d' })
-}
-
-export function verifyToken(token: string): { userId: string } | null {
+export async function getAuthUser(request: NextRequest) {
   try {
-    return jwt.verify(token, JWT_SECRET) as { userId: string }
-  } catch {
+    const authHeader = request.headers.get('authorization')
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return null
+    }
+
+    const token = authHeader.substring(7)
+    const decoded = verifyToken(token)
+    
+    if (!decoded) {
+      return null
+    }
+
+    return decoded
+  } catch (error) {
+    console.error('Auth error:', error)
     return null
   }
 }
 
-export function getUserIdFromRequest(req: NextRequest): string | null {
-  const authHeader = req.headers.get('authorization')
-  if (!authHeader?.startsWith('Bearer ')) return null
-  
-  const token = authHeader.substring(7)
-  const payload = verifyToken(token)
-  return payload?.userId || null
+export function withAuth(handler: (request: NextRequest, context: { userId: string }) => Promise<Response>) {
+  return async (request: NextRequest) => {
+    const auth = await getAuthUser(request)
+    
+    if (!auth) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
+      )
+    }
+
+    return handler(request, { userId: auth.userId })
+  }
 }

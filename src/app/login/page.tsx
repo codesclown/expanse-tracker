@@ -20,13 +20,12 @@ export default function Login() {
 
     try {
       await login(email, password)
+      // Only navigate on successful login (no error thrown)
       router.push('/dashboard')
     } catch (err: any) {
-      if (err.message?.includes('Database not configured')) {
-        setError('Database not available. The app will work in local storage mode. You can continue using all features without a database.')
-      } else {
-        setError(err.message || 'Login failed')
-      }
+      console.error('Login error:', err)
+      setError(err.message || 'Invalid email or password. Please try again.')
+      // Don't navigate on error
     } finally {
       setLoading(false)
     }
@@ -69,10 +68,10 @@ export default function Login() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
-              <span className="text-xl font-bold text-foreground">FinanceTracker</span>
+              <span className="metric-value text-foreground">FinanceTracker</span>
             </div>
             
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+            <h1 className="heading-page text-foreground mb-2">
               Welcome Back
             </h1>
             <p className="text-muted-foreground text-sm md:text-base">
@@ -138,7 +137,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="btn-premium w-full bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-premium hover:shadow-premium-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 group py-4 text-lg font-semibold"
+              className="btn-premium w-full bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-premium hover:shadow-premium-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 group py-4 btn-text-lg"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-3">

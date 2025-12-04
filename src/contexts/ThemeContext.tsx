@@ -13,36 +13,58 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('light')
+  // Initialize theme from what's already applied by the script
+  const [theme, setTheme] = useState<Theme>(() => {
+    // Check if we're on client-side and get the current theme from DOM
+    if (typeof window !== 'undefined') {
+      const isDark = document.documentElement.classList.contains('dark')
+      return isDark ? 'dark' : 'light'
+    }
+    return 'light' // Default for SSR
+  })
   const [mounted, setMounted] = useState(false)
   const [isTransitioning, setIsTransitioning] = useState(false)
 
   useEffect(() => {
     setMounted(true)
-    const savedTheme = localStorage.getItem('theme') as Theme
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light')
     
-    setTheme(initialTheme)
+    // Sync with the actual DOM state (set by the script in layout)
+    const isDark = document.documentElement.classList.contains('dark')
+    const actualTheme = isDark ? 'dark' : 'light'
     
-    // Apply theme immediately without transition on initial load
-    document.documentElement.classList.toggle('dark', initialTheme === 'dark')
-    document.documentElement.style.setProperty('--theme-transition', 'none')
+    // Update state to match DOM if different
+    if (actualTheme !== theme) {
+      setTheme(actualTheme)
+    }
     
-    // Enable transitions after a brief delay
+    // Mark as hydrated and enable smooth transitions after initial load
     setTimeout(() => {
+      document.documentElement.classList.add('hydrated')
       document.documentElement.style.setProperty('--theme-transition', 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)')
     }, 100)
   }, [])
 
   useEffect(() => {
     if (mounted) {
-      localStorage.setItem('theme', theme)
+      // Save theme preference (with error handling)
+      try {
+        localStorage.setItem('theme', theme)
+      } catch (e) {
+        // localStorage might not be available (private browsing, etc.)
+        console.warn('Could not save theme preference:', e)
+      }
       
-      // Add transition class and update theme
+      // Apply theme with smooth transition
       setIsTransitioning(true)
       document.documentElement.classList.add('theme-transitioning')
-      document.documentElement.classList.toggle('dark', theme === 'dark')
+      
+      // Update DOM class and color scheme
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+      }
+      document.documentElement.style.colorScheme = theme
       
       // Remove transition class after animation completes
       setTimeout(() => {

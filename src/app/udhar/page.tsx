@@ -1,15 +1,61 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import BottomNav from '@/components/BottomNav'
 import AddUdharModal from '@/components/AddUdharModal'
+import { HeaderSkeleton, CardSkeleton, ListItemSkeleton } from '@/components/Skeleton'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { useTheme } from '@/contexts/ThemeContext'
 
 export default function Udhar() {
   const [udhars, setUdhars] = useLocalStorage<any[]>('udhars', [])
   const [showModal, setShowModal] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const { theme, toggleTheme, isTransitioning } = useTheme()
+
+  // Ensure component is mounted before rendering to prevent hydration issues
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return (
+      <>
+        <div className="min-h-screen bg-premium-mesh pb-32 md:pb-8 md:pl-64 lg:pl-72">
+          {/* Header Skeleton */}
+          <HeaderSkeleton />
+
+          {/* Content Skeleton */}
+          <main className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 -mt-12 pb-safe relative z-10 space-y-6">
+            {/* Summary Cards Skeleton */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-slide-in">
+              <CardSkeleton />
+              <CardSkeleton />
+              <CardSkeleton />
+            </div>
+
+            {/* Action Button Skeleton */}
+            <div className="flex justify-center">
+              <div className="w-40 h-12 bg-muted/50 rounded-2xl animate-pulse"></div>
+            </div>
+
+            {/* Udhar List Skeleton */}
+            <div className="glass rounded-2xl border border-border shadow-premium overflow-hidden animate-pulse">
+              <div className="p-4 border-b border-border">
+                <div className="w-32 h-6 bg-muted/50 rounded animate-pulse"></div>
+              </div>
+              <div className="divide-y divide-border">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <ListItemSkeleton key={i} />
+                ))}
+              </div>
+            </div>
+          </main>
+        </div>
+        <BottomNav />
+      </>
+    )
+  }
 
   const handleAddUdhar = (udhar: any) => {
     setUdhars([...udhars, { ...udhar, id: Date.now(), createdAt: new Date().toISOString() }])
@@ -68,7 +114,7 @@ export default function Udhar() {
                         {udhars.length} records
                       </span>
                     </div>
-                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">
+                    <h1 className="heading-page">
                       Udhar Tracker
                     </h1>
                   </div>
@@ -135,7 +181,7 @@ export default function Udhar() {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Money Given</p>
-                  <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">₹{totalGiven.toLocaleString()}</p>
+                  <p className="metric-value text-emerald-600 dark:text-emerald-400"><span className="currency-symbol">₹</span>{totalGiven.toLocaleString()}</p>
                 </div>
               </div>
             </div>
@@ -149,7 +195,7 @@ export default function Udhar() {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Money Taken</p>
-                  <p className="text-lg font-bold text-red-500 dark:text-red-400">₹{totalTaken.toLocaleString()}</p>
+                  <p className="metric-value text-red-500 dark:text-red-400"><span className="currency-symbol">₹</span>{totalTaken.toLocaleString()}</p>
                 </div>
               </div>
             </div>
@@ -167,12 +213,12 @@ export default function Udhar() {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Net Balance</p>
-                  <p className={`text-lg font-bold ${
+                  <p className={`metric-value ${
                     netBalance >= 0 
                       ? 'text-blue-600 dark:text-blue-400' 
                       : 'text-orange-500 dark:text-orange-400'
                   }`}>
-                    ₹{Math.abs(netBalance).toLocaleString()}
+                    <span className="currency-symbol">₹</span>{Math.abs(netBalance).toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -227,7 +273,7 @@ export default function Udhar() {
                           </div>
                           <p className="text-sm text-muted-foreground mb-1">{udhar.reason}</p>
                           <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                            <span>Total: ₹{udhar.total.toLocaleString()}</span>
+                            <span>Total: <span className="currency-symbol">₹</span>{udhar.total.toLocaleString()}</span>
                             <span>•</span>
                             <span>Created: {new Date(udhar.createdAt).toLocaleDateString()}</span>
                           </div>
@@ -236,12 +282,12 @@ export default function Udhar() {
                       <div className="flex items-center gap-3">
                         <div className="text-right">
                           <p className="text-xs text-muted-foreground">Remaining</p>
-                          <p className={`text-lg font-bold ${
+                          <p className={`metric-value ${
                             udhar.direction === 'given' 
                               ? 'text-emerald-600 dark:text-emerald-400' 
                               : 'text-red-500 dark:text-red-400'
                           }`}>
-                            ₹{udhar.remaining.toLocaleString()}
+                            <span className="currency-symbol">₹</span>{udhar.remaining.toLocaleString()}
                           </p>
                         </div>
                         <button
@@ -264,7 +310,7 @@ export default function Udhar() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
                 </div>
-                <p className="text-lg font-semibold text-foreground mb-2">No loans recorded</p>
+                <p className="heading-card mb-2">No loans recorded</p>
                 <p className="text-muted-foreground text-sm mb-6">
                   Start tracking by adding your first loan
                 </p>
@@ -277,7 +323,7 @@ export default function Udhar() {
               </div>
             )}
           </div>
-        </div>
+        </main>
 
         {/* Floating Action Button - Mobile Only */}
         <button

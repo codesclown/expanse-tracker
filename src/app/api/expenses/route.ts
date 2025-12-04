@@ -1,56 +1,64 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { z } from 'zod'
-import { prisma } from '@/lib/prisma'
-import { getUserIdFromRequest } from '@/lib/auth'
-import { buildPrismaWhere } from '@/lib/filters'
-import { linkExpenseToSubscription } from '@/lib/subscriptions'
+import { createExpense, getExpenses } from '@/lib/database'
+import { withAuth } from '@/lib/auth'
 
-const createExpenseSchema = z.object({
-  date: z.string().transform(s => new Date(s)),
-  title: z.string(),
-  amount: z.number().positive(),
-  category: z.string(),
-  bank: z.string(),
-  paymentMode: z.string(),
-  tags: z.array(z.string()).default([]),
-  notes: z.string().optional(),
-  receiptUrl: z.string().optional(),
+export const GET = withAuth(async (request: NextRequest, { userId }) => {
+  try {
+    const { searchParams } = new URL(request.url)
+    const filters = {
+      category: searchParams.get('category') || undefined,
+      dateFrom: searchParams.get('dateFrom') || undefined,
+      dateTo: searchParams.get('dateTo') || undefined,
+      limit: searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined,
+      offset: searchParams.get('offset') ? parseInt(searchParams.get('offset')!) : undefined,
+    }
+
+    const expenses = await getExpenses(userId, filters)
+    return NextResponse.json(expenses)
+  } catch (error: any) {
+    console.error('Get expenses error:', error)
+    return NextResponse.json(
+      { error: error.message || 'Failed to fetch expenses' },
+      { status: 500 }
+    )
+  }
 })
 
-export async function GET(req: NextRequest) {
-  const userId = getUserIdFromRequest(req)
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  const { searchParams } = new URL(req.url)
-  const filters = {
-    startDate: searchParams.get('startDate') ? new Date(searchParams.get('startDate')!) : undefined,
-    endDate: searchParams.get('endDate') ? new Date(searchParams.get('endDate')!) : undefined,
-    category: searchParams.get('category') || undefined,
-    bank: searchParams.get('bank') || undefined,
-  }
-
-  const where = buildPrismaWhere(userId, filters)
-  const expenses = await prisma.expense.findMany({ where, orderBy: { date: 'desc' } })
-
-  return NextResponse.json({ expenses })
-}
-
-export async function POST(req: NextRequest) {
-  const userId = getUserIdFromRequest(req)
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
+export const POST = withAuth(async (request: NextRequest, { userId }) => {
   try {
-    const body = await req.json()
-    const data = createExpenseSchema.parse(body)
+    const data = await request.json()
+    
+    // Validate required fields
+    const requiredFields = ['date', 'title', 'amount', 'category', 'bank', 'paymentMode']
+    for (const field of requiredFields) {
+      if (!data[field]) {
+        return NextResponse.json(
+          { error: `${field} is required` },
+          { status: 400 }
+        )
+      }
+    }
 
-    const expense = await prisma.expense.create({
-      data: { ...data, userId },
-    })
+    // Validate amount
+    if (typeof data.amount !== 'number' || data.amount <= 0) {
+      return NextResponse.json(
+        { error: 'Amount must be a positive number' },
+        { status: 400 }
+      )
+    }
 
-    await linkExpenseToSubscription(expense.id)
+    // Ensure tags is an array
+    if (!Array.isArray(data.tags)) {
+      data.tags = []
+    }
 
-    return NextResponse.json({ expense })
-  } catch (error) {
-    return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
+    const expense = await createExpense(userId, data)
+    return NextResponse.json(expense, { status: 201 })
+  } catch (error: any) {
+    console.error('Create expense error:', error)
+    return NextResponse.json(
+      { error: error.message || 'Failed to create expense' },
+      { status: 500 }
+    )
   }
-}
+})

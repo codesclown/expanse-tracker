@@ -1,15 +1,76 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getUserIdFromRequest } from '@/lib/auth'
-import { storeSmartScore } from '@/lib/smartScore'
+import { withAuth } from '@/lib/auth'
+import { getFinancialSummary, prisma } from '@/lib/database'
 
-export async function POST(req: NextRequest) {
-  const userId = getUserIdFromRequest(req)
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+export const POST = withAuth(async (request: NextRequest, { userId }) => {
+  try {
+    const { year, month } = await request.json()
 
-  const body = await req.json()
-  const year = body.year || new Date().getFullYear()
-  const month = body.month || new Date().getMonth() + 1
+    if (!year || !month || month < 1 || month > 12) {
+      return NextResponse.json(
+        { error: 'Valid year and month are required' },
+        { status: 400 }
+      )
+    }
 
-  const score = await storeSmartScore(userId, year, month)
-  return NextResponse.json({ score })
-}
+    // Calculate smart score based on financial data
+    const summary = await getFinancialSummary(userId, year, month)
+    
+    let score = 0
+    let metrics = {
+      savingsRate: 0,
+      expenseVariability: 0,
+      budgetAdherence: 0,
+      incomeStability: 0
+    }
+
+    if (summary.totalIncome > 0) {
+      // Savings rate (40% weight)
+      const savingsRate = (summary.savings / summary.totalIncome) * 100
+      metrics.savingsRate = Math.max(0, Math.min(100, savingsRate))
+      
+      // Budget adherence (30% weight) - simplified
+      metrics.budgetAdherence = summary.totalExpenses <= summary.totalIncome ? 100 : 50
+      
+      // Income stability (20% weight) - simplified
+      metrics.incomeStability = summary.incomeCount > 0 ? 80 : 0
+      
+      // Expense variability (10% weight) - simplified
+      metrics.expenseVariability = summary.topCategories.length > 1 ? 70 : 50
+
+      score = Math.round(
+        (metrics.savingsRate * 0.4) +
+        (metrics.budgetAdherence * 0.3) +
+        (metrics.incomeStability * 0.2) +
+        (metrics.expenseVariability * 0.1)
+      )
+    }
+
+    const smartScore = await prisma.smartScore.upsert({
+      where: {
+        userId_year_month: { userId, year, month }
+      },
+      update: {
+        score,
+        summary: `Financial health score for ${year}-${month.toString().padStart(2, '0')}`,
+        metrics
+      },
+      create: {
+        userId,
+        year,
+        month,
+        score,
+        summary: `Financial health score for ${year}-${month.toString().padStart(2, '0')}`,
+        metrics
+      }
+    })
+
+    return NextResponse.json({ score: smartScore })
+  } catch (error: any) {
+    console.error('Recalculate smart score error:', error)
+    return NextResponse.json(
+      { error: error.message || 'Failed to recalculate smart score' },
+      { status: 500 }
+    )
+  }
+})

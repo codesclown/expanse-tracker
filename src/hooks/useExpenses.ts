@@ -1,97 +1,113 @@
 import { useState, useEffect } from 'react'
 import { api } from '@/lib/api'
-import { useLocalStorage } from './useLocalStorage'
+import { useNotification } from '@/contexts/NotificationContext'
+import { useData } from '@/contexts/DataContext'
 
 export function useExpenses() {
   const [expenses, setExpenses] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [useApi, setUseApi] = useLocalStorage('useApi', false)
-  const [localExpenses, setLocalExpenses] = useLocalStorage<any[]>('expenses', [])
+  const { addNotification } = useNotification()
+  const { triggerRefresh } = useData()
 
-  useEffect(() => {
-    if (useApi) {
-      loadFromApi()
-    } else {
-      setExpenses(localExpenses)
-      setLoading(false)
-    }
-  }, [useApi]) // Remove localExpenses from dependency to avoid infinite loops
-
-  // Separate effect to sync with local storage changes
-  useEffect(() => {
-    if (!useApi) {
-      setExpenses(localExpenses)
-    }
-  }, [localExpenses, useApi])
-
-  const loadFromApi = async () => {
+  const fetchExpenses = async (filters?: any) => {
     try {
-      const data = await api.getExpenses()
-      setExpenses(data.expenses || [])
-    } catch (error) {
-      console.error('Failed to load expenses:', error)
-      setExpenses(localExpenses)
+      setLoading(true)
+      const data = await api.getExpenses(filters)
+      setExpenses(data)
+    } catch (error: any) {
+      console.error('Failed to fetch expenses:', error)
+      addNotification({
+        type: 'error',
+        title: 'Error',
+        message: error.message || 'Failed to fetch expenses',
+        duration: 4000
+      })
     } finally {
       setLoading(false)
     }
   }
 
   const addExpense = async (expense: any) => {
-    if (useApi) {
-      try {
-        const data = await api.createExpense(expense)
-        setExpenses([...expenses, data.expense])
-      } catch (error) {
-        console.error('Failed to create expense:', error)
-        throw error
-      }
-    } else {
-      const newExpense = { 
-        ...expense, 
-        id: Date.now(), 
-        createdAt: new Date().toISOString(),
-        timestamp: Date.now() // Add timestamp for sorting
-      }
-
-      const updated = [...localExpenses, newExpense]
-      setLocalExpenses(updated)
-      setExpenses(updated)
+    try {
+      const newExpense = await api.createExpense(expense)
+      setExpenses(prev => [newExpense, ...prev])
+      triggerRefresh() // Trigger global data refresh
+      addNotification({
+        type: 'success',
+        title: 'Expense Added',
+        message: `₹${expense.amount.toLocaleString()} expense has been recorded.`,
+        duration: 4000
+      })
+      return newExpense
+    } catch (error: any) {
+      console.error('Failed to add expense:', error)
+      addNotification({
+        type: 'error',
+        title: 'Error',
+        message: error.message || 'Failed to add expense',
+        duration: 4000
+      })
+      throw error
     }
   }
 
-  const updateExpense = async (updatedExpense: any) => {
-    if (useApi) {
-      try {
-        const data = await api.updateExpense(updatedExpense.id, updatedExpense)
-        setExpenses(expenses.map(e => e.id === updatedExpense.id ? data.expense : e))
-      } catch (error) {
-        console.error('Failed to update expense:', error)
-        throw error
-      }
-    } else {
-      const updated = localExpenses.map(e => 
-        e.id === updatedExpense.id ? { ...updatedExpense, updatedAt: new Date().toISOString() } : e
-      )
-      setLocalExpenses(updated)
-      setExpenses(updated)
+  const updateExpense = async (expense: any) => {
+    try {
+      const updatedExpense = await api.updateExpense(expense.id, expense)
+      setExpenses(prev => prev.map(e => e.id === expense.id ? updatedExpense : e))
+      triggerRefresh() // Trigger global data refresh
+      addNotification({
+        type: 'success',
+        title: 'Expense Updated',
+        message: 'Expense has been successfully updated.',
+        duration: 4000
+      })
+      return updatedExpense
+    } catch (error: any) {
+      console.error('Failed to update expense:', error)
+      addNotification({
+        type: 'error',
+        title: 'Error',
+        message: error.message || 'Failed to update expense',
+        duration: 4000
+      })
+      throw error
     }
   }
 
-  const deleteExpense = async (id: string | number) => {
-    if (useApi) {
-      try {
-        await api.deleteExpense(String(id))
-        setExpenses(expenses.filter(e => e.id !== id))
-      } catch (error) {
-        console.error('Failed to delete expense:', error)
-        throw error
-      }
-    } else {
-      const updated = localExpenses.filter(e => e.id !== id)
-      setLocalExpenses(updated)
-      setExpenses(updated)
+  const deleteExpense = async (id: string) => {
+    try {
+      await api.deleteExpense(id)
+      setExpenses(prev => prev.filter(e => e.id !== id))
+      triggerRefresh() // Trigger global data refresh
+      addNotification({
+        type: 'success',
+        title: 'Expense Deleted',
+        message: 'Expense has been successfully deleted.',
+        duration: 4000
+      })
+    } catch (error: any) {
+      console.error('Failed to delete expense:', error)
+      addNotification({
+        type: 'error',
+        title: 'Error',
+        message: error.message || 'Failed to delete expense',
+        duration: 4000
+      })
+      throw error
     }
   }
 
-  return { expenses, loading, addExpense, updateExpense, deleteExpense, useApi, setUseApi }
+  useEffect(() => {
+    fetchExpenses()
+  }, [])
+
+  return {
+    expenses,
+    loading,
+    addExpense,
+    updateExpense,
+    deleteExpense,
+    refetch: fetchExpenses,
+  }
 }

@@ -1,24 +1,66 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
-import { getUserIdFromRequest } from '@/lib/auth'
+import { updateExpense, deleteExpense } from '@/lib/database'
+import { withAuth } from '@/lib/auth'
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
-  const userId = getUserIdFromRequest(req)
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+export const PUT = withAuth(async (request: NextRequest, { userId }) => {
+  try {
+    const { pathname } = new URL(request.url)
+    const id = pathname.split('/').pop()!
+    
+    const data = await request.json()
+    
+    // Validate amount if provided
+    if (data.amount !== undefined && (typeof data.amount !== 'number' || data.amount <= 0)) {
+      return NextResponse.json(
+        { error: 'Amount must be a positive number' },
+        { status: 400 }
+      )
+    }
 
-  const body = await req.json()
-  const expense = await prisma.expense.updateMany({
-    where: { id: params.id, userId },
-    data: body,
-  })
+    // Ensure tags is an array if provided
+    if (data.tags !== undefined && !Array.isArray(data.tags)) {
+      data.tags = []
+    }
 
-  return NextResponse.json({ expense })
-}
+    const expense = await updateExpense(id, userId, data)
+    return NextResponse.json(expense)
+  } catch (error: any) {
+    console.error('Update expense error:', error)
+    
+    if (error.code === 'P2025') {
+      return NextResponse.json(
+        { error: 'Expense not found' },
+        { status: 404 }
+      )
+    }
+    
+    return NextResponse.json(
+      { error: error.message || 'Failed to update expense' },
+      { status: 500 }
+    )
+  }
+})
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  const userId = getUserIdFromRequest(req)
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  await prisma.expense.deleteMany({ where: { id: params.id, userId } })
-  return NextResponse.json({ success: true })
-}
+export const DELETE = withAuth(async (request: NextRequest, { userId }) => {
+  try {
+    const { pathname } = new URL(request.url)
+    const id = pathname.split('/').pop()!
+    
+    await deleteExpense(id, userId)
+    return NextResponse.json({ success: true })
+  } catch (error: any) {
+    console.error('Delete expense error:', error)
+    
+    if (error.code === 'P2025') {
+      return NextResponse.json(
+        { error: 'Expense not found' },
+        { status: 404 }
+      )
+    }
+    
+    return NextResponse.json(
+      { error: error.message || 'Failed to delete expense' },
+      { status: 500 }
+    )
+  }
+})

@@ -684,6 +684,17 @@ html {
   color-scheme: light dark;
 }
 
+/* Prevent flash by ensuring initial theme is applied immediately */
+html:not(.dark) {
+  --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
+}
+
+html.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+}
+
 html.theme-transitioning {
   overflow: hidden;
 }
@@ -691,6 +702,49 @@ html.theme-transitioning {
 /* Smooth background transitions for body */
 body {
   transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: hsl(var(--background));
+}
+
+/* Ensure skeleton loaders respect initial theme */
+.skeleton-base {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted) / 0.3),
+    hsl(var(--muted) / 0.5),
+    hsl(var(--muted) / 0.3)
+  );
+}
+
+/* Prevent skeleton flash by using CSS variables */
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    hsl(var(--foreground) / 0.1),
+    transparent
+  );
+  background-size: 200% 100%;
+}
+
+/* Prevent any flash during initial load */
+html:not(.hydrated) * {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Mark as hydrated after theme is applied */
+html.hydrated * {
+  transition: var(--theme-transition);
+}
+
+/* Smooth theme toggle animation */
+.theme-toggle-smooth {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Prevent layout shift during theme changes */
+.theme-stable {
+  contain: layout style paint;
 }
 
 /* Enhanced transitions for common elements */
@@ -772,6 +826,138 @@ button, input, textarea, select {
 }
 
 /* --------------------------------------------------
+   PREMIUM TYPOGRAPHY SYSTEM
+-------------------------------------------------- */
+/* Page Headers - Large, Bold, Responsive */
+.heading-page {
+  @apply text-2xl md:text-3xl lg:text-4xl font-bold;
+}
+
+/* Section Headers - Medium, Semibold */
+.heading-section {
+  @apply text-base md:text-lg font-semibold text-foreground;
+}
+
+/* Card Headers - Smaller, Bold */
+.heading-card {
+  @apply text-lg font-bold text-foreground;
+}
+
+/* Metric Values - Large, Bold, Colorful */
+.metric-value {
+  @apply text-lg md:text-xl font-bold;
+}
+
+/* Large Metric Values - For main dashboard stats */
+.metric-value-large {
+  @apply text-3xl font-bold;
+}
+
+/* Extra Large Metric Values - For primary balance displays */
+.metric-value-xl {
+  @apply text-4xl md:text-5xl lg:text-6xl font-bold leading-tight;
+}
+
+/* Currency Symbol Enhancements */
+.currency-symbol {
+  @apply inline-block font-bold;
+  font-size: 1.1em;
+  margin-right: 0.1em;
+}
+
+.currency-symbol-large {
+  @apply inline-block font-bold;
+  font-size: 1.2em;
+  margin-right: 0.15em;
+}
+
+.currency-symbol-xl {
+  @apply inline-block font-bold;
+  font-size: 1.3em;
+  margin-right: 0.2em;
+}
+
+/* Button Text - Consistent button typography */
+.btn-text {
+  @apply text-sm font-semibold;
+}
+
+/* Button Text Large - For prominent buttons */
+.btn-text-lg {
+  @apply text-lg md:text-xl font-bold;
+}
+
+/* Small Labels - For form labels and metadata */
+.label-small {
+  @apply text-xs text-muted-foreground;
+}
+
+/* Body Text - Standard paragraph text */
+.body-text {
+  @apply text-sm md:text-base text-muted-foreground;
+}
+
+/* Refined Typography for Premium UI */
+.text-refined-xs {
+  @apply text-xs font-medium tracking-wide;
+}
+
+.text-refined-sm {
+  @apply text-sm font-medium;
+}
+
+.text-refined-base {
+  @apply text-base font-medium;
+}
+
+.text-refined-lg {
+  @apply text-lg font-semibold;
+}
+
+/* Slick Section Headers */
+.section-header-slick {
+  @apply text-sm font-semibold text-foreground uppercase tracking-wide;
+}
+
+/* Premium Card Styles */
+.card-slick {
+  @apply glass rounded-2xl border border-border/30 shadow-lg;
+}
+
+.card-slick-premium {
+  @apply glass-premium rounded-2xl border border-border/50 shadow-premium;
+}
+
+/* Premium gradient text effects */
+.text-gradient-primary {
+  @apply bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent;
+}
+
+.text-gradient-success {
+  @apply bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent;
+}
+
+.text-gradient-danger {
+  @apply bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent;
+}
+
+.text-gradient-warning {
+  @apply bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent;
+}
+
+.text-gradient-info {
+  @apply bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent;
+}
+
+.text-gradient-balance-positive {
+  @apply bg-gradient-to-r from-emerald-600 to-cyan-600 bg-clip-text text-transparent;
+}
+
+.text-gradient-balance-negative {
+  @apply bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent;
+}
+
+/* --------------------------------------------------
    TEXT UTILITIES
 -------------------------------------------------- */
 .line-clamp-1 {
@@ -793,4 +979,172 @@ button, input, textarea, select {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
+}
+
+/* --------------------------------------------------
+   MOBILE OPTIMIZATIONS
+-------------------------------------------------- */
+
+/* Touch-friendly interactions */
+@media (max-width: 768px) {
+  /* Larger touch targets for mobile */
+  .btn-premium {
+    @apply min-h-[44px] px-4 py-3;
+  }
+  
+  /* Better spacing for mobile cards */
+  .glass-premium {
+    @apply p-4;
+  }
+  
+  /* Improved mobile typography */
+  .heading-page {
+    @apply text-2xl;
+  }
+  
+  .heading-section {
+    @apply text-lg;
+  }
+  
+  .heading-card {
+    @apply text-base;
+  }
+  
+  /* Mobile-specific animations */
+  .hover\:scale-110:hover {
+    @apply scale-105;
+  }
+  
+  /* Better mobile shadows */
+  .shadow-premium-lg {
+    @apply shadow-xl;
+  }
+}
+
+/* Safe area handling for devices with notches */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
+
+/* Smooth scrolling for mobile */
+@media (max-width: 768px) {
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Prevent zoom on input focus */
+  input, select, textarea {
+    font-size: 16px;
+  }
+}
+
+/* Premium mobile card animations */
+@media (max-width: 768px) {
+  .animate-slide-in {
+    animation: mobileSlideIn 0.4s ease-out;
+  }
+  
+  @keyframes mobileSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* Mobile-first responsive grid improvements */
+@media (max-width: 640px) {
+  .grid-cols-2 {
+    gap: 0.75rem;
+  }
+  
+  .grid-cols-1 {
+    gap: 1rem;
+  }
+}
+
+/* Enhanced mobile button states */
+@media (max-width: 768px) {
+  .btn-premium:active {
+    @apply scale-95;
+  }
+  
+  .glass:active {
+    @apply scale-[0.98];
+  }
+}
+/* --------------------------------------------------
+   SKELETON LOADER ANIMATIONS
+-------------------------------------------------- */
+
+/* Shimmer animation for premium skeleton loaders */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  background-size: 200% 100%;
+}
+
+.dark .animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+}
+
+.bg-size-200 {
+  background-size: 200% 100%;
+}
+
+/* Premium skeleton base styles */
+.skeleton-base {
+  @apply bg-gradient-to-r from-muted/30 via-muted/50 to-muted/30;
+  @apply dark:from-muted/20 dark:via-muted/40 dark:to-muted/20;
+}
+
+/* Skeleton variants for different themes */
+.skeleton-light {
+  @apply bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200;
+}
+
+.skeleton-dark {
+  @apply bg-gradient-to-r from-gray-700 via-gray-600 to-gray-700;
+}
+
+/* Smooth skeleton transitions */
+.skeleton-transition {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+/* Skeleton loading states */
+.skeleton-loading {
+  @apply animate-pulse;
+}
+
+.skeleton-shimmer {
+  @apply animate-shimmer bg-size-200;
 }

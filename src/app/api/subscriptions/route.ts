@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
-import { getUserIdFromRequest } from '@/lib/auth'
+import { getSubscriptions } from '@/lib/database'
+import { withAuth } from '@/lib/auth'
 
-export async function GET(req: NextRequest) {
-  const userId = getUserIdFromRequest(req)
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  const subscriptions = await prisma.subscription.findMany({
-    where: { userId },
-    orderBy: { createdAt: 'desc' },
-  })
-
-  return NextResponse.json({ subscriptions })
-}
+export const GET = withAuth(async (request: NextRequest, { userId }) => {
+  try {
+    const subscriptions = await getSubscriptions(userId)
+    return NextResponse.json(subscriptions)
+  } catch (error: any) {
+    console.error('Get subscriptions error:', error)
+    return NextResponse.json(
+      { error: error.message || 'Failed to fetch subscriptions' },
+      { status: 500 }
+    )
+  }
+})

@@ -1,41 +1,58 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { z } from 'zod'
-import { prisma } from '@/lib/prisma'
-import { getUserIdFromRequest } from '@/lib/auth'
+import { createIncome, getIncomes } from '@/lib/database'
+import { withAuth } from '@/lib/auth'
 
-const createIncomeSchema = z.object({
-  date: z.string().transform(s => new Date(s)),
-  source: z.string(),
-  amount: z.number().positive(),
-  notes: z.string().optional(),
+export const GET = withAuth(async (request: NextRequest, { userId }) => {
+  try {
+    const { searchParams } = new URL(request.url)
+    const filters = {
+      dateFrom: searchParams.get('dateFrom') || undefined,
+      dateTo: searchParams.get('dateTo') || undefined,
+      limit: searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined,
+      offset: searchParams.get('offset') ? parseInt(searchParams.get('offset')!) : undefined,
+    }
+
+    const incomes = await getIncomes(userId, filters)
+    return NextResponse.json(incomes)
+  } catch (error: any) {
+    console.error('Get incomes error:', error)
+    return NextResponse.json(
+      { error: error.message || 'Failed to fetch incomes' },
+      { status: 500 }
+    )
+  }
 })
 
-export async function GET(req: NextRequest) {
-  const userId = getUserIdFromRequest(req)
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  const incomes = await prisma.income.findMany({
-    where: { userId },
-    orderBy: { date: 'desc' },
-  })
-
-  return NextResponse.json({ incomes })
-}
-
-export async function POST(req: NextRequest) {
-  const userId = getUserIdFromRequest(req)
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
+export const POST = withAuth(async (request: NextRequest, { userId }) => {
   try {
-    const body = await req.json()
-    const data = createIncomeSchema.parse(body)
+    const data = await request.json()
+    
+    // Validate required fields
+    const requiredFields = ['date', 'source', 'amount']
+    for (const field of requiredFields) {
+      if (!data[field]) {
+        return NextResponse.json(
+          { error: `${field} is required` },
+          { status: 400 }
+        )
+      }
+    }
 
-    const income = await prisma.income.create({
-      data: { ...data, userId },
-    })
+    // Validate amount
+    if (typeof data.amount !== 'number' || data.amount <= 0) {
+      return NextResponse.json(
+        { error: 'Amount must be a positive number' },
+        { status: 400 }
+      )
+    }
 
-    return NextResponse.json({ income })
-  } catch (error) {
-    return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
+    const income = await createIncome(userId, data)
+    return NextResponse.json(income, { status: 201 })
+  } catch (error: any) {
+    console.error('Create income error:', error)
+    return NextResponse.json(
+      { error: error.message || 'Failed to create income' },
+      { status: 500 }
+    )
   }
-}
+})

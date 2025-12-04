@@ -1,355 +1,397 @@
-# Troubleshooting Guide
+# 🔧 Troubleshooting Guide - FinanceTracker
 
-## "Invalid request" Error on Registration
+This guide helps you resolve common issues with database integration and email notifications.
 
-### Problem
-You see "Invalid request" error when trying to register.
+## 🗄️ Database Issues
 
-### Causes & Solutions
+### Problem: "Database connection failed"
 
-#### 1. Database Not Set Up (Most Common)
+**Symptoms:**
+- API calls return 500 errors
+- Prisma Studio won't open
+- Registration/login fails
 
-**Symptom**: Error on registration/login
+**Solutions:**
 
-**Solution**: The app works without a database! Just use local storage mode.
+1. **Check PostgreSQL is running:**
+   ```bash
+   # For local PostgreSQL
+   brew services start postgresql  # macOS
+   sudo service postgresql start   # Linux
+   ```
 
-**How to fix**:
-1. Ignore the error message
-2. The app will automatically use local storage
-3. You'll be redirected to dashboard after 2 seconds
-4. All data will be saved in your browser
+2. **Verify DATABASE_URL format:**
+   ```env
+   # Correct format
+   DATABASE_URL="postgresql://username:password@localhost:5432/database_name"
+   
+   # Common mistakes:
+   # ❌ Missing protocol: username:password@localhost:5432/database_name
+   # ❌ Wrong port: postgresql://username:password@localhost:3000/database_name
+   # ❌ Special characters not encoded: postgresql://user@domain.com:pass@localhost:5432/db
+   ```
 
-**To use database** (optional):
-```bash
-# 1. Install PostgreSQL
-# 2. Create database
-createdb expense_tracker
+3. **Test database connection:**
+   ```bash
+   npx prisma db push
+   ```
 
-# 3. Add to .env.local
-DATABASE_URL="postgresql://username:password@localhost:5432/expense_tracker"
+4. **Reset and recreate database:**
+   ```bash
+   npx prisma db push --force-reset
+   npx prisma generate
+   ```
 
-# 4. Run migrations
-npm run db:push
-npm run db:generate
+### Problem: "Prisma Client not generated"
 
-# 5. Restart server
-npm run dev
-```
+**Symptoms:**
+- Import errors for `@prisma/client`
+- TypeScript errors about Prisma types
 
-#### 2. Salary Field Issue
-
-**Symptom**: Error specifically mentions salary
-
-**Solution**: Leave salary field empty or enter a valid number
-
-**Valid inputs**:
-- Empty (leave blank)
-- Numbers only: 50000, 100000, etc.
-- No commas or special characters
-
-#### 3. Password Too Short
-
-**Symptom**: Error on registration
-
-**Solution**: Use at least 6 characters for password
-
-#### 4. Email Format
-
-**Symptom**: Error on registration
-
-**Solution**: Use valid email format
-- ✅ user@example.com
-- ❌ user@example
-- ❌ user.example.com
-
-## Common Issues
-
-### 1. Can't See Data After Registration
-
-**Solution**:
-- Check browser console (F12)
-- Data is in localStorage
-- Refresh the page
-- Try adding an expense
-
-### 2. "Unauthorized" Error
-
-**Solution**:
-- Logout and login again
-- Clear browser cache
-- Check if token is in localStorage (F12 → Application → Local Storage)
-
-### 3. Dashboard Shows No Data
-
-**Solution**:
-- Add some expenses first
-- Add income to see Smart Score
-- Data persists in browser localStorage
-
-### 4. Subscription Detection Not Working
-
-**Solution**:
-- Add at least 2 similar expenses
-- Make them ~30 days apart
-- Click "Auto-Detect Subscriptions" button
-- Example:
-  - Expense 1: "Netflix" ₹500 on Jan 1
-  - Expense 2: "Netflix" ₹500 on Feb 1
-
-### 5. Smart Score Shows 0
-
-**Solution**:
-- Add income first (required for calculation)
-- Add some expenses
-- Score = (Income - Expense) / Income * 100
-
-### 6. Chat Not Responding
-
-**Solution**:
-- Check if you have expenses/income added
-- Try simpler questions
-- Refresh the page
-
-## Development Issues
-
-### Port Already in Use
-
-```bash
-# Use different port
-npm run dev -- -p 3001
-```
-
-### Module Not Found
-
-```bash
-# Reinstall dependencies
-rm -rf node_modules
-npm install
-```
-
-### Prisma Errors
-
+**Solutions:**
 ```bash
 # Regenerate Prisma client
-npm run db:generate
+npx prisma generate
 
-# Reset database (WARNING: deletes all data)
-npx prisma migrate reset
-npm run db:push
+# If still failing, delete and regenerate
+rm -rf node_modules/.prisma
+npx prisma generate
 ```
 
-### TypeScript Errors
+### Problem: "Table doesn't exist"
 
+**Symptoms:**
+- Database queries fail
+- Missing table errors in logs
+
+**Solutions:**
 ```bash
-# Check for errors
-npm run build
+# Push schema to database
+npx prisma db push
 
-# Fix common issues
-rm -rf .next
-npm run dev
+# Or reset everything
+npx prisma db push --force-reset
 ```
 
-## Browser Issues
+## 📧 Email Issues
 
-### Clear Cache
+### Problem: "Email sending failed"
 
-1. Open DevTools (F12)
-2. Right-click refresh button
-3. Select "Empty Cache and Hard Reload"
+**Symptoms:**
+- No welcome emails received
+- No expense alert emails
+- Console shows email errors
 
-### Clear localStorage
+**Solutions:**
 
-1. Open DevTools (F12)
-2. Go to Application tab
-3. Click Local Storage → http://localhost:3000
-4. Right-click → Clear
+1. **Verify Gmail 2FA is enabled:**
+   - Go to [Google Account Security](https://myaccount.google.com/security)
+   - Enable 2-Step Verification
 
-### Supported Browsers
+2. **Check App Password format:**
+   ```env
+   # Correct (16 characters, no spaces)
+   GMAIL_APP_PASSWORD="abcdabcdabcdabcd"
+   
+   # Wrong formats:
+   # ❌ With spaces: "abcd abcd abcd abcd"
+   # ❌ Too short: "abcdabcd"
+   # ❌ Regular password: "mypassword123"
+   ```
 
-- ✅ Chrome 90+
-- ✅ Firefox 88+
-- ✅ Safari 14+
-- ✅ Edge 90+
+3. **Test email configuration:**
+   ```bash
+   # Check environment variables are loaded
+   node -e "console.log(process.env.GMAIL_USER, process.env.GMAIL_APP_PASSWORD)"
+   ```
 
-## Database Issues
+4. **Generate new App Password:**
+   - Go to Google Account → Security → 2-Step Verification → App passwords
+   - Delete old password, generate new one
+   - Update `.env.local` immediately
 
-### Connection Failed
+### Problem: "Gmail authentication failed"
 
-**Check**:
-1. PostgreSQL is running
-2. DATABASE_URL is correct
-3. Database exists
-4. User has permissions
+**Symptoms:**
+- "Invalid credentials" errors
+- "Authentication failed" in logs
 
-**Test connection**:
+**Solutions:**
+
+1. **Verify Gmail account settings:**
+   - 2FA must be enabled
+   - App password must be generated after 2FA
+   - Account must not have security restrictions
+
+2. **Check for typos:**
+   ```env
+   # Make sure email is correct
+   GMAIL_USER="your-actual-email@gmail.com"
+   
+   # App password is exactly 16 characters
+   GMAIL_APP_PASSWORD="abcdabcdabcdabcd"
+   ```
+
+3. **Test with simple email:**
+   - Try with a fresh Gmail account
+   - Ensure no special security policies
+
+## 🔐 Authentication Issues
+
+### Problem: "JWT token invalid"
+
+**Symptoms:**
+- Automatic logout
+- "Unauthorized" errors
+- Login doesn't persist
+
+**Solutions:**
+
+1. **Check JWT_SECRET:**
+   ```env
+   # Must be at least 32 characters
+   JWT_SECRET="your-super-secret-jwt-key-minimum-32-characters-long"
+   
+   # Generate random secret:
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   ```
+
+2. **Clear browser storage:**
+   ```javascript
+   // In browser console
+   localStorage.clear()
+   sessionStorage.clear()
+   ```
+
+3. **Restart development server:**
+   ```bash
+   # Stop server (Ctrl+C) and restart
+   npm run dev
+   ```
+
+### Problem: "Password hashing failed"
+
+**Symptoms:**
+- Registration fails
+- Login always fails
+- bcrypt errors in logs
+
+**Solutions:**
+
+1. **Check bcrypt installation:**
+   ```bash
+   npm install bcryptjs
+   npm install @types/bcryptjs
+   ```
+
+2. **Verify password requirements:**
+   - Minimum 6 characters
+   - No special encoding issues
+
+## 🌐 API Issues
+
+### Problem: "API routes not working"
+
+**Symptoms:**
+- 404 errors on API calls
+- Network tab shows failed requests
+- Forms don't submit
+
+**Solutions:**
+
+1. **Check API route files exist:**
+   ```
+   src/app/api/auth/login/route.ts
+   src/app/api/auth/register/route.ts
+   src/app/api/expenses/route.ts
+   ```
+
+2. **Verify export format:**
+   ```typescript
+   // Correct format
+   export const POST = withAuth(async (request, { userId }) => {
+     // handler code
+   })
+   
+   // Wrong format
+   export default function handler() { }
+   ```
+
+3. **Check middleware:**
+   ```typescript
+   // Ensure withAuth is imported correctly
+   import { withAuth } from '@/lib/auth'
+   ```
+
+### Problem: "CORS errors"
+
+**Symptoms:**
+- Browser blocks API requests
+- CORS policy errors in console
+
+**Solutions:**
+
+1. **Check API route headers:**
+   ```typescript
+   return NextResponse.json(data, {
+     headers: {
+       'Access-Control-Allow-Origin': '*',
+       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
+       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+     }
+   })
+   ```
+
+## 🔄 Environment Issues
+
+### Problem: "Environment variables not loaded"
+
+**Symptoms:**
+- `process.env.DATABASE_URL` is undefined
+- Configuration not working
+- API calls fail with missing config
+
+**Solutions:**
+
+1. **Check file name:**
+   ```bash
+   # Must be exactly this name
+   .env.local
+   
+   # Not these:
+   # .env
+   # .env.development
+   # env.local
+   ```
+
+2. **Restart development server:**
+   ```bash
+   # Environment changes require restart
+   npm run dev
+   ```
+
+3. **Check file location:**
+   ```
+   project-root/
+   ├── .env.local          ✅ Correct location
+   ├── src/
+   │   └── .env.local      ❌ Wrong location
+   ```
+
+4. **Verify syntax:**
+   ```env
+   # Correct
+   DATABASE_URL="postgresql://user:pass@localhost:5432/db"
+   
+   # Wrong (no spaces around =)
+   DATABASE_URL = "postgresql://user:pass@localhost:5432/db"
+   ```
+
+## 🚀 Development Issues
+
+### Problem: "Build fails"
+
+**Symptoms:**
+- `npm run build` errors
+- TypeScript compilation errors
+- Missing dependencies
+
+**Solutions:**
+
+1. **Check TypeScript errors:**
+   ```bash
+   npx tsc --noEmit
+   ```
+
+2. **Install missing dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Clear Next.js cache:**
+   ```bash
+   rm -rf .next
+   npm run build
+   ```
+
+### Problem: "Hot reload not working"
+
+**Symptoms:**
+- Changes don't reflect
+- Page doesn't update
+- Development server issues
+
+**Solutions:**
+
+1. **Restart development server:**
+   ```bash
+   # Stop (Ctrl+C) and restart
+   npm run dev
+   ```
+
+2. **Clear browser cache:**
+   - Hard refresh (Ctrl+Shift+R)
+   - Clear browser cache
+   - Try incognito mode
+
+## 🧪 Testing Your Setup
+
+### Database Test
 ```bash
-psql -d expense_tracker
+# Open Prisma Studio
+npm run db:studio
+
+# Should open http://localhost:5555
+# You should see your database tables
 ```
 
-### Migration Errors
+### Email Test
+1. Register a new account
+2. Check your email for welcome message
+3. Add an expense
+4. Check for expense alert email
 
-```bash
-# Force push schema
-npm run db:push -- --force-reset
+### API Test
+1. Open browser Network tab
+2. Add an expense
+3. Should see successful POST to `/api/expenses`
+4. Response should be 201 with expense data
 
-# Or create new migration
-npx prisma migrate dev --name init
-```
+### Authentication Test
+1. Login with valid credentials
+2. Should redirect to dashboard
+3. Refresh page - should stay logged in
+4. Logout - should redirect to login
 
-## API Issues
+## 📞 Getting Help
 
-### 404 Not Found
+If you're still having issues:
 
-**Check**:
-- API route file exists in `src/app/api/`
-- File is named `route.ts`
-- Export is `export async function POST/GET`
+1. **Check the logs:**
+   ```bash
+   # Development server logs
+   npm run dev
+   
+   # Check browser console for errors
+   # Check Network tab for failed requests
+   ```
 
-### 500 Internal Server Error
+2. **Verify your setup:**
+   ```bash
+   # Run the setup script again
+   node setup-database.js
+   ```
 
-**Check**:
-- Server logs in terminal
-- Database connection
-- Environment variables
+3. **Create a minimal test:**
+   - Try with a fresh database
+   - Test with a new Gmail account
+   - Use the exact environment variables from the guide
 
-### CORS Errors
+4. **Common gotchas:**
+   - PostgreSQL not running
+   - Wrong Gmail app password format
+   - JWT_SECRET too short
+   - Environment file in wrong location
+   - Typos in environment variables
 
-**Solution**: Not needed for Next.js (same origin)
-
-## Performance Issues
-
-### Slow Loading
-
-**Solutions**:
-- Clear browser cache
-- Check network tab (F12)
-- Reduce number of expenses
-- Use API mode instead of localStorage
-
-### High Memory Usage
-
-**Solutions**:
-- Clear old data
-- Export and delete old expenses
-- Use database mode
-
-## Data Issues
-
-### Lost Data
-
-**localStorage mode**:
-- Data is in browser only
-- Clearing cache = losing data
-- Export regularly
-
-**API mode**:
-- Data is in database
-- Survives browser clear
-- Backup database regularly
-
-### Duplicate Data
-
-**Solution**:
-- Delete duplicates manually
-- Check for multiple accounts
-- Clear localStorage and start fresh
-
-## Still Having Issues?
-
-### Check Logs
-
-**Browser Console**:
-```
-F12 → Console tab
-Look for red errors
-```
-
-**Server Logs**:
-```
-Check terminal where npm run dev is running
-Look for error messages
-```
-
-### Debug Mode
-
-Add to `.env.local`:
-```env
-NODE_ENV=development
-DEBUG=true
-```
-
-### Get Help
-
-1. Check browser console for errors
-2. Check server terminal for errors
-3. Note exact error message
-4. Note steps to reproduce
-5. Check if database is set up
-
-## Quick Fixes
-
-### Reset Everything
-
-```bash
-# 1. Stop server (Ctrl+C)
-
-# 2. Clear browser data
-# F12 → Application → Clear storage
-
-# 3. Delete node_modules
-rm -rf node_modules .next
-
-# 4. Reinstall
-npm install
-
-# 5. Restart
-npm run dev
-```
-
-### Start Fresh
-
-```bash
-# 1. Clear localStorage (F12 → Application)
-
-# 2. Register new account
-
-# 3. Add test data
-
-# 4. Check if working
-```
-
-## Prevention
-
-### Best Practices
-
-1. **Regular Backups**: Export data weekly
-2. **Use Database**: For important data
-3. **Test First**: Try with sample data
-4. **Update Regularly**: Keep dependencies updated
-5. **Monitor Logs**: Check for errors
-
-### Recommended Setup
-
-**For Testing**:
-- Use localStorage mode
-- No database needed
-- Quick and easy
-
-**For Production**:
-- Set up PostgreSQL
-- Use API mode
-- Regular backups
-- Monitor errors
-
-## Success Checklist
-
-- ✅ App loads at http://localhost:3000
-- ✅ Can register/login
-- ✅ Can add expenses
-- ✅ Can add income
-- ✅ Dashboard shows data
-- ✅ Smart Score calculates
-- ✅ Chat responds
-- ✅ Subscriptions detect
-
-If all checked, you're good to go! 🎉
+Remember: Most issues are configuration-related. Double-check your `.env.local` file and ensure all services (PostgreSQL, Gmail) are properly set up.

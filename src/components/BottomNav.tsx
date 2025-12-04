@@ -37,6 +37,15 @@ export default function BottomNav() {
       ),
     },
     {
+      path: '/udhar',
+      label: 'Udhar',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+      ),
+    },
+    {
       path: '/chat',
       label: 'Chat',
       icon: (
@@ -79,7 +88,7 @@ export default function BottomNav() {
               }`}>
                 {item.icon}
               </div>
-              <span className="text-xs mt-1.5 font-semibold">{item.label}</span>
+              <span className="label-small mt-1.5 font-semibold">{item.label}</span>
             </Link>
           ))}
         </div>
@@ -96,7 +105,7 @@ export default function BottomNav() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
-              <span className="text-xl font-bold text-foreground">FinanceTracker</span>
+              <span className="metric-value text-foreground">FinanceTracker</span>
             </div>
           </div>
 
@@ -115,7 +124,7 @@ export default function BottomNav() {
                 <div className={`transition-all duration-300 ${isActive(item.path) ? 'scale-110' : 'group-hover:scale-110'}`}>
                   {item.icon}
                 </div>
-                <span className="font-semibold">{item.label}</span>
+                <span className="btn-text">{item.label}</span>
               </Link>
             ))}
           </div>
