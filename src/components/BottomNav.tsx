@@ -183,33 +183,36 @@ export default function BottomNav() {
         </div>
       </nav>
 
-      {/* Premium Desktop Sidebar */}
+      {/* Ultra Premium Desktop Sidebar */}
       <nav className="hidden md:block fixed left-0 top-0 bottom-0 w-64 lg:w-72 z-40">
-        {/* Theme-aware glass background */}
-        <div className="absolute inset-0 glass-premium border-r border-border/20 shadow-2xl"></div>
+        {/* Premium gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/95 via-slate-800/98 to-slate-900/95 dark:from-slate-950/98 dark:via-slate-900/99 dark:to-slate-950/98 backdrop-blur-2xl border-r border-slate-700/30 dark:border-slate-600/20 shadow-2xl"></div>
+        
+        {/* Luxury accent gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-600/5 via-transparent via-50% to-indigo-600/5"></div>
         
         {/* Premium mesh pattern overlay */}
-        <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05]">
+        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.08]">
           <div 
             className="absolute inset-0"
             style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M20 20c0 4.4-3.6 8-8 8s-8-3.6-8-8 3.6-8 8-8 8 3.6 8 8zm0-20c0 4.4-3.6 8-8 8s-8-3.6-8-8 3.6-8 8-8 8 3.6 8 8z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
             }}
           />
         </div>
 
         <div className="relative flex flex-col h-full">
           {/* Premium Logo Section */}
-          <div className="p-6 lg:p-7 border-b border-border/10">
+          <div className="p-6 lg:p-7 border-b border-slate-700/30 dark:border-slate-600/20">
             <div className="flex items-center space-x-3 group cursor-pointer">
-              <div className="w-11 h-11 lg:w-12 lg:h-12 bg-gradient-to-tr from-violet-600 via-purple-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-premium group-hover:shadow-premium-lg group-hover:shadow-violet-500/25 transition-all duration-300 group-hover:scale-105">
-                <svg className="w-6 h-6 lg:w-7 lg:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-11 h-11 lg:w-12 lg:h-12 bg-gradient-to-tr from-violet-600 via-purple-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-violet-500/30 group-hover:shadow-3xl group-hover:shadow-violet-500/40 transition-all duration-300 group-hover:scale-105 border border-violet-400/20">
+                <svg className="w-6 h-6 lg:w-7 lg:h-7 text-white drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
               <div>
-                <h1 className="text-base lg:text-lg font-bold text-foreground">ExpenseTracker</h1>
-                <p className="text-xs text-muted-foreground">Financial Dashboard</p>
+                <h1 className="text-base lg:text-lg font-bold text-slate-100 dark:text-white group-hover:text-white transition-colors">ExpenseTracker</h1>
+                <p className="text-xs text-slate-400 dark:text-slate-400 group-hover:text-slate-300 transition-colors">Financial Dashboard</p>
               </div>
             </div>
           </div>
@@ -217,55 +220,74 @@ export default function BottomNav() {
           {/* Premium Navigation */}
           <div className="flex-1 p-4 lg:p-5">
             <div className="space-y-2">
-              {allNavItems.map((item, index) => (
+              {allNavItems.map((item) => (
                 <Link
                   key={item.path}
                   href={item.path}
-                  className={`group flex items-center space-x-3 px-4 py-3.5 rounded-2xl transition-all duration-300 ${
+                  className={`group flex items-center space-x-3 px-4 py-3.5 rounded-2xl transition-all duration-300 relative overflow-hidden ${
                     isActive(item.path)
-                      ? 'bg-gradient-to-r from-violet-500 via-purple-600 to-indigo-600 text-white shadow-premium shadow-violet-500/25'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60 hover:shadow-lg hover:-translate-y-0.5'
+                      ? 'bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white shadow-2xl shadow-violet-500/30 border border-violet-400/20'
+                      : 'text-slate-300 dark:text-slate-400 hover:text-white hover:bg-gradient-to-r hover:from-slate-700/80 hover:via-slate-600/80 hover:to-slate-700/80 hover:shadow-xl hover:shadow-slate-900/20 hover:border hover:border-slate-500/30 hover:-translate-y-0.5'
                   }`}
                 >
-                  <div className={`transition-all duration-300 ${
-                    isActive(item.path) ? 'text-white scale-110' : 'group-hover:text-violet-600 group-hover:scale-110'
+                  {/* Premium glow effect for active item */}
+                  {isActive(item.path) && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-violet-600/20 via-purple-600/20 to-indigo-600/20 blur-xl"></div>
+                  )}
+                  
+                  <div className={`relative z-10 transition-all duration-300 ${
+                    isActive(item.path) 
+                      ? 'text-white scale-110 drop-shadow-sm' 
+                      : 'group-hover:text-violet-400 group-hover:scale-110 group-hover:drop-shadow-sm'
                   }`}>
                     {item.icon}
                   </div>
-                  <span className="font-semibold text-sm">{item.label}</span>
+                  <span className={`relative z-10 font-semibold text-sm transition-all duration-300 ${
+                    isActive(item.path) 
+                      ? 'text-white drop-shadow-sm' 
+                      : 'group-hover:text-white'
+                  }`}>
+                    {item.label}
+                  </span>
                   
-                  {/* Active indicator */}
+                  {/* Premium active indicator */}
                   {isActive(item.path) && (
-                    <div className="ml-auto w-2 h-2 bg-white/80 rounded-full"></div>
+                    <div className="ml-auto relative z-10">
+                      <div className="w-2 h-2 bg-white/90 rounded-full shadow-sm"></div>
+                      <div className="absolute inset-0 w-2 h-2 bg-white/50 rounded-full animate-ping"></div>
+                    </div>
                   )}
+                  
+                  {/* Hover glow effect */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-gradient-to-r from-slate-600/10 via-slate-500/10 to-slate-600/10 transition-opacity duration-300 rounded-2xl"></div>
                 </Link>
               ))}
             </div>
           </div>
 
           {/* Premium User Profile with Real Data */}
-          <div className="p-4 lg:p-5 border-t border-border/10">
+          <div className="p-4 lg:p-5 border-t border-slate-700/30 dark:border-slate-600/20">
             <div className="group relative">
-              <div className="flex items-center space-x-3 p-4 rounded-2xl bg-secondary/40 hover:bg-secondary/60 transition-all duration-300 cursor-pointer hover:shadow-lg hover:-translate-y-0.5 border border-border/20">
+              <div className="flex items-center space-x-3 p-4 rounded-2xl bg-gradient-to-r from-slate-700/50 via-slate-600/50 to-slate-700/50 hover:from-slate-600/60 hover:via-slate-500/60 hover:to-slate-600/60 transition-all duration-300 cursor-pointer hover:shadow-xl hover:shadow-slate-900/30 hover:-translate-y-0.5 border border-slate-600/30 hover:border-slate-500/50 backdrop-blur-sm">
                 <div className="relative">
-                  <div className="w-10 h-10 bg-gradient-to-tr from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center text-white text-sm font-bold shadow-lg group-hover:shadow-xl group-hover:shadow-emerald-500/25 transition-all duration-300 group-hover:scale-105">
+                  <div className="w-10 h-10 bg-gradient-to-tr from-violet-600 via-purple-600 to-indigo-600 rounded-xl flex items-center justify-center text-white text-sm font-bold shadow-lg group-hover:shadow-xl group-hover:shadow-violet-500/30 transition-all duration-300 group-hover:scale-105 border border-violet-400/20">
                     {user ? getUserInitials(user.name) : 'U'}
                   </div>
-                  <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-background shadow-sm">
-                    <div className="w-full h-full bg-green-400 rounded-full animate-pulse"></div>
+                  <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-slate-800 shadow-sm">
+                    <div className="w-full h-full bg-emerald-400 rounded-full animate-pulse"></div>
                   </div>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground truncate group-hover:text-violet-600 transition-colors">
+                  <p className="text-sm font-semibold text-slate-200 dark:text-slate-100 truncate group-hover:text-white transition-colors">
                     {user?.name || 'Guest User'}
                   </p>
-                  <p className="text-xs text-muted-foreground truncate">
+                  <p className="text-xs text-slate-400 dark:text-slate-400 truncate group-hover:text-slate-300 transition-colors">
                     {user?.email || 'guest@example.com'}
                   </p>
                 </div>
                 <button
                   onClick={logout}
-                  className="opacity-0 group-hover:opacity-100 p-2 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/20 text-muted-foreground hover:text-red-600 transition-all duration-300 hover:scale-110"
+                  className="opacity-0 group-hover:opacity-100 p-2 rounded-xl hover:bg-red-500/20 hover:border hover:border-red-400/30 text-slate-400 hover:text-red-400 transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-red-500/20"
                   title="Logout"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
