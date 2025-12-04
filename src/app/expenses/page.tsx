@@ -3,7 +3,9 @@
 import { useState, useMemo } from 'react'
 import BottomNav from '@/components/BottomNav'
 import AddExpenseModal from '@/components/AddExpenseModal'
+import AddIncomeModal from '@/components/AddIncomeModal'
 import EditExpenseModal from '@/components/EditExpenseModal'
+import EditIncomeModal from '@/components/EditIncomeModal'
 import ReportsModal from '@/components/ReportsModal'
 import { 
   HeaderSkeleton, 
@@ -19,36 +21,77 @@ import { useNotification } from '@/contexts/NotificationContext'
 
 export default function Expenses() {
   const { expenses, addExpense, updateExpense, deleteExpense, loading } = useExpenses()
-  const { incomes } = useIncomes()
+  const { incomes, addIncome, updateIncome, deleteIncome } = useIncomes()
   const { theme, toggleTheme, isTransitioning } = useTheme()
   const { addNotification } = useNotification()
   
-  const [showAddModal, setShowAddModal] = useState(false)
-  const [showEditModal, setShowEditModal] = useState(false)
+  const [showAddExpenseModal, setShowAddExpenseModal] = useState(false)
+  const [showAddIncomeModal, setShowAddIncomeModal] = useState(false)
+  const [showEditExpenseModal, setShowEditExpenseModal] = useState(false)
+  const [showEditIncomeModal, setShowEditIncomeModal] = useState(false)
   const [showReportsModal, setShowReportsModal] = useState(false)
   const [editingExpense, setEditingExpense] = useState<any>(null)
+  const [editingIncome, setEditingIncome] = useState<any>(null)
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('All')
   const [dateFilter, setDateFilter] = useState('All')
   const [amountFilter, setAmountFilter] = useState('All')
   const [bankFilter, setBankFilter] = useState('All')
+  const [typeFilter, setTypeFilter] = useState('All')
   const [sortBy, setSortBy] = useState('date')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
 
   const handleAddExpense = async (expense: any) => {
     await addExpense(expense)
-    setShowAddModal(false)
+    setShowAddExpenseModal(false)
+  }
+
+  const handleAddIncome = async (income: any) => {
+    await addIncome(income)
+    setShowAddIncomeModal(false)
   }
 
   const handleEditExpense = (expense: any) => {
     setEditingExpense(expense)
-    setShowEditModal(true)
+    setShowEditExpenseModal(true)
   }
 
   const handleUpdateExpense = async (expense: any) => {
     await updateExpense(expense)
-    setShowEditModal(false)
+    setShowEditExpenseModal(false)
     setEditingExpense(null)
+  }
+
+  const handleEditIncome = (income: any) => {
+    setEditingIncome(income)
+    setShowEditIncomeModal(true)
+  }
+
+  const handleUpdateIncome = async (income: any) => {
+    await updateIncome(income)
+    setShowEditIncomeModal(false)
+    setEditingIncome(null)
+  }
+
+  const handleDeleteIncome = async (id: string) => {
+    if (confirm('Are you sure you want to delete this income?')) {
+      try {
+        await deleteIncome(id)
+        addNotification({
+          type: 'success',
+          title: 'Income Deleted',
+          message: 'The income has been successfully deleted.',
+          duration: 3000
+        })
+      } catch (error) {
+        addNotification({
+          type: 'error',
+          title: 'Delete Failed',
+          message: 'Failed to delete the income. Please try again.',
+          duration: 4000
+        })
+      }
+    }
   }
 
   const handleDeleteExpense = async (id: string) => {
@@ -72,40 +115,56 @@ export default function Expenses() {
     }
   }
 
-  // Advanced filtering and sorting
-  const filteredAndSortedExpenses = useMemo(() => {
-    let filtered = expenses.filter(expense => {
-      // Category filter
-      if (categoryFilter !== 'All' && expense.category !== categoryFilter) return false
+  // Advanced filtering and sorting for combined transactions
+  const filteredAndSortedTransactions = useMemo(() => {
+    // Combine expenses and incomes into a single array with type indicator
+    const allTransactions = [
+      ...expenses.map(expense => ({ ...expense, type: 'expense' })),
+      ...incomes.map(income => ({ 
+        ...income, 
+        type: 'income',
+        title: income.source || 'Income',
+        category: income.source || 'Income',
+        bank: 'Cash', // Income doesn't have paymentMode in schema
+        tags: []
+      }))
+    ]
+
+    let filtered = allTransactions.filter(transaction => {
+      // Type filter
+      if (typeFilter !== 'All' && transaction.type !== typeFilter) return false
       
-      // Bank filter
-      if (bankFilter !== 'All' && expense.bank !== bankFilter) return false
+      // Category filter
+      if (categoryFilter !== 'All' && transaction.category !== categoryFilter) return false
+      
+      // Bank filter  
+      if (bankFilter !== 'All' && transaction.bank !== bankFilter) return false
       
       // Date filter
       if (dateFilter !== 'All') {
-        const expenseDate = new Date(expense.date)
+        const transactionDate = new Date(transaction.date)
         const now = new Date()
         
         switch (dateFilter) {
           case 'Today':
-            if (expenseDate.toDateString() !== now.toDateString()) return false
+            if (transactionDate.toDateString() !== now.toDateString()) return false
             break
           case 'This Week':
             const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-            if (expenseDate < weekAgo) return false
+            if (transactionDate < weekAgo) return false
             break
           case 'This Month':
-            if (expenseDate.getMonth() !== now.getMonth() || expenseDate.getFullYear() !== now.getFullYear()) return false
+            if (transactionDate.getMonth() !== now.getMonth() || transactionDate.getFullYear() !== now.getFullYear()) return false
             break
           case 'This Year':
-            if (expenseDate.getFullYear() !== now.getFullYear()) return false
+            if (transactionDate.getFullYear() !== now.getFullYear()) return false
             break
         }
       }
       
       // Amount filter
       if (amountFilter !== 'All') {
-        const amount = expense.amount
+        const amount = transaction.amount
         switch (amountFilter) {
           case 'Under ₹100':
             if (amount >= 100) return false
@@ -126,11 +185,11 @@ export default function Expenses() {
       if (search.trim()) {
         const searchTerm = search.toLowerCase().trim()
         return (
-          expense.title.toLowerCase().includes(searchTerm) ||
-          expense.category.toLowerCase().includes(searchTerm) ||
-          (expense.bank && expense.bank.toLowerCase().includes(searchTerm)) ||
-          (expense.tags && expense.tags.some((tag: string) => tag.toLowerCase().includes(searchTerm))) ||
-          (expense.notes && expense.notes.toLowerCase().includes(searchTerm))
+          transaction.title.toLowerCase().includes(searchTerm) ||
+          transaction.category.toLowerCase().includes(searchTerm) ||
+          (transaction.bank && transaction.bank.toLowerCase().includes(searchTerm)) ||
+          (transaction.tags && transaction.tags.some((tag: string) => tag.toLowerCase().includes(searchTerm))) ||
+          (transaction.notes && transaction.notes.toLowerCase().includes(searchTerm))
         )
       }
       
@@ -169,20 +228,38 @@ export default function Expenses() {
     })
     
     return filtered
-  }, [expenses, categoryFilter, bankFilter, dateFilter, amountFilter, search, sortBy, sortOrder])
+  }, [expenses, incomes, categoryFilter, bankFilter, dateFilter, amountFilter, typeFilter, search, sortBy, sortOrder])
 
   // Get unique values for filters
-  const categories = ['All', ...Array.from(new Set(expenses.map(e => e.category)))]
-  const banks = ['All', ...Array.from(new Set(expenses.map(e => e.bank).filter(Boolean)))]
+  const categories = ['All', ...Array.from(new Set([
+    ...expenses.map(e => e.category),
+    ...incomes.map(i => i.source || 'Income')
+  ]))]
+  const banks = ['All', ...Array.from(new Set([
+    ...expenses.map(e => e.bank).filter(Boolean),
+    'Cash' // Income transactions are always Cash since no paymentMode field
+  ]))]
   
   // Statistics
   const stats = useMemo(() => {
-    const total = filteredAndSortedExpenses.reduce((sum, e) => sum + e.amount, 0)
-    const average = filteredAndSortedExpenses.length > 0 ? total / filteredAndSortedExpenses.length : 0
-    const highest = filteredAndSortedExpenses.length > 0 ? Math.max(...filteredAndSortedExpenses.map(e => e.amount)) : 0
+    const expenseTransactions = filteredAndSortedTransactions.filter(t => t.type === 'expense')
+    const incomeTransactions = filteredAndSortedTransactions.filter(t => t.type === 'income')
     
-    return { total, average, highest, count: filteredAndSortedExpenses.length }
-  }, [filteredAndSortedExpenses])
+    const totalExpenses = expenseTransactions.reduce((sum, e) => sum + e.amount, 0)
+    const totalIncome = incomeTransactions.reduce((sum, i) => sum + i.amount, 0)
+    const average = expenseTransactions.length > 0 ? totalExpenses / expenseTransactions.length : 0
+    const highest = expenseTransactions.length > 0 ? Math.max(...expenseTransactions.map(e => e.amount)) : 0
+    
+    return { 
+      total: totalExpenses, 
+      totalIncome,
+      average, 
+      highest, 
+      count: filteredAndSortedTransactions.length,
+      expenseCount: expenseTransactions.length,
+      incomeCount: incomeTransactions.length
+    }
+  }, [filteredAndSortedTransactions])
 
   // Reports function
   const handleOpenReports = () => {
@@ -282,12 +359,12 @@ export default function Expenses() {
                       </span>
                     </div>
                     <h1 className="heading-page">
-                      Expense Tracker
+                      Financial Tracker
                     </h1>
                   </div>
                 </div>
                 <p className="text-sm md:text-base text-white/80 max-w-md">
-                  Monitor and categorize your spending patterns with advanced filtering
+                  Track your expenses and income with advanced filtering and analytics
                 </p>
               </div>
 
@@ -346,7 +423,7 @@ export default function Expenses() {
               </p>
             </div>
             <button
-              onClick={() => setShowAddModal(true)}
+              onClick={() => setShowAddExpenseModal(true)}
               className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -486,29 +563,44 @@ export default function Expenses() {
               </div>
               
               {/* Action Buttons */}
-              <div className="flex gap-3 md:gap-4">
+              <div className="flex gap-2 md:gap-3">
                 <button
-                  onClick={() => setShowAddModal(true)}
-                  className="group relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-600 hover:from-blue-700 hover:via-blue-800 hover:to-indigo-700 text-white shadow-2xl hover:shadow-blue-500/25 hover:-translate-y-1 flex items-center justify-center gap-2 px-6 py-3 lg:px-8 lg:py-4 rounded-2xl font-semibold text-sm lg:text-base transition-all duration-300 border border-white/10"
+                  onClick={() => setShowAddExpenseModal(true)}
+                  className="group relative overflow-hidden bg-gradient-to-r from-red-600 via-rose-600 to-pink-600 hover:from-red-700 hover:via-rose-700 hover:to-pink-700 text-white shadow-2xl hover:shadow-red-500/25 hover:-translate-y-1 flex items-center justify-center gap-2 px-4 py-3 lg:px-6 lg:py-3.5 rounded-2xl font-semibold text-sm transition-all duration-300 border border-white/10"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="relative flex items-center gap-2">
-                    <div className="w-5 h-5 rounded-lg bg-white/20 flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
+                    <div className="w-4 h-4 rounded-lg bg-white/20 flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                       </svg>
                     </div>
                     <span className="group-hover:translate-x-0.5 transition-transform duration-300">Add Expense</span>
                   </div>
                 </button>
-                
+
                 <button
-                  onClick={handleOpenReports}
-                  className="group relative overflow-hidden bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-700 hover:via-teal-700 hover:to-cyan-700 text-white shadow-2xl hover:shadow-emerald-500/25 hover:-translate-y-1 flex items-center justify-center gap-2 px-6 py-3 lg:px-8 lg:py-4 rounded-2xl font-semibold text-sm lg:text-base transition-all duration-300 border border-white/10"
+                  onClick={() => setShowAddIncomeModal(true)}
+                  className="group relative overflow-hidden bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 hover:from-emerald-700 hover:via-green-700 hover:to-teal-700 text-white shadow-2xl hover:shadow-emerald-500/25 hover:-translate-y-1 flex items-center justify-center gap-2 px-4 py-3 lg:px-6 lg:py-3.5 rounded-2xl font-semibold text-sm transition-all duration-300 border border-white/10"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="relative flex items-center gap-2">
-                    <div className="w-5 h-5 rounded-lg bg-white/20 flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
+                    <div className="w-4 h-4 rounded-lg bg-white/20 flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                      </svg>
+                    </div>
+                    <span className="group-hover:translate-x-0.5 transition-transform duration-300">Add Income</span>
+                  </div>
+                </button>
+                
+                <button
+                  onClick={handleOpenReports}
+                  className="group relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white shadow-2xl hover:shadow-blue-500/25 hover:-translate-y-1 flex items-center justify-center gap-2 px-4 py-3 lg:px-6 lg:py-3.5 rounded-2xl font-semibold text-sm transition-all duration-300 border border-white/10"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative flex items-center gap-2">
+                    <div className="w-4 h-4 rounded-lg bg-white/20 flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
@@ -526,7 +618,7 @@ export default function Expenses() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <span className="text-xs font-medium text-primary">
-                    Found {stats.count} expense{stats.count !== 1 ? 's' : ''} matching "{search}"
+                    Found {stats.count} transaction{stats.count !== 1 ? 's' : ''} matching "{search}"
                   </span>
                 </div>
               </div>
@@ -539,6 +631,7 @@ export default function Expenses() {
               <h3 className="text-sm md:text-base font-semibold text-foreground">Filters & Sorting</h3>
               <button
                 onClick={() => {
+                  setTypeFilter('All')
                   setCategoryFilter('All')
                   setDateFilter('All')
                   setAmountFilter('All')
@@ -554,7 +647,21 @@ export default function Expenses() {
             </div>
 
             {/* Desktop: Show all filters in a grid */}
-            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-6 gap-4">
+              {/* Type Filter */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-foreground">Type</label>
+                <select
+                  value={typeFilter}
+                  onChange={(e) => setTypeFilter(e.target.value)}
+                  className="input-premium w-full px-3 py-2.5 text-sm font-medium"
+                >
+                  <option value="All">All</option>
+                  <option value="expense">Expenses</option>
+                  <option value="income">Income</option>
+                </select>
+              </div>
+
               {/* Category Filter */}
               <div className="space-y-2">
                 <label className="text-xs font-medium text-foreground">Category</label>
@@ -643,7 +750,21 @@ export default function Expenses() {
             </div>
 
             {/* Mobile: Show only most important filters */}
-            <div className="md:hidden grid grid-cols-1 gap-3">
+            <div className="md:hidden grid grid-cols-2 gap-3">
+              {/* Type Filter */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-foreground">Type</label>
+                <select
+                  value={typeFilter}
+                  onChange={(e) => setTypeFilter(e.target.value)}
+                  className="input-premium w-full px-3 py-2.5 text-sm font-medium"
+                >
+                  <option value="All">All</option>
+                  <option value="expense">Expenses</option>
+                  <option value="income">Income</option>
+                </select>
+              </div>
+
               {/* Category Filter */}
               <div className="space-y-2">
                 <label className="text-xs font-medium text-foreground">Category</label>
@@ -727,22 +848,30 @@ export default function Expenses() {
             </div>
           </div>
 
-          {/* Responsive Expenses List - Card layout for mobile, enhanced for desktop */}
+          {/* Responsive Transactions List - Card layout for mobile, enhanced for desktop */}
           <div className="glass-premium rounded-xl md:rounded-2xl border border-border/20 shadow-premium overflow-hidden animate-slide-in">
-            {filteredAndSortedExpenses.length > 0 ? (
+            {filteredAndSortedTransactions.length > 0 ? (
               <div className="divide-y divide-border/10">
-                {filteredAndSortedExpenses.map((expense, index) => (
+                {filteredAndSortedTransactions.map((transaction, index) => (
                   <div
-                    key={expense.id}
+                    key={transaction.id}
                     className="px-3 md:px-6 py-2.5 md:py-4 hover:bg-secondary/10 transition-all duration-200 group"
                     style={{ animationDelay: `${(index + 3) * 30}ms` }}
                   >
                     <div className="flex items-start gap-3">
                       {/* Compact Icon */}
                       <div className="flex-shrink-0 mt-0.5">
-                        <div className="w-8 h-8 md:w-9 md:h-9 bg-gradient-to-br from-rose-500 to-pink-600 rounded-lg flex items-center justify-center shadow-sm group-hover:scale-105 transition-all duration-200">
+                        <div className={`w-8 h-8 md:w-9 md:h-9 rounded-lg flex items-center justify-center shadow-sm group-hover:scale-105 transition-all duration-200 ${
+                          transaction.type === 'income' 
+                            ? 'bg-gradient-to-br from-emerald-500 to-green-600' 
+                            : 'bg-gradient-to-br from-rose-500 to-pink-600'
+                        }`}>
                           <svg className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d={
+                              transaction.type === 'income' 
+                                ? "M5 10l7-7m0 0l7 7m-7-7v18" 
+                                : "M19 14l-7 7m0 0l-7-7m7 7V3"
+                            } />
                           </svg>
                         </div>
                       </div>
@@ -752,22 +881,22 @@ export default function Expenses() {
                         {/* Top Row: Title and Date */}
                         <div className="flex items-start justify-between mb-1">
                           <h3 className="font-semibold text-sm md:text-base text-foreground truncate group-hover:text-primary transition-colors pr-2">
-                            {expense.title}
+                            {transaction.title}
                           </h3>
                           <span className="text-xs text-muted-foreground flex-shrink-0">
-                            {expense.createdAt
-                              ? `${new Date(expense.createdAt).toLocaleDateString('en-US', {
+                            {transaction.createdAt
+                              ? `${new Date(transaction.createdAt).toLocaleDateString('en-US', {
                                   month: 'short',
                                   day: 'numeric'
-                                })} ${new Date(expense.createdAt).toLocaleTimeString('en-US', {
+                                })} ${new Date(transaction.createdAt).toLocaleTimeString('en-US', {
                                   hour: 'numeric',
                                   minute: '2-digit',
                                   hour12: true
                                 })}`
-                              : `${new Date(expense.date).toLocaleDateString('en-US', {
+                              : `${new Date(transaction.date).toLocaleDateString('en-US', {
                                   month: 'short',
                                   day: 'numeric'
-                                })} ${new Date(expense.date).toLocaleTimeString('en-US', {
+                                })} ${new Date(transaction.date).toLocaleTimeString('en-US', {
                                   hour: 'numeric',
                                   minute: '2-digit',
                                   hour12: true
@@ -780,13 +909,17 @@ export default function Expenses() {
                         <div className="flex items-center justify-between">
                           {/* Left: Category and Payment Method */}
                           <div className="flex items-center gap-2">
-                            <span className="inline-flex items-center px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-medium rounded">
-                              {expense.category}
+                            <span className={`inline-flex items-center px-1.5 py-0.5 text-xs font-medium rounded ${
+                              transaction.type === 'income' 
+                                ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
+                                : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                            }`}>
+                              {transaction.category}
                             </span>
                             
                             {/* Payment Method Icon - Hidden on mobile, shown on desktop */}
                             <div className="hidden md:flex items-center gap-1 text-xs text-muted-foreground">
-                              {(expense.paymentMode || 'Cash') === 'Cash' ? (
+                              {(transaction.bank || 'Cash') === 'Cash' ? (
                                 <svg className="w-3 h-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg>
@@ -795,21 +928,21 @@ export default function Expenses() {
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                 </svg>
                               )}
-                              <span>{expense.paymentMode || 'Cash'}</span>
+                              <span>{transaction.bank || 'Cash'}</span>
                             </div>
 
                             {/* Tags */}
-                            {expense.tags && expense.tags.length > 0 && (
+                            {transaction.tags && transaction.tags.length > 0 && (
                               <div className="flex items-center gap-1">
-                                {expense.tags.slice(0, 1).map((tag: string, i: number) => (
+                                {transaction.tags.slice(0, 1).map((tag: string, i: number) => (
                                   <span key={i} className="inline-flex items-center gap-1 px-1 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-xs rounded">
                                     <span className="w-1 h-1 bg-emerald-500 rounded-full"></span>
                                     {tag}
                                   </span>
                                 ))}
-                                {expense.tags.length > 1 && (
+                                {transaction.tags.length > 1 && (
                                   <span className="text-xs text-muted-foreground">
-                                    +{expense.tags.length - 1}
+                                    +{transaction.tags.length - 1}
                                   </span>
                                 )}
                               </div>
@@ -820,27 +953,33 @@ export default function Expenses() {
                           <div className="flex items-center gap-2">
                             {/* Amount */}
                             <div className="text-right">
-                              <p className="font-bold text-sm md:text-base text-red-500 flex items-center justify-end gap-0.5">
-                                <span className="text-red-600">₹</span>
-                                <span>{expense.amount.toLocaleString()}</span>
+                              <p className={`font-bold text-sm md:text-base flex items-center justify-end gap-0.5 ${
+                                transaction.type === 'income' 
+                                  ? 'text-emerald-500' 
+                                  : 'text-red-500'
+                              }`}>
+                                <span className={transaction.type === 'income' ? 'text-emerald-600' : 'text-red-600'}>
+                                  {transaction.type === 'income' ? '+₹' : '₹'}
+                                </span>
+                                <span>{transaction.amount.toLocaleString()}</span>
                               </p>
                             </div>
 
-                            {/* Actions */}
+                            {/* Actions - Show for both expenses and income */}
                             <div className="flex gap-0.5 opacity-70 md:opacity-0 group-hover:opacity-100 transition-opacity">
                               <button
-                                onClick={() => handleEditExpense(expense)}
+                                onClick={() => transaction.type === 'expense' ? handleEditExpense(transaction) : handleEditIncome(transaction)}
                                 className="p-1 text-amber-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded transition-all duration-200 hover:scale-110"
-                                title="Edit expense"
+                                title={`Edit ${transaction.type}`}
                               >
                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
                               </button>
                               <button
-                                onClick={() => handleDeleteExpense(expense.id)}
+                                onClick={() => transaction.type === 'expense' ? handleDeleteExpense(transaction.id) : handleDeleteIncome(transaction.id)}
                                 className="p-1 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-all duration-200 hover:scale-110"
-                                title="Delete expense"
+                                title={`Delete ${transaction.type}`}
                               >
                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -864,33 +1003,34 @@ export default function Expenses() {
                 <div className="space-y-3">
                   <h3 className="heading-card">
                     {search || categoryFilter !== 'All' || dateFilter !== 'All' || amountFilter !== 'All' || bankFilter !== 'All'
-                      ? 'No matching expenses found'
-                      : 'No expenses yet'
+                      ? 'No matching transactions found'
+                      : 'No transactions yet'
                     }
                   </h3>
                   <p className="text-muted-foreground max-w-md mx-auto text-sm leading-relaxed">
                     {search || categoryFilter !== 'All' || dateFilter !== 'All' || amountFilter !== 'All' || bankFilter !== 'All'
                       ? 'Try adjusting your search or filter criteria to find what you\'re looking for.'
-                      : 'Start tracking your expenses by adding your first transaction.'
+                      : 'Start tracking your finances by adding your first expense or income.'
                     }
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mt-6">
                   <button
-                    onClick={() => setShowAddModal(true)}
+                    onClick={() => setShowAddExpenseModal(true)}
                     className="btn-premium bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 px-6 py-2.5 text-sm font-semibold group transition-all duration-200"
                   >
                     <svg className="w-4 h-4 mr-1.5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                     </svg>
                     {search || categoryFilter !== 'All' || dateFilter !== 'All' || amountFilter !== 'All' || bankFilter !== 'All'
-                      ? 'Add New Expense'
-                      : 'Add Your First Expense'
+                      ? 'Add New Transaction'
+                      : 'Add Your First Transaction'
                     }
                   </button>
                   {(search || categoryFilter !== 'All' || dateFilter !== 'All' || amountFilter !== 'All' || bankFilter !== 'All') && (
                     <button
                       onClick={() => {
+                        setTypeFilter('All')
                         setCategoryFilter('All')
                         setDateFilter('All')
                         setAmountFilter('All')
@@ -913,7 +1053,7 @@ export default function Expenses() {
 
       {/* Premium Floating Action Button - Mobile Only */}
       <button
-        onClick={() => setShowAddModal(true)}
+        onClick={() => setShowAddExpenseModal(true)}
         className="md:hidden fixed bottom-28 right-3 w-12 h-12 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-600 text-white rounded-xl shadow-2xl hover:shadow-blue-500/25 flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 z-40 group border border-white/10"
       >
         <div className="relative">
@@ -925,16 +1065,29 @@ export default function Expenses() {
       </button>
 
       <AddExpenseModal
-        isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
+        isOpen={showAddExpenseModal}
+        onClose={() => setShowAddExpenseModal(false)}
         onSave={handleAddExpense}
       />
 
+      <AddIncomeModal
+        isOpen={showAddIncomeModal}
+        onClose={() => setShowAddIncomeModal(false)}
+        onSave={handleAddIncome}
+      />
+
       <EditExpenseModal
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
+        isOpen={showEditExpenseModal}
+        onClose={() => setShowEditExpenseModal(false)}
         onSave={handleUpdateExpense}
         expense={editingExpense}
+      />
+
+      <EditIncomeModal
+        isOpen={showEditIncomeModal}
+        onClose={() => setShowEditIncomeModal(false)}
+        onSave={handleUpdateIncome}
+        income={editingIncome}
       />
 
       <ReportsModal

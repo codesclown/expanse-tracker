@@ -2,11 +2,23 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useAuth } from '@/contexts/AuthContext'
 
 export default function BottomNav() {
   const pathname = usePathname()
+  const { user, logout } = useAuth()
 
   const isActive = (path: string) => pathname === path
+
+  // Get user initials for avatar
+  const getUserInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word.charAt(0))
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
+  }
 
   // Bottom navigation items (excluding Home and Settings)
   const bottomNavItems = [
@@ -171,50 +183,95 @@ export default function BottomNav() {
         </div>
       </nav>
 
-      {/* Desktop Sidebar */}
-      <nav className="hidden md:block fixed left-0 top-0 bottom-0 w-64 lg:w-72 glass border-r border-border z-40 shadow-premium">
-        <div className="flex flex-col h-full">
-          {/* Logo */}
-          <div className="p-6 border-b border-border">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
-                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      {/* Premium Desktop Sidebar */}
+      <nav className="hidden md:block fixed left-0 top-0 bottom-0 w-64 lg:w-72 z-40">
+        {/* Theme-aware glass background */}
+        <div className="absolute inset-0 glass-premium border-r border-border/20 shadow-2xl"></div>
+        
+        {/* Premium mesh pattern overlay */}
+        <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05]">
+          <div 
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            }}
+          />
+        </div>
+
+        <div className="relative flex flex-col h-full">
+          {/* Premium Logo Section */}
+          <div className="p-6 lg:p-7 border-b border-border/10">
+            <div className="flex items-center space-x-3 group cursor-pointer">
+              <div className="w-11 h-11 lg:w-12 lg:h-12 bg-gradient-to-tr from-violet-600 via-purple-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-premium group-hover:shadow-premium-lg group-hover:shadow-violet-500/25 transition-all duration-300 group-hover:scale-105">
+                <svg className="w-6 h-6 lg:w-7 lg:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
-              <span className="metric-value text-foreground">FinanceTracker</span>
+              <div>
+                <h1 className="text-base lg:text-lg font-bold text-foreground">ExpenseTracker</h1>
+                <p className="text-xs text-muted-foreground">Financial Dashboard</p>
+              </div>
             </div>
           </div>
 
-          {/* Nav Items */}
-          <div className="flex-1 p-4 space-y-3">
-            {allNavItems.map((item) => (
-              <Link
-                key={item.path}
-                href={item.path}
-                className={`flex items-center space-x-4 px-4 py-4 rounded-2xl transition-all duration-300 group ${
-                  isActive(item.path)
-                    ? 'bg-gradient-to-r from-violet-500 via-purple-600 to-indigo-600 text-white shadow-premium'
-                    : 'text-muted-foreground hover:bg-secondary hover:text-foreground hover:shadow-lg hover:-translate-y-0.5'
-                }`}
-              >
-                <div className={`transition-all duration-300 ${isActive(item.path) ? 'scale-110' : 'group-hover:scale-110'}`}>
-                  {item.icon}
-                </div>
-                <span className="btn-text">{item.label}</span>
-              </Link>
-            ))}
+          {/* Premium Navigation */}
+          <div className="flex-1 p-4 lg:p-5">
+            <div className="space-y-2">
+              {allNavItems.map((item, index) => (
+                <Link
+                  key={item.path}
+                  href={item.path}
+                  className={`group flex items-center space-x-3 px-4 py-3.5 rounded-2xl transition-all duration-300 ${
+                    isActive(item.path)
+                      ? 'bg-gradient-to-r from-violet-500 via-purple-600 to-indigo-600 text-white shadow-premium shadow-violet-500/25'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60 hover:shadow-lg hover:-translate-y-0.5'
+                  }`}
+                >
+                  <div className={`transition-all duration-300 ${
+                    isActive(item.path) ? 'text-white scale-110' : 'group-hover:text-violet-600 group-hover:scale-110'
+                  }`}>
+                    {item.icon}
+                  </div>
+                  <span className="font-semibold text-sm">{item.label}</span>
+                  
+                  {/* Active indicator */}
+                  {isActive(item.path) && (
+                    <div className="ml-auto w-2 h-2 bg-white/80 rounded-full"></div>
+                  )}
+                </Link>
+              ))}
+            </div>
           </div>
 
-          {/* User Profile Section */}
-          <div className="p-4 border-t border-border">
-            <div className="flex items-center space-x-4 p-4 rounded-2xl bg-secondary/50 hover:bg-secondary transition-colors">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-white text-sm font-bold">U</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-foreground truncate">User</p>
-                <p className="text-xs text-muted-foreground truncate">user@example.com</p>
+          {/* Premium User Profile with Real Data */}
+          <div className="p-4 lg:p-5 border-t border-border/10">
+            <div className="group relative">
+              <div className="flex items-center space-x-3 p-4 rounded-2xl bg-secondary/40 hover:bg-secondary/60 transition-all duration-300 cursor-pointer hover:shadow-lg hover:-translate-y-0.5 border border-border/20">
+                <div className="relative">
+                  <div className="w-10 h-10 bg-gradient-to-tr from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center text-white text-sm font-bold shadow-lg group-hover:shadow-xl group-hover:shadow-emerald-500/25 transition-all duration-300 group-hover:scale-105">
+                    {user ? getUserInitials(user.name) : 'U'}
+                  </div>
+                  <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-background shadow-sm">
+                    <div className="w-full h-full bg-green-400 rounded-full animate-pulse"></div>
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground truncate group-hover:text-violet-600 transition-colors">
+                    {user?.name || 'Guest User'}
+                  </p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {user?.email || 'guest@example.com'}
+                  </p>
+                </div>
+                <button
+                  onClick={logout}
+                  className="opacity-0 group-hover:opacity-100 p-2 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/20 text-muted-foreground hover:text-red-600 transition-all duration-300 hover:scale-110"
+                  title="Logout"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                </button>
               </div>
             </div>
           </div>

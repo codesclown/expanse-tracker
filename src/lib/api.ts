@@ -107,6 +107,19 @@ export class ApiClient {
     })
   }
 
+  async updateIncome(id: string, income: any) {
+    return this.request(`/incomes/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(income),
+    })
+  }
+
+  async deleteIncome(id: string) {
+    return this.request(`/incomes/${id}`, {
+      method: 'DELETE',
+    })
+  }
+
   // Udhar
   async getUdhars() {
     return this.request('/udhar')

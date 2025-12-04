@@ -220,12 +220,21 @@ export async function updateExpense(id: string, userId: string, data: Partial<{
   tags: string[]
   notes: string
 }>) {
-  const updateData: any = { ...data }
-  if (data.date) updateData.date = new Date(data.date)
-
   return prisma.expense.update({
-    where: { id, userId },
-    data: updateData,
+    where: { 
+      id,
+      userId // Ensure user can only update their own expense
+    },
+    data: {
+      ...(data.date && { date: new Date(data.date) }),
+      ...(data.title && { title: data.title }),
+      ...(data.amount && { amount: data.amount }),
+      ...(data.category && { category: data.category }),
+      ...(data.bank && { bank: data.bank }),
+      ...(data.paymentMode && { paymentMode: data.paymentMode }),
+      ...(data.tags && { tags: data.tags }),
+      ...(data.notes !== undefined && { notes: data.notes }),
+    }
   })
 }
 
@@ -272,6 +281,35 @@ export async function getIncomes(userId: string, filters?: {
     orderBy: { date: 'desc' },
     take: filters?.limit || 100,
     skip: filters?.offset || 0,
+  })
+}
+
+export async function updateIncome(id: string, userId: string, data: Partial<{
+  date: string
+  source: string
+  amount: number
+  notes: string
+}>) {
+  return prisma.income.update({
+    where: { 
+      id,
+      userId // Ensure user can only update their own income
+    },
+    data: {
+      ...(data.date && { date: new Date(data.date) }),
+      ...(data.source && { source: data.source }),
+      ...(data.amount && { amount: data.amount }),
+      ...(data.notes !== undefined && { notes: data.notes }),
+    }
+  })
+}
+
+export async function deleteIncome(id: string, userId: string) {
+  return prisma.income.delete({
+    where: { 
+      id,
+      userId // Ensure user can only delete their own income
+    }
   })
 }
 
