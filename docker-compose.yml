@@ -13,8 +13,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
-    ports:
-      - "5432:5432"
+    # Only expose internally to avoid port conflicts
+    expose:
+      - "5432"
     networks:
       - expense-tracker-network
     healthcheck:
