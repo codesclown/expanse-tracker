@@ -21,6 +21,7 @@ interface PlanningCategory {
   realCost: number
   startDate?: string
   endDate?: string
+  expiryDate?: string
   isActive: boolean
   expenses: ExpensePlan[]
   createdAt: string
@@ -525,8 +526,18 @@ export default function ExpensePlanning() {
                   const progress = category.expectedCost > 0 ? (category.realCost / category.expectedCost) * 100 : 0
 
                   const getExpiryStatus = () => {
-                    if (!category.endDate && !category.startDate) return null
                     const now = new Date()
+                    now.setHours(0, 0, 0, 0) // Reset to start of day for accurate comparison
+                    
+                    // Check expiryDate first (highest priority)
+                    if (category.expiryDate) {
+                      const expiryDate = new Date(category.expiryDate)
+                      expiryDate.setHours(0, 0, 0, 0)
+                      return now > expiryDate ? 'expired' : 'active'
+                    }
+                    
+                    // Then check type-based expiry
+                    if (!category.endDate && !category.startDate) return null
                     const endDate = category.endDate ? new Date(category.endDate) : null
                     const startDate = category.startDate ? new Date(category.startDate) : null
 
@@ -550,15 +561,20 @@ export default function ExpensePlanning() {
                   }
 
                   const expiryStatus = getExpiryStatus()
+                  const isExpired = expiryStatus === 'expired'
 
                   return (
                     <div 
                       key={category.id} 
                       onClick={() => handleViewCategoryDetails(category)}
-                      className="relative glass-premium rounded-2xl border border-white/10 shadow-2xl overflow-hidden group hover:shadow-premium-lg hover:scale-[1.02] transition-all duration-300 cursor-pointer"
+                      className={`relative glass-premium rounded-2xl border shadow-2xl overflow-hidden group hover:shadow-premium-lg hover:scale-[1.02] transition-all duration-300 cursor-pointer ${
+                        isExpired 
+                          ? 'border-red-500/30 opacity-75 grayscale-[0.3]' 
+                          : 'border-white/10'
+                      }`}
                     >
                       {/* Gradient Top Bar */}
-                      <div className={`h-1 bg-gradient-to-r ${category.color}`}></div>
+                      <div className={`h-1 bg-gradient-to-r ${isExpired ? 'from-red-500 to-red-600' : category.color}`}></div>
                       
                       {/* Background Glow Effect */}
                       <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}></div>
@@ -577,7 +593,7 @@ export default function ExpensePlanning() {
                             
                             <div>
                               <h3 className="text-xs md:text-sm font-bold text-foreground mb-0.5">{category.name}</h3>
-                              <div className="flex items-center gap-1.5">
+                              <div className="flex items-center gap-1.5 flex-wrap">
                                 <span className="text-[10px] px-1.5 py-0.5 bg-secondary/80 backdrop-blur-sm rounded-full font-medium">
                                   {categoryExpenses.length} expenses
                                 </span>
@@ -587,10 +603,26 @@ export default function ExpensePlanning() {
                                       ? 'bg-green-500/20 text-green-600 dark:text-green-400 border border-green-500/30'
                                       : 'bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/30'
                                   }`}>
-                                    {expiryStatus === 'active' ? '● Active' : '● Expired'}
+                                    {expiryStatus === 'active' ? '● Active' : '● Inactive'}
                                   </span>
                                 )}
                               </div>
+                              {/* Show expiry date if category is expired or has an expiry date */}
+                              {category.expiryDate && (
+                                <p className={`text-[10px] mt-1 font-medium flex items-center gap-1 ${
+                                  isExpired ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground'
+                                }`}>
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                  </svg>
+                                  {isExpired ? 'Expired: ' : 'Expires: '}
+                                  {new Date(category.expiryDate).toLocaleDateString('en-US', { 
+                                    month: 'short', 
+                                    day: 'numeric', 
+                                    year: 'numeric' 
+                                  })}
+                                </p>
+                              )}
                             </div>
                           </div>
                           <div className="flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
@@ -669,16 +701,25 @@ export default function ExpensePlanning() {
                           </div>
                         )}
 
-                        {/* Add Expense Button */}
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); setSelectedCategory(category); setShowExpenseModal(true); }} 
-                          className={`w-full py-2 md:py-2.5 bg-gradient-to-r ${category.color} hover:shadow-lg text-white rounded-lg text-xs md:text-sm font-bold transition-all flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-95`}
-                        >
-                          <svg className="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-                          </svg>
-                          Add Expense
-                        </button>
+                        {/* Add Expense Button - Hidden when expired */}
+                        {!isExpired ? (
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); setSelectedCategory(category); setShowExpenseModal(true); }} 
+                            className={`w-full py-2 md:py-2.5 bg-gradient-to-r ${category.color} hover:shadow-lg text-white rounded-lg text-xs md:text-sm font-bold transition-all flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-95`}
+                          >
+                            <svg className="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add Expense
+                          </button>
+                        ) : (
+                          <div className="w-full py-2 md:py-2.5 bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 rounded-lg text-xs md:text-sm font-bold flex items-center justify-center gap-1.5">
+                            <svg className="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                            Category Expired
+                          </div>
+                        )}
                       </div>
                     </div>
                   )

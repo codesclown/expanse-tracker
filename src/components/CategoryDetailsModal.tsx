@@ -31,9 +31,19 @@ export default function CategoryDetailsModal({
   const progress = category.expectedCost > 0 ? (category.realCost / category.expectedCost) * 100 : 0
 
   const getExpiryStatus = () => {
+    const now = new Date()
+    now.setHours(0, 0, 0, 0) // Reset to start of day for accurate comparison
+    
+    // Check expiryDate first (highest priority)
+    if (category.expiryDate) {
+      const expiryDate = new Date(category.expiryDate)
+      expiryDate.setHours(0, 0, 0, 0)
+      return now > expiryDate ? 'expired' : 'active'
+    }
+    
+    // Then check type-based expiry
     if (!category.endDate && !category.startDate) return null
     
-    const now = new Date()
     const endDate = category.endDate ? new Date(category.endDate) : null
     const startDate = category.startDate ? new Date(category.startDate) : null
 
@@ -63,6 +73,7 @@ export default function CategoryDetailsModal({
   }
 
   const expiryStatus = getExpiryStatus()
+  const isExpired = expiryStatus === 'expired'
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-[100] flex items-center justify-center p-2 sm:p-4 animate-fade-in">
@@ -89,7 +100,7 @@ export default function CategoryDetailsModal({
                           ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
                           : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
                       }`}>
-                        {expiryStatus === 'active' ? '● Active' : '● Expired'}
+                        {expiryStatus === 'active' ? '● Active' : '● Inactive'}
                       </span>
                     )}
                   </div>
@@ -197,19 +208,38 @@ export default function CategoryDetailsModal({
             </div>
           )}
 
-          {/* Date Range */}
-          {(category.startDate || category.endDate) && (
+          {/* Date Range & Expiry */}
+          {(category.startDate || category.endDate || category.expiryDate) && (
             <div className="glass-premium rounded-lg p-2.5 border border-border/20">
               <p className="text-[10px] sm:text-xs font-semibold text-foreground mb-1.5">Time Period</p>
-              <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-muted-foreground">
-                <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <span>
-                  {category.startDate && new Date(category.startDate).toLocaleDateString()}
-                  {category.endDate && ` - ${new Date(category.endDate).toLocaleDateString()}`}
-                </span>
-              </div>
+              {(category.startDate || category.endDate) && (
+                <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-muted-foreground mb-1.5">
+                  <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span>
+                    {category.startDate && new Date(category.startDate).toLocaleDateString()}
+                    {category.endDate && ` - ${new Date(category.endDate).toLocaleDateString()}`}
+                  </span>
+                </div>
+              )}
+              {category.expiryDate && (
+                <div className={`flex items-center gap-1.5 text-[10px] sm:text-xs font-medium ${
+                  isExpired ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground'
+                }`}>
+                  <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>
+                    {isExpired ? 'Expired: ' : 'Expires: '}
+                    {new Date(category.expiryDate).toLocaleDateString('en-US', { 
+                      month: 'short', 
+                      day: 'numeric', 
+                      year: 'numeric' 
+                    })}
+                  </span>
+                </div>
+              )}
             </div>
           )}
 
