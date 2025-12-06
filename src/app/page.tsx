@@ -5,11 +5,18 @@ import { useTheme } from '@/contexts/ThemeContext'
 import { useState, useEffect, useRef } from 'react'
 
 // Optimized Animated Counter Component with better performance
-const AnimatedCounter = ({ end, duration = 1500, suffix = '', prefix = '' }) => {
+interface AnimatedCounterProps {
+  end: string | number
+  duration?: number
+  suffix?: string
+  prefix?: string
+}
+
+const AnimatedCounter = ({ end, duration = 1500, suffix = '', prefix = '' }: AnimatedCounterProps) => {
   const [count, setCount] = useState(0)
   const [isVisible, setIsVisible] = useState(false)
-  const counterRef = useRef(null)
-  const animationRef = useRef(null)
+  const counterRef = useRef<HTMLSpanElement>(null)
+  const animationRef = useRef<number | null>(null)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -36,11 +43,11 @@ const AnimatedCounter = ({ end, duration = 1500, suffix = '', prefix = '' }) => 
   useEffect(() => {
     if (!isVisible) return
 
-    let startTime = null
+    let startTime: number | null = null
     const startValue = 0
-    const endValue = parseInt(end.replace(/[^\d]/g, ''))
+    const endValue = parseInt(String(end).replace(/[^\d]/g, ''))
 
-    const animate = (currentTime) => {
+    const animate = (currentTime: number) => {
       if (startTime === null) startTime = currentTime
       const progress = Math.min((currentTime - startTime) / duration, 1)
       
