@@ -21,10 +21,12 @@ model User {
   udhar           Udhar[]
   bankAccounts    BankAccount[]
   smartScores     SmartScore[]
-  subscriptions      Subscription[]
-  expensePlanning    ExpensePlanning[]
-  planningCategories PlanningCategory[]
-  shoppingList       ShoppingList[]
+  subscriptions       Subscription[]
+  expensePlanning     ExpensePlanning[]
+  planningCategories  PlanningCategory[]
+  shoppingList        ShoppingList[]
+  shoppingCategories  ShoppingCategory[]
+  shoppingItems       ShoppingItem[]
 }
 
 model Expense {
@@ -182,6 +184,47 @@ model ExpensePlanning {
   updatedAt    DateTime          @updatedAt
 
   @@index([userId, date])
+  @@index([userId, categoryId])
+}
+
+model ShoppingCategory {
+  id           String         @id @default(cuid())
+  userId       String
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  icon         String         @default("🛒")
+  color        String         @default("from-blue-500 to-cyan-600")
+  expectedCost Float          @default(0)
+  realCost     Float          @default(0)
+  isActive     Boolean        @default(true)
+  expiryDate   DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  items        ShoppingItem[]
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@index([userId, isActive])
+  @@index([expiryDate])
+}
+
+model ShoppingItem {
+  id            String            @id @default(cuid())
+  userId        String
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId    String?
+  category      ShoppingCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  name          String
+  expectedPrice Float
+  actualPrice   Float?
+  quantity      Int               @default(1)
+  unit          String            @default("pcs")
+  isBought      Boolean           @default(false)
+  notes         String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@index([userId])
   @@index([userId, categoryId])
 }
 
