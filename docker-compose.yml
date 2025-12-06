@@ -1,7 +1,9 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
+  # ---------------------------------------
+  # POSTGRES DATABASE
+  # ---------------------------------------
   postgres:
     image: postgres:15-alpine
     container_name: expense-tracker-db
@@ -13,7 +15,6 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
-    # Only expose internally to avoid port conflicts
     expose:
       - "5432"
     networks:
@@ -24,22 +25,22 @@ services:
       timeout: 5s
       retries: 5
 
-  # Next.js Application
+  # ---------------------------------------
+  # NEXT.JS APPLICATION (STANDALONE BUILD)
+  # ---------------------------------------
   app:
     build:
       context: .
       dockerfile: Dockerfile
+      args:                       # 💥 REQUIRED for Prisma during Docker build
+        DATABASE_URL: postgresql://postgres:postgres123@postgres:5432/financetracker
     container_name: expense-tracker-app
     restart: unless-stopped
     environment:
-      - NODE_ENV=production
-      - DATABASE_URL=postgresql://postgres:postgres123@postgres:5432/financetracker
-      - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-      - NEXT_PUBLIC_APP_URL=http://localhost:3000
-      # Optional: Add your email and OpenAI credentials
-      # - GMAIL_USER=your-email@gmail.com
-      # - GMAIL_APP_PASSWORD=your-gmail-app-password
-      # - OPENAI_API_KEY=sk-proj-your-openai-api-key-here
+      NODE_ENV: production
+      DATABASE_URL: postgresql://postgres:postgres123@postgres:5432/financetracker
+      JWT_SECRET: your-super-secret-jwt-key-change-this-in-production
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
     ports:
       - "3000:3000"
     depends_on:
@@ -49,15 +50,19 @@ services:
       - expense-tracker-network
     volumes:
       - ./uploads:/app/uploads
+    # 🔥 Full working startup sequence
     command: >
       sh -c "
-        echo 'Waiting for database to be ready...' &&
+        echo '⏳ Waiting for Postgres...' &&
+        sleep 5 &&
         npx prisma db push --accept-data-loss &&
-        echo 'Database schema updated successfully!' &&
+        echo '✅ Prisma schema synced!' &&
         node server.js
       "
 
-  # Optional: Prisma Studio for database management
+  # ---------------------------------------
+  # OPTIONAL: Prisma Studio
+  # ---------------------------------------
   prisma-studio:
     build:
       context: .
@@ -65,7 +70,7 @@ services:
     container_name: expense-tracker-prisma-studio
     restart: unless-stopped
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres123@postgres:5432/financetracker
+      DATABASE_URL: postgresql://postgres:postgres123@postgres:5432/financetracker
     ports:
       - "5555:5555"
     depends_on:
@@ -76,10 +81,16 @@ services:
     profiles:
       - tools
 
+# ---------------------------------------
+# VOLUMES
+# ---------------------------------------
 volumes:
   postgres_data:
     driver: local
 
+# ---------------------------------------
+# NETWORK
+# ---------------------------------------
 networks:
   expense-tracker-network:
     driver: bridge
