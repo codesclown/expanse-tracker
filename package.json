@@ -26,12 +26,12 @@
     "deploy:prod": "./scripts/deploy-production.sh deploy",
     "deploy:verify": "./scripts/deploy-production.sh verify",
     "deploy:logs": "./scripts/deploy-production.sh logs",
-    "deploy:stop": "./scripts/deploy-production.sh stop"
+    "deploy:stop": "./scripts/deploy-production.sh stop",
+    "check-expiry": "node scripts/check-category-expiry.js"
   },
   "dependencies": {
     "@prisma/client": "^5.20.0",
     "@tanstack/react-query": "^5.14.2",
-    "@types/nodemailer": "^7.0.4",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",
     "framer-motion": "^10.16.16",
@@ -44,6 +44,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "recharts": "^2.10.3",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "tailwind-merge": "^3.4.0",
     "zod": "^3.22.4"
   },
@@ -56,6 +58,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/jspdf": "^1.3.3",
     "@types/node": "^20",
+    "@types/nodemailer": "^7.0.4",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",

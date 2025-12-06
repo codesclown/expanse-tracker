@@ -6,6 +6,7 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { NotificationProvider } from '@/contexts/NotificationContext'
 import { DataProvider } from '@/contexts/DataContext'
+import ExpiryCheckerInitializer from '@/components/ExpiryCheckerInitializer'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -120,6 +121,7 @@ export default function RootLayout({
           <NotificationProvider>
             <AuthProvider>
               <DataProvider>
+                <ExpiryCheckerInitializer />
                 <div className="min-h-screen transition-colors duration-300">
                   {children}
                 </div>

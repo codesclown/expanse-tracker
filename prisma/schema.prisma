@@ -21,9 +21,10 @@ model User {
   udhar           Udhar[]
   bankAccounts    BankAccount[]
   smartScores     SmartScore[]
-  subscriptions   Subscription[]
-  expensePlanning ExpensePlanning[]
-  shoppingList    ShoppingList[]
+  subscriptions      Subscription[]
+  expensePlanning    ExpensePlanning[]
+  planningCategories PlanningCategory[]
+  shoppingList       ShoppingList[]
 }
 
 model Expense {
@@ -139,22 +140,49 @@ model BankTransaction {
   @@index([userId, date])
 }
 
+model PlanningCategory {
+  id                  String            @id @default(cuid())
+  userId              String
+  user                User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name                String
+  icon                String            @default("📝")
+  color               String            @default("from-blue-500 to-cyan-600")
+  type                String            @default("general") // festival, day, month, year, duration, general
+  expectedCost        Float             @default(0)
+  realCost            Float             @default(0)
+  startDate           DateTime?
+  endDate             DateTime?
+  expiryDate          DateTime?
+  isActive            Boolean           @default(true)
+  expiryEmailSent     Boolean           @default(false)
+  expiryEmailSentAt   DateTime?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  expenses            ExpensePlanning[]
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@index([userId, isActive])
+  @@index([expiryDate, expiryEmailSent])
+}
+
 model ExpensePlanning {
-  id           String   @id @default(cuid())
+  id           String            @id @default(cuid())
   userId       String
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId   String?
+  category     PlanningCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   title        String
   amount       Float
-  category     String
   date         DateTime
   description  String?
   actualAmount Float?
-  isCompleted  Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  isCompleted  Boolean           @default(false)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
 
   @@index([userId, date])
-  @@index([userId, category])
+  @@index([userId, categoryId])
 }
 
 model ShoppingList {

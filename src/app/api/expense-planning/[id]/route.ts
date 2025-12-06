@@ -33,8 +33,24 @@ export async function PATCH(
 
     const updatedExpense = await prisma.expensePlanning.update({
       where: { id: params.id },
-      data: body
+      data: body,
+      include: {
+        category: true
+      }
     })
+
+    // Update category real cost if expense has a category
+    if (updatedExpense.categoryId) {
+      const allExpenses = await prisma.expensePlanning.findMany({
+        where: { categoryId: updatedExpense.categoryId }
+      })
+      const totalRealCost = allExpenses.reduce((sum, exp) => sum + exp.amount, 0)
+      
+      await prisma.planningCategory.update({
+        where: { id: updatedExpense.categoryId },
+        data: { realCost: totalRealCost }
+      })
+    }
 
     return NextResponse.json(updatedExpense)
   } catch (error) {
@@ -69,9 +85,24 @@ export async function DELETE(
       return NextResponse.json({ error: 'Expense not found' }, { status: 404 })
     }
 
+    const categoryId = expense.categoryId
+
     await prisma.expensePlanning.delete({
       where: { id: params.id }
     })
+
+    // Update category real cost after deletion
+    if (categoryId) {
+      const allExpenses = await prisma.expensePlanning.findMany({
+        where: { categoryId: categoryId }
+      })
+      const totalRealCost = allExpenses.reduce((sum, exp) => sum + exp.amount, 0)
+      
+      await prisma.planningCategory.update({
+        where: { id: categoryId },
+        data: { realCost: totalRealCost }
+      })
+    }
 
     return NextResponse.json({ message: 'Expense deleted successfully' })
   } catch (error) {
