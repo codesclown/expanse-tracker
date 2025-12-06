@@ -345,11 +345,14 @@ export default function Shopping() {
       })
 
       if (response.ok) {
+        const result = await response.json()
         addNotification({
           type: 'success',
-          title: 'Item Marked as Bought',
-          message: `${item.name} marked as bought for ₹${price}`,
-          duration: 4000
+          title: result.expenseCreated ? 'Item Bought & Expense Added' : 'Item Marked as Bought',
+          message: result.expenseCreated 
+            ? `${item.name} marked as bought for ₹${price} and added to expenses` 
+            : `${item.name} marked as bought for ₹${price}`,
+          duration: 5000
         })
         loadData()
       }

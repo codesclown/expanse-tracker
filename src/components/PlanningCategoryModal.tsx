@@ -33,6 +33,7 @@ const categoryTypes = [
 
 export default function PlanningCategoryModal({ isOpen, onClose, onSave, editingCategory }: PlanningCategoryModalProps) {
   const { addNotification } = useNotification()
+  const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     icon: '📝',
@@ -72,8 +73,10 @@ export default function PlanningCategoryModal({ isOpen, onClose, onSave, editing
 
   if (!isOpen) return null
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (isLoading) return
     
     if (!formData.name) {
       addNotification({
@@ -107,16 +110,22 @@ export default function PlanningCategoryModal({ isOpen, onClose, onSave, editing
       }
     }
 
-    const data: any = {
-      ...formData,
-      expectedCost: formData.expectedCost ? parseFloat(formData.expectedCost) : 0,
-      startDate: formData.startDate || null,
-      endDate: formData.endDate || null,
-      expiryDate: formData.expiryDate || null
-    }
+    setIsLoading(true)
+    
+    try {
+      const data: any = {
+        ...formData,
+        expectedCost: formData.expectedCost ? parseFloat(formData.expectedCost) : 0,
+        startDate: formData.startDate || null,
+        endDate: formData.endDate || null,
+        expiryDate: formData.expiryDate || null
+      }
 
-    onSave(data)
-    handleClose()
+      await onSave(data)
+      handleClose()
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleClose = () => {
@@ -358,15 +367,25 @@ export default function PlanningCategoryModal({ isOpen, onClose, onSave, editing
             <button
               type="button"
               onClick={handleClose}
-              className="flex-1 px-5 py-3 sm:py-3.5 border-2 border-border/50 text-foreground rounded-xl text-sm sm:text-base font-semibold hover:bg-secondary/50 hover:border-border transition-all duration-200 active:scale-95"
+              disabled={isLoading}
+              className="flex-1 px-5 py-3 sm:py-3.5 border-2 border-border/50 text-foreground rounded-xl text-sm sm:text-base font-semibold hover:bg-secondary/50 hover:border-border transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 px-5 py-3 sm:py-3.5 bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-600 hover:from-indigo-600 hover:via-purple-700 hover:to-pink-700 text-white rounded-xl text-sm sm:text-base font-bold shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95 flex items-center justify-center gap-2"
+              disabled={isLoading}
+              className="flex-1 px-5 py-3 sm:py-3.5 bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-600 hover:from-indigo-600 hover:via-purple-700 hover:to-pink-700 text-white rounded-xl text-sm sm:text-base font-bold shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {editingCategory ? (
+              {isLoading ? (
+                <>
+                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span>{editingCategory ? 'Updating...' : 'Creating...'}</span>
+                </>
+              ) : editingCategory ? (
                 <>
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />

@@ -402,7 +402,7 @@ export default function Dashboard() {
           <section className="glass rounded-2xl md:rounded-3xl border border-border shadow-premium p-4 md:p-6 lg:p-8 animate-slide-in">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 md:gap-6">
               <div className="space-y-3 md:space-y-4">
-                <div className="inline-flex items-center gap-2 md:gap-3 px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-gradient-to-r from-emerald-50 to-cyan-50 dark:from-emerald-900/30 dark:to-cyan-900/30 border border-emerald-200/50 dark:border-emerald-800/50">
+                <div className="inline-flex items-center gap-2 md:gap-3 px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-gradient-to-r from-emerald-50 to-cyan-50 dark:from-transparent dark:to-transparent dark:bg-emerald-500/20 border border-emerald-200/50 dark:border-emerald-500/50">
                   <div className="relative">
                     <span className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-emerald-500 animate-pulse block" />
                     <span className="absolute inset-0 w-2 h-2 md:w-3 md:h-3 rounded-full bg-emerald-400 animate-ping" />
@@ -476,7 +476,7 @@ export default function Dashboard() {
                   </svg>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30 text-emerald-700 dark:text-emerald-300 font-semibold border border-emerald-200/50 dark:border-emerald-800/50">
+                  <span className="text-xs px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-transparent dark:to-transparent dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-semibold border border-emerald-200/50 dark:border-emerald-500/50">
                     Income
                   </span>
                   <InfoTooltip 
@@ -516,7 +516,7 @@ export default function Dashboard() {
                   </svg>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs px-3 py-1.5 rounded-full bg-gradient-to-r from-rose-50 to-pink-50 dark:from-rose-900/30 dark:to-pink-900/30 text-rose-700 dark:text-rose-300 font-semibold border border-rose-200/50 dark:border-rose-800/50">
+                  <span className="text-xs px-3 py-1.5 rounded-full bg-gradient-to-r from-rose-50 to-pink-50 dark:from-transparent dark:to-transparent dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 font-semibold border border-rose-200/50 dark:border-rose-500/50">
                     Expenses
                   </span>
                   <InfoTooltip 

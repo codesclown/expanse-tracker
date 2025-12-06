@@ -152,7 +152,7 @@ async function generateCategoryPDF(category: any, expenses: any[], userEmail?: s
     expense.isCompleted ? 'Yes' : 'No'
   ])
   
-  autoTable(doc, {
+  autoTable(doc as any, {
     startY: 150,
     head: [['#', 'Date', 'Description', 'Notes', 'Amount', 'Status']],
     body: tableData,

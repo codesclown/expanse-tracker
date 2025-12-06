@@ -360,7 +360,7 @@ export default function Analytics() {
                   </svg>
                 </div>
                 <div className="flex items-center gap-1">
-                  <span className="text-xs px-1.5 py-0.5 bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 rounded font-medium">Health</span>
+                  <span className="text-xs px-1.5 py-0.5 bg-violet-100 dark:bg-violet-500/20 text-violet-700 dark:text-violet-300 rounded font-medium border border-violet-200/50 dark:border-violet-500/50">Health</span>
                   <InfoTooltip 
                     content="Comprehensive financial wellness score based on savings rate, income stability, expense tracking, and spending patterns"
                     iconSize="w-2.5 h-2.5"
@@ -380,7 +380,7 @@ export default function Analytics() {
                   <span className="text-white font-bold text-sm md:text-base">₹</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <span className="text-xs px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded font-medium">Income</span>
+                  <span className="text-xs px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 rounded font-medium border border-emerald-200/50 dark:border-emerald-500/50">Income</span>
                   <InfoTooltip 
                     content="Total money earned from all sources including salary, freelance, investments, and other income streams"
                     iconSize="w-2.5 h-2.5"
@@ -402,7 +402,7 @@ export default function Analytics() {
                   </svg>
                 </div>
                 <div className="flex items-center gap-1">
-                  <span className="text-xs px-1.5 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded font-medium">Expense</span>
+                  <span className="text-xs px-1.5 py-0.5 bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-300 rounded font-medium border border-red-200/50 dark:border-red-500/50">Expense</span>
                   <InfoTooltip 
                     content="Total money spent across all categories including food, transport, shopping, bills, and other expenses"
                     iconSize="w-2.5 h-2.5"
@@ -424,7 +424,7 @@ export default function Analytics() {
                   </svg>
                 </div>
                 <div className="flex items-center gap-1">
-                  <span className="text-xs px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded font-medium">Savings</span>
+                  <span className="text-xs px-1.5 py-0.5 bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 rounded font-medium border border-blue-200/50 dark:border-blue-500/50">Savings</span>
                   <InfoTooltip 
                     content="Total income minus total expenses (positive = savings, negative = deficit)"
                     iconSize="w-2.5 h-2.5"

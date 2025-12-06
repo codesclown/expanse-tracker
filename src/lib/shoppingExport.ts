@@ -142,7 +142,7 @@ export async function exportShoppingCategoryToPDF(category: any, items: any[], u
     item.isBought ? 'Yes' : 'No'
   ])
   
-    autoTable(doc, {
+    autoTable(doc as any, {
       startY: 142,
       head: [['#', 'Item Name', 'Qty', 'Notes', 'Expected', 'Actual', 'Bought']],
       body: tableData,
@@ -396,7 +396,7 @@ async function generateShoppingPDF(category: any, items: any[], userEmail?: stri
     item.isBought ? 'Yes' : 'No'
   ])
   
-  autoTable(doc, {
+  autoTable(doc as any, {
     startY: 142,
     head: [['#', 'Item Name', 'Qty', 'Notes', 'Expected', 'Actual', 'Bought']],
     body: tableData,

@@ -36,6 +36,34 @@ export async function PATCH(
       data: body
     })
 
+    // If item is marked as completed, create an expense automatically
+    if (body.completed && !item.completed && updatedItem.estimatedPrice) {
+      try {
+        const expenseData = {
+          userId: decoded.userId,
+          date: new Date(),
+          title: `${updatedItem.name} (Shopping List)`,
+          amount: Math.round(updatedItem.estimatedPrice * updatedItem.quantity),
+          category: updatedItem.category || 'Shopping',
+          bank: 'Cash',
+          paymentMode: 'Cash',
+          tags: ['Shopping List', updatedItem.category || 'Shopping'],
+          notes: `Bought ${updatedItem.quantity} ${updatedItem.unit}${updatedItem.notes ? ` - ${updatedItem.notes}` : ''}`
+        }
+
+        console.log('Creating expense for shopping list item:', expenseData)
+
+        const expense = await prisma.expense.create({
+          data: expenseData
+        })
+
+        console.log('Expense created successfully:', expense.id)
+      } catch (expenseError) {
+        console.error('Error creating expense for shopping list item:', expenseError)
+        // Don't fail the whole request if expense creation fails
+      }
+    }
+
     return NextResponse.json(updatedItem)
   } catch (error) {
     console.error('Error updating shopping item:', error)
