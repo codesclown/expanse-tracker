@@ -266,88 +266,57 @@ export default function Chat() {
           <div>
             <h1 className="text-base font-bold text-foreground">AI Assistant</h1>
             <p className="text-xs text-muted-foreground">
-              Smart & Helpful • Financial Insights
+              Smart & Helpful
             </p>
           </div>
-          <button
-            onClick={toggleTheme}
-            disabled={isTransitioning}
-            aria-label="Toggle theme"
-            className={`w-9 h-9 rounded-xl glass border border-border transition-all hover:shadow-premium ${
-              isTransitioning ? 'animate-theme-toggle' : ''
-            } disabled:opacity-50 flex items-center justify-center`}
-          >
-            <div className="relative w-4 h-4">
-              <svg
-                className={`absolute inset-0 w-4 h-4 text-foreground transition-all duration-300 ${
-                  theme === 'light' ? 'opacity-100 rotate-0' : 'opacity-0 rotate-180'
-                }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-              </svg>
-              <svg
-                className={`absolute inset-0 w-4 h-4 text-foreground transition-all duration-300 ${
-                  theme === 'dark' ? 'opacity-100 rotate-0' : 'opacity-0 -rotate-180'
-                }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-            </div>
-          </button>
         </div>
       </div>
 
       {/* Chat Container */}
-      <div className="flex-1 max-w-4xl mx-auto px-3 md:px-6 lg:px-8 mt-16 md:-mt-8 relative z-10 w-full min-h-0 pb-20 md:pb-8">
-        <div className="glass rounded-3xl border border-border shadow-premium h-full flex flex-col overflow-hidden">
+      <div className="flex-1 max-w-4xl mx-auto px-3 md:px-6 lg:px-8 mt-16 md:-mt-8 relative z-10 w-full min-h-0 pb-24 md:pb-8">
+        <div className="glass-premium rounded-xl md:rounded-3xl border border-border/20 shadow-premium h-full flex flex-col overflow-hidden">
           {/* Chat Messages */}
-          <div className="flex-1 p-4 md:p-6 overflow-y-auto min-h-0">
+          <div className="flex-1 p-3 md:p-6 overflow-y-auto min-h-0">
               {messages.length === 0 ? (
-                <div className="text-center py-8 animate-slide-in">
-                  <div className="w-20 h-20 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600 rounded-3xl flex items-center justify-center mx-auto mb-6 animate-pulse shadow-premium">
-                    <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="text-center py-6 md:py-8 animate-slide-in">
+                  <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600 rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-4 md:mb-6 animate-pulse shadow-premium">
+                    <svg className="w-8 h-8 md:w-10 md:h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                     </svg>
                   </div>
-                  <p className="metric-value-large text-foreground mb-3">Hi! I'm your AI assistant</p>
-                  <p className="text-muted-foreground mb-8 max-w-md mx-auto">Ask me anything about your spending and finances. I'm here to help you make smarter financial decisions.</p>
+                  <p className="text-lg md:text-2xl font-bold text-foreground mb-2 md:mb-3">Hi! I'm your AI assistant</p>
+                  <p className="text-xs md:text-sm text-muted-foreground mb-6 md:mb-8 max-w-md mx-auto px-4">Ask me anything about your spending and finances. I'm here to help you make smarter financial decisions.</p>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-w-4xl mx-auto">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3 max-w-4xl mx-auto">
                     {quickQuestions.map((q, i) => (
                       <button
                         key={i}
                         onClick={() => { setInput(q); setTimeout(handleSend, 100) }}
-                        className="glass rounded-2xl p-4 text-left hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1 group border border-border"
+                        className="glass-premium rounded-xl md:rounded-2xl p-3 md:p-4 text-left hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-0.5 group border border-border/20"
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform">
-                            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="flex items-center gap-2 md:gap-3">
+                          <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform">
+                            <svg className="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                             </svg>
                           </div>
-                          <span className="text-sm font-semibold text-foreground group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">{q}</span>
+                          <span className="text-xs md:text-sm font-semibold text-foreground group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">{q}</span>
                         </div>
                       </button>
                     ))}
                   </div>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3 md:space-y-4">
                   {messages.map((msg) => (
                     <div
                       key={msg.id}
                       className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-slide-in`}
                     >
-                      <div className={`max-w-[85%] md:max-w-[70%] px-5 py-4 rounded-2xl shadow-premium ${
+                      <div className={`max-w-[85%] md:max-w-[70%] px-3 py-2.5 md:px-5 md:py-4 rounded-xl md:rounded-2xl shadow-premium ${
                         msg.role === 'user' 
                           ? 'bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white' 
-                          : 'glass text-foreground border border-border'
+                          : 'glass-premium text-foreground border border-border/20'
                       }`}>
                         {msg.role === 'assistant' && msg.source && (
                           <div className="flex items-center gap-2 mb-2 text-xs text-muted-foreground">
@@ -364,26 +333,26 @@ export default function Chat() {
                             )}
                           </div>
                         )}
-                        <p className="text-sm whitespace-pre-line">{msg.content}</p>
+                        <p className="text-xs md:text-sm whitespace-pre-line leading-relaxed">{msg.content}</p>
                       </div>
                     </div>
                   ))}
                   {isTyping && (
-                    <div className="flex gap-3 justify-start animate-slide-in">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600 flex items-center justify-center shadow-lg flex-shrink-0">
-                        <svg className="w-4 h-4 text-white animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="flex gap-2 md:gap-3 justify-start animate-slide-in">
+                      <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600 flex items-center justify-center shadow-lg flex-shrink-0">
+                        <svg className="w-3.5 h-3.5 md:w-4 md:h-4 text-white animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                         </svg>
                       </div>
-                      <div className="bg-gradient-to-r from-muted/20 via-muted/30 to-muted/20 rounded-2xl p-4 max-w-[80%] animate-shimmer bg-size-200">
+                      <div className="bg-gradient-to-r from-muted/20 via-muted/30 to-muted/20 rounded-xl md:rounded-2xl p-3 md:p-4 max-w-[80%] animate-shimmer bg-size-200">
                         <div className="flex items-center gap-1 mb-2">
-                          <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                          <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                          <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-primary/60 rounded-full animate-bounce"></div>
+                          <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                          <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                         </div>
                         <div className="space-y-1">
-                          <div className="w-full h-2 bg-muted/40 rounded animate-pulse"></div>
-                          <div className="w-3/4 h-2 bg-muted/40 rounded animate-pulse" style={{ animationDelay: '0.1s' }}></div>
+                          <div className="w-full h-1.5 md:h-2 bg-muted/40 rounded animate-pulse"></div>
+                          <div className="w-3/4 h-1.5 md:h-2 bg-muted/40 rounded animate-pulse" style={{ animationDelay: '0.1s' }}></div>
                         </div>
                       </div>
                     </div>
@@ -393,25 +362,25 @@ export default function Chat() {
             </div>
 
           {/* Input Area */}
-          <div className="flex-shrink-0 p-4 md:p-6 border-t border-border glass backdrop-blur-sm">
-            <div className="flex space-x-3 md:space-x-4">
+          <div className="flex-shrink-0 p-3 md:p-6 border-t border-border/20 glass-premium backdrop-blur-sm">
+            <div className="flex space-x-2 md:space-x-3">
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-                placeholder="Ask me anything about your finances..."
-                className="flex-1 px-3 md:px-4 py-2 md:py-3 text-sm md:text-base bg-background/50 border border-border rounded-xl md:rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all duration-300 placeholder:text-muted-foreground"
+                placeholder="Ask about your finances..."
+                className="flex-1 px-3 md:px-4 py-2 md:py-3 text-[16px] md:text-base bg-background/50 border border-border rounded-xl md:rounded-2xl focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all duration-300 placeholder:text-muted-foreground"
               />
               <button
                 onClick={handleSend}
                 disabled={!input.trim() || isTyping}
-                className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-premium hover:shadow-premium-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center hover:scale-105 transition-all duration-300 rounded-xl md:rounded-2xl"
+                className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-premium hover:shadow-premium-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-300 rounded-xl md:rounded-2xl"
               >
                 {isTyping ? (
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 md:w-5 md:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                 ) : (
-                  <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                   </svg>
                 )}

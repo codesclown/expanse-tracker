@@ -32,29 +32,29 @@ export default function BottomNav() {
       ),
     },
     {
+      path: '/expense-planning',
+      label: 'Planning',
+      icon: (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      ),
+    },
+    {
+      path: '/shopping-list',
+      label: 'Shopping',
+      icon: (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+        </svg>
+      ),
+    },
+    {
       path: '/analytics',
       label: 'Analytics',
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-        </svg>
-      ),
-    },
-    {
-      path: '/subscriptions',
-      label: 'Subs',
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-        </svg>
-      ),
-    },
-    {
-      path: '/udhar',
-      label: 'Udhar',
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
       ),
     },
@@ -82,6 +82,24 @@ export default function BottomNav() {
     },
     ...bottomNavItems,
     {
+      path: '/subscriptions',
+      label: 'Subscriptions',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+      ),
+    },
+    {
+      path: '/udhar',
+      label: 'Udhar',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+      ),
+    },
+    {
       path: '/settings',
       label: 'Settings',
       icon: (
@@ -97,14 +115,14 @@ export default function BottomNav() {
     <>
       {/* Mobile Top Navigation - Minimal Premium */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 pt-safe">
-        <div className="flex items-center justify-between px-3 py-2 bg-background/98 backdrop-blur-xl border-b border-border/5">
+        <div className="flex items-center justify-between px-4 py-3 bg-background/98 backdrop-blur-xl border-b border-border/10 shadow-lg">
           {/* Home Button */}
           <Link
             href="/dashboard"
-            className={`w-8 h-8 md:w-9 md:h-9 rounded-lg md:rounded-xl flex items-center justify-center transition-all duration-200 ${
+            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 ${
               isActive('/dashboard')
-                ? 'bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-sm'
-                : 'bg-secondary/40 text-muted-foreground hover:bg-secondary/60 hover:text-foreground'
+                ? 'bg-gradient-to-br from-violet-500 to-purple-600 text-white mobile-premium-button scale-105'
+                : 'bg-secondary/40 text-muted-foreground hover:bg-secondary/60 hover:text-foreground hover:scale-105'
             }`}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
@@ -125,10 +143,10 @@ export default function BottomNav() {
           {/* Settings Button */}
           <Link
             href="/settings"
-            className={`w-8 h-8 md:w-9 md:h-9 rounded-lg md:rounded-xl flex items-center justify-center transition-all duration-200 ${
+            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 ${
               isActive('/settings')
-                ? 'bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-sm'
-                : 'bg-secondary/40 text-muted-foreground hover:bg-secondary/60 hover:text-foreground'
+                ? 'bg-gradient-to-br from-violet-500 to-purple-600 text-white mobile-premium-button scale-105'
+                : 'bg-secondary/40 text-muted-foreground hover:bg-secondary/60 hover:text-foreground hover:scale-105'
             }`}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
@@ -141,8 +159,8 @@ export default function BottomNav() {
 
       {/* Mobile Premium Bottom Navigation - Minimal */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 pb-safe">
-        <div className="bg-background/98 backdrop-blur-xl border-t border-border/5">
-          <div className="flex items-center justify-around px-2 py-1.5">
+        <div className="bg-background/98 backdrop-blur-xl border-t border-border/10 shadow-2xl">
+          <div className="flex items-center justify-around px-3 py-2">
             {bottomNavItems.map((item) => (
               <Link
                 key={item.path}
@@ -153,30 +171,32 @@ export default function BottomNav() {
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                <div className={`w-6 h-6 md:w-7 md:h-7 rounded-lg flex items-center justify-center transition-all duration-200 ${
+                <div className={`w-7 h-7 rounded-xl flex items-center justify-center transition-all duration-200 ${
                   isActive(item.path) 
-                    ? 'bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-sm' 
-                    : 'group-hover:bg-secondary/30'
+                    ? 'bg-gradient-to-br from-violet-500 to-purple-600 text-white mobile-premium-button scale-110' 
+                    : 'group-hover:bg-secondary/30 group-hover:scale-105'
                 }`}>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                     {item.path === '/expenses' && (
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     )}
+                    {item.path === '/expense-planning' && (
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    )}
+                    {item.path === '/shopping-list' && (
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    )}
                     {item.path === '/analytics' && (
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    )}
-                    {item.path === '/subscriptions' && (
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    )}
-                    {item.path === '/udhar' && (
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                     )}
                     {item.path === '/chat' && (
                       <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                     )}
                   </svg>
                 </div>
-                <span className="text-xs mt-0.5 font-medium">{item.label}</span>
+                <span className={`text-xs mt-1 font-semibold transition-all duration-200 ${
+                  isActive(item.path) ? 'text-violet-600 dark:text-violet-400' : ''
+                }`}>{item.label}</span>
               </Link>
             ))}
           </div>

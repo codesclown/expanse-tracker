@@ -19,6 +19,31 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         <meta name="color-scheme" content="light dark" />
+        
+        {/* PWA Meta Tags */}
+        <meta name="application-name" content="Expense Tracker" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Expense Tracker" />
+        <meta name="description" content="Track expenses, plan budgets, manage shopping lists and control your finances with smart insights" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="msapplication-config" content="/browserconfig.xml" />
+        <meta name="msapplication-TileColor" content="#3b82f6" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="theme-color" content="#3b82f6" />
+
+        {/* Apple Touch Icons */}
+        <link rel="apple-touch-icon" href="/icon-152.svg" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/icon-152.svg" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/icon-192.svg" />
+
+        {/* Favicon */}
+        <link rel="icon" type="image/svg+xml" sizes="32x32" href="/icon-32.svg" />
+        <link rel="icon" type="image/svg+xml" sizes="16x16" href="/icon-16.svg" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="mask-icon" href="/icon-192.svg" color="#3b82f6" />
+        <link rel="shortcut icon" href="/favicon.ico" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -71,6 +96,19 @@ export default function RootLayout({
                   // Fallback to light theme if there's an error
                   document.documentElement.classList.remove('dark');
                   document.documentElement.style.colorScheme = 'light';
+                }
+
+                // Register service worker for PWA
+                if ('serviceWorker' in navigator) {
+                  window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/sw.js')
+                      .then(function(registration) {
+                        console.log('SW registered: ', registration);
+                      })
+                      .catch(function(registrationError) {
+                        console.log('SW registration failed: ', registrationError);
+                      });
+                  });
                 }
               })();
             `,

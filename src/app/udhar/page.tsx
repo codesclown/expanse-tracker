@@ -174,7 +174,7 @@ export default function Udhar() {
         <div className="md:hidden fixed top-16 left-0 right-0 z-40 px-3 py-2 bg-background/98 backdrop-blur-xl border-b border-border/5">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-lg font-bold text-foreground">Udhar</h1>
+              <h1 className="text-base font-bold text-foreground">Udhar</h1>
               <p className="text-xs text-muted-foreground">
                 {udhars.length} loans • Net: ₹{Math.abs(netBalance).toLocaleString()}
               </p>
@@ -355,8 +355,11 @@ export default function Udhar() {
                 </p>
                 <button
                   onClick={() => setShowModal(true)}
-                  className="btn-premium bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-lg"
+                  className="bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 active:scale-95 px-4 py-2 md:px-6 md:py-2.5 text-xs md:text-sm font-semibold transition-all duration-200 rounded-xl inline-flex items-center justify-center gap-1.5"
                 >
+                  <svg className="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                  </svg>
                   Add Your First Loan
                 </button>
               </div>

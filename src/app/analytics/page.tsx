@@ -442,10 +442,10 @@ export default function Analytics() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
             {/* Monthly Trend Chart */}
             <div className="glass-premium rounded-xl md:rounded-2xl p-3 md:p-6 border border-border/20 shadow-premium">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-4 md:mb-6">
                 <div>
-                  <h3 className="text-lg font-bold text-foreground">Monthly Trend</h3>
-                  <p className="text-sm text-muted-foreground">Income vs Expenses over time</p>
+                  <h3 className="text-base md:text-lg font-bold text-foreground">Monthly Trend</h3>
+                  <p className="text-xs md:text-sm text-muted-foreground">Income vs Expenses over time</p>
                 </div>
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-sm">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -475,10 +475,10 @@ export default function Analytics() {
 
             {/* Category Breakdown Pie Chart */}
             <div className="glass-premium rounded-2xl p-6 border border-border/20 shadow-premium">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-4 md:mb-6">
                 <div>
-                  <h3 className="text-lg font-bold text-foreground">Expense Categories</h3>
-                  <p className="text-sm text-muted-foreground">Spending distribution by category</p>
+                  <h3 className="text-base md:text-lg font-bold text-foreground">Expense Categories</h3>
+                  <p className="text-xs md:text-sm text-muted-foreground">Spending distribution by category</p>
                 </div>
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center shadow-sm">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -518,10 +518,10 @@ export default function Analytics() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
             {/* Income vs Expense Comparison */}
             <div className="glass-premium rounded-2xl p-6 border border-border/20 shadow-premium">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-4 md:mb-6">
                 <div>
-                  <h3 className="text-lg font-bold text-foreground">Income vs Expenses</h3>
-                  <p className="text-sm text-muted-foreground">Last 6 months comparison</p>
+                  <h3 className="text-base md:text-lg font-bold text-foreground">Income vs Expenses</h3>
+                  <p className="text-xs md:text-sm text-muted-foreground">Last 6 months comparison</p>
                 </div>
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-sm">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -550,10 +550,10 @@ export default function Analytics() {
 
             {/* Payment Methods Distribution */}
             <div className="glass-premium rounded-2xl p-6 border border-border/20 shadow-premium">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-4 md:mb-6">
                 <div>
-                  <h3 className="text-lg font-bold text-foreground">Payment Methods</h3>
-                  <p className="text-sm text-muted-foreground">How you spend your money</p>
+                  <h3 className="text-base md:text-lg font-bold text-foreground">Payment Methods</h3>
+                  <p className="text-xs md:text-sm text-muted-foreground">How you spend your money</p>
                 </div>
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-sm">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -585,10 +585,10 @@ export default function Analytics() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
             {/* Daily Spending Pattern */}
             <div className="glass-premium rounded-2xl p-6 border border-border/20 shadow-premium">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-4 md:mb-6">
                 <div>
-                  <h3 className="text-lg font-bold text-foreground">Daily Spending Pattern</h3>
-                  <p className="text-sm text-muted-foreground">Average spending by day of week</p>
+                  <h3 className="text-base md:text-lg font-bold text-foreground">Daily Spending Pattern</h3>
+                  <p className="text-xs md:text-sm text-muted-foreground">Average spending by day of week</p>
                 </div>
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center shadow-sm">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -615,10 +615,10 @@ export default function Analytics() {
 
             {/* Savings Rate Trend */}
             <div className="glass-premium rounded-2xl p-6 border border-border/20 shadow-premium">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-4 md:mb-6">
                 <div>
-                  <h3 className="text-lg font-bold text-foreground">Savings Rate Trend</h3>
-                  <p className="text-sm text-muted-foreground">Monthly savings percentage</p>
+                  <h3 className="text-base md:text-lg font-bold text-foreground">Savings Rate Trend</h3>
+                  <p className="text-xs md:text-sm text-muted-foreground">Monthly savings percentage</p>
                 </div>
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-sm">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -646,10 +646,10 @@ export default function Analytics() {
 
           {/* Budget vs Actual Comparison */}
           <div className="glass-premium rounded-2xl p-6 border border-border/20 shadow-premium">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-4 md:mb-6">
               <div>
-                <h3 className="text-lg font-bold text-foreground">Budget vs Actual Spending</h3>
-                <p className="text-sm text-muted-foreground">How well you're sticking to your budget</p>
+                <h3 className="text-base md:text-lg font-bold text-foreground">Budget vs Actual Spending</h3>
+                <p className="text-xs md:text-sm text-muted-foreground">How well you're sticking to your budget</p>
               </div>
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-sm">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -684,9 +684,9 @@ export default function Analytics() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
               </div>
-              <h3 className="text-lg font-bold text-foreground mb-2">Growth Rate</h3>
-              <p className="text-3xl font-bold text-emerald-600 mb-2">{analyticsData.growthRate}%</p>
-              <p className="text-sm text-muted-foreground">Month over month change</p>
+              <h3 className="text-base md:text-lg font-bold text-foreground mb-2">Growth Rate</h3>
+              <p className="text-2xl md:text-3xl font-bold text-emerald-600 mb-2">{analyticsData.growthRate}%</p>
+              <p className="text-xs md:text-sm text-muted-foreground">Month over month change</p>
             </div>
 
             <div className="glass-premium rounded-2xl p-6 border border-border/20 shadow-premium text-center">
@@ -695,9 +695,9 @@ export default function Analytics() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
               </div>
-              <h3 className="text-lg font-bold text-foreground mb-2">Transactions</h3>
-              <p className="text-3xl font-bold text-blue-600 mb-2">{expenses.length + incomes.length}</p>
-              <p className="text-sm text-muted-foreground">Total recorded transactions</p>
+              <h3 className="text-base md:text-lg font-bold text-foreground mb-2">Transactions</h3>
+              <p className="text-2xl md:text-3xl font-bold text-blue-600 mb-2">{expenses.length + incomes.length}</p>
+              <p className="text-xs md:text-sm text-muted-foreground">Total recorded transactions</p>
             </div>
 
             <div className="glass-premium rounded-2xl p-6 border border-border/20 shadow-premium text-center">
@@ -706,9 +706,9 @@ export default function Analytics() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-bold text-foreground mb-2">Health Score</h3>
-              <p className="text-3xl font-bold text-violet-600 mb-2">{analyticsData.healthScore}%</p>
-              <p className="text-sm text-muted-foreground">Financial wellness indicator</p>
+              <h3 className="text-base md:text-lg font-bold text-foreground mb-2">Health Score</h3>
+              <p className="text-2xl md:text-3xl font-bold text-violet-600 mb-2">{analyticsData.healthScore}%</p>
+              <p className="text-xs md:text-sm text-muted-foreground">Financial wellness indicator</p>
             </div>
           </div>
         </main>

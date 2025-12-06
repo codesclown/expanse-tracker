@@ -144,6 +144,20 @@ Visit `http://localhost:3000` - **Everything is now connected to real database!*
 - **Subscription detection** from expense patterns
 - **Real-time dashboard** with live calculations
 
+### **Expense Planning & Shopping Lists** 🆕
+- **Plan upcoming expenses** by day/month/year (trips, festivals, monthly costs)
+- **Smart shopping lists** with daily/monthly/yearly organization
+- **Mobile-optimized UI** with premium app-like experience
+- **Real-time cost estimation** and budget tracking
+- **Category-based organization** with priority levels
+
+### **Progressive Web App (PWA)** 🆕
+- **Installable app** with manifest.json and service worker
+- **Offline functionality** with smart caching
+- **Mobile-first design** with premium button styling
+- **App shortcuts** for quick actions
+- **Native app experience** on mobile devices
+
 ### **AI Chatbot**
 - Natural language queries about **real spending data**
 - "How much did I spend this month?" - **Real database query**

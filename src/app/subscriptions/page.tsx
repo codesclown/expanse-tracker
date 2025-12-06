@@ -147,7 +147,7 @@ export default function Subscriptions() {
         <div className="md:hidden fixed top-16 left-0 right-0 z-40 px-3 py-2 bg-background/98 backdrop-blur-xl border-b border-border/5">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-lg font-bold text-foreground">Subscriptions</h1>
+              <h1 className="text-base font-bold text-foreground">Subscriptions</h1>
               <p className="text-xs text-muted-foreground">
                 {subscriptions.length} active • ₹{stats.total.toLocaleString()}/month
               </p>
@@ -287,7 +287,7 @@ export default function Subscriptions() {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-bold text-foreground">Smart Detection</h3>
+                    <h3 className="text-base md:text-lg font-bold text-foreground">Smart Detection</h3>
                     <TipTooltip 
                       content="AI analyzes your expense patterns to identify recurring subscriptions. Looks for similar amounts, regular intervals, and matching merchant names."
                       iconSize="w-3.5 h-3.5"
@@ -328,8 +328,8 @@ export default function Subscriptions() {
                 <div className="p-6 border-b border-border/20 bg-gradient-to-r from-violet-50/50 to-purple-50/50 dark:from-violet-900/10 dark:to-purple-900/10">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="text-lg font-bold text-foreground">Active Subscriptions</h2>
-                      <p className="text-sm text-muted-foreground">Manage your recurring payments</p>
+                      <h2 className="text-base md:text-lg font-bold text-foreground">Active Subscriptions</h2>
+                      <p className="text-xs md:text-sm text-muted-foreground">Manage your recurring payments</p>
                     </div>
                     <div className="text-right">
                       <p className="text-sm text-muted-foreground">Total Monthly</p>

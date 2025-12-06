@@ -8,20 +8,22 @@ datasource db {
 }
 
 model User {
-  id            String          @id @default(cuid())
-  name          String
-  email         String          @unique
-  passwordHash  String
-  salary        Int             @default(0)
-  currency      String          @default("INR")
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  expenses      Expense[]
-  incomes       Income[]
-  udhar         Udhar[]
-  bankAccounts  BankAccount[]
-  smartScores   SmartScore[]
-  subscriptions Subscription[]
+  id              String            @id @default(cuid())
+  name            String
+  email           String            @unique
+  passwordHash    String
+  salary          Int               @default(0)
+  currency        String            @default("INR")
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  expenses        Expense[]
+  incomes         Income[]
+  udhar           Udhar[]
+  bankAccounts    BankAccount[]
+  smartScores     SmartScore[]
+  subscriptions   Subscription[]
+  expensePlanning ExpensePlanning[]
+  shoppingList    ShoppingList[]
 }
 
 model Expense {
@@ -135,4 +137,42 @@ model BankTransaction {
 
   @@index([bankAccountId, date])
   @@index([userId, date])
+}
+
+model ExpensePlanning {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title        String
+  amount       Float
+  category     String
+  date         DateTime
+  description  String?
+  actualAmount Float?
+  isCompleted  Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId, date])
+  @@index([userId, category])
+}
+
+model ShoppingList {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name           String
+  quantity       Int
+  unit           String   @default("pcs")
+  category       String
+  priority       String   @default("medium")
+  completed      Boolean  @default(false)
+  estimatedPrice Float?
+  notes          String?
+  period         String   @default("daily")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId, period])
+  @@index([userId, completed])
 }

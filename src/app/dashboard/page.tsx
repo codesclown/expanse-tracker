@@ -767,6 +767,96 @@ export default function Dashboard() {
                 </div>
               </div>
             </a>
+
+            {/* Expense Planning Card */}
+            <a
+              href="/expense-planning"
+              className="group relative w-full rounded-lg md:rounded-xl lg:rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 text-white p-2 md:p-3 lg:p-4 shadow-2xl hover:shadow-blue-500/25 hover:-translate-y-1 md:hover:-translate-y-2 transition-all duration-500 overflow-hidden border border-white/10 block min-h-[80px] md:min-h-[100px] lg:min-h-[120px]"
+            >
+              {/* Animated Background Pattern */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-0 right-0 w-16 h-16 sm:w-24 sm:h-24 bg-white rounded-full translate-x-8 -translate-y-8 sm:translate-x-12 sm:-translate-y-12 group-hover:scale-125 transition-transform duration-700"></div>
+                <div className="absolute bottom-0 left-0 w-12 h-12 sm:w-18 sm:h-18 bg-white rounded-full -translate-x-6 translate-y-6 sm:-translate-x-9 sm:translate-y-9 group-hover:scale-150 transition-transform duration-700 delay-100"></div>
+              </div>
+              
+              {/* Hover Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              
+              {/* Content */}
+              <div className="relative z-10 flex flex-col h-full">
+                <div className="flex items-center justify-between mb-2 md:mb-3">
+                  <div className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 rounded-lg md:rounded-xl bg-white/15 backdrop-blur-md flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 border border-white/20">
+                    <svg className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-white/10 flex items-center justify-center group-hover:translate-x-1 transition-transform duration-300">
+                    <svg className="w-2.5 h-2.5 md:w-3 md:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </div>
+                </div>
+                
+                <div className="flex-1">
+                  <h3 className="text-sm md:text-base lg:text-lg font-bold mb-1 group-hover:translate-x-1 transition-transform duration-300">
+                    Plan Expenses
+                  </h3>
+                  <p className="text-xs md:text-sm text-white/80 leading-relaxed group-hover:translate-x-1 transition-transform duration-300 delay-75">
+                    Budget upcoming costs
+                  </p>
+                </div>
+                
+                <div className="mt-1 md:mt-2 flex items-center text-xs text-white/60">
+                  <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-white/40 rounded-full mr-1.5"></div>
+                  Planning
+                </div>
+              </div>
+            </a>
+
+            {/* Shopping List Card */}
+            <a
+              href="/shopping-list"
+              className="group relative w-full rounded-lg md:rounded-xl lg:rounded-2xl bg-gradient-to-br from-green-500 via-emerald-600 to-teal-600 text-white p-2 md:p-3 lg:p-4 shadow-2xl hover:shadow-green-500/25 hover:-translate-y-1 md:hover:-translate-y-2 transition-all duration-500 overflow-hidden border border-white/10 block min-h-[80px] md:min-h-[100px] lg:min-h-[120px]"
+            >
+              {/* Animated Background Pattern */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-1/2 left-1/2 w-20 h-20 sm:w-28 sm:h-28 bg-white rounded-full -translate-x-10 -translate-y-10 sm:-translate-x-14 sm:-translate-y-14 group-hover:scale-125 transition-transform duration-700"></div>
+                <div className="absolute bottom-0 right-0 w-8 h-8 sm:w-12 sm:h-12 bg-white rounded-full translate-x-4 translate-y-4 sm:translate-x-6 sm:translate-y-6 group-hover:scale-150 transition-transform duration-700 delay-200"></div>
+              </div>
+              
+              {/* Hover Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              
+              {/* Content */}
+              <div className="relative z-10 flex flex-col h-full">
+                <div className="flex items-center justify-between mb-2 md:mb-3">
+                  <div className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 rounded-lg md:rounded-xl bg-white/15 backdrop-blur-md flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 border border-white/20">
+                    <svg className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17M17 13v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+                    </svg>
+                  </div>
+                  <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-white/10 flex items-center justify-center group-hover:translate-x-1 transition-transform duration-300">
+                    <svg className="w-2.5 h-2.5 md:w-3 md:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </div>
+                </div>
+                
+                <div className="flex-1">
+                  <h3 className="text-sm md:text-base lg:text-lg font-bold mb-1 group-hover:translate-x-1 transition-transform duration-300">
+                    Shopping List
+                  </h3>
+                  <p className="text-xs md:text-sm text-white/80 leading-relaxed group-hover:translate-x-1 transition-transform duration-300 delay-75">
+                    Organize purchases
+                  </p>
+                </div>
+                
+                <div className="mt-1 md:mt-2 flex items-center text-xs text-white/60">
+                  <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-white/40 rounded-full mr-1.5"></div>
+                  Shopping
+                </div>
+              </div>
+            </a>
           </section>
 
           {/* ANALYTICS + RECENT ACTIVITY */}

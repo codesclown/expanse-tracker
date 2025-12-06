@@ -454,50 +454,50 @@ export default function Expenses() {
                 />
               </div>
               
-              {/* Action Buttons */}
+              {/* Action Buttons - Mobile Optimized */}
               <div className="flex gap-2 md:gap-3">
                 <button
                   onClick={() => setShowAddExpenseModal(true)}
-                  className="group relative overflow-hidden bg-gradient-to-r from-red-600 via-rose-600 to-pink-600 hover:from-red-700 hover:via-rose-700 hover:to-pink-700 text-white shadow-2xl hover:shadow-red-500/25 hover:-translate-y-1 flex items-center justify-center gap-2 px-4 py-3 lg:px-6 lg:py-3.5 rounded-2xl font-semibold text-sm transition-all duration-300 border border-white/10"
+                  className="group relative overflow-hidden bg-gradient-to-r from-red-600 via-rose-600 to-pink-600 hover:from-red-700 hover:via-rose-700 hover:to-pink-700 text-white shadow-lg hover:shadow-red-500/25 sm:hover:-translate-y-1 flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-2.5 sm:px-4 sm:py-3 lg:px-6 lg:py-3.5 rounded-xl sm:rounded-2xl font-semibold text-xs sm:text-sm transition-all duration-300 border border-white/10 flex-1 sm:flex-none"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="relative flex items-center gap-2">
-                    <div className="w-4 h-4 rounded-lg bg-white/20 flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="relative flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
+                    <div className="w-8 h-8 sm:w-4 sm:h-4 rounded-lg bg-white/20 flex items-center justify-center group-hover:scale-110 transition-all duration-300">
+                      <svg className="w-4 h-4 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                       </svg>
                     </div>
-                    <span className="group-hover:translate-x-0.5 transition-transform duration-300">Add Expense</span>
+                    <span className="text-[11px] sm:text-xs lg:text-sm whitespace-nowrap">Add<br className="sm:hidden" />Expense</span>
                   </div>
                 </button>
 
                 <button
                   onClick={() => setShowAddIncomeModal(true)}
-                  className="group relative overflow-hidden bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 hover:from-emerald-700 hover:via-green-700 hover:to-teal-700 text-white shadow-2xl hover:shadow-emerald-500/25 hover:-translate-y-1 flex items-center justify-center gap-2 px-4 py-3 lg:px-6 lg:py-3.5 rounded-2xl font-semibold text-sm transition-all duration-300 border border-white/10"
+                  className="group relative overflow-hidden bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 hover:from-emerald-700 hover:via-green-700 hover:to-teal-700 text-white shadow-lg hover:shadow-emerald-500/25 sm:hover:-translate-y-1 flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-2.5 sm:px-4 sm:py-3 lg:px-6 lg:py-3.5 rounded-xl sm:rounded-2xl font-semibold text-xs sm:text-sm transition-all duration-300 border border-white/10 flex-1 sm:flex-none"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="relative flex items-center gap-2">
-                    <div className="w-4 h-4 rounded-lg bg-white/20 flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="relative flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
+                    <div className="w-8 h-8 sm:w-4 sm:h-4 rounded-lg bg-white/20 flex items-center justify-center group-hover:scale-110 transition-all duration-300">
+                      <svg className="w-4 h-4 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 10l7-7m0 0l7 7m-7-7v18" />
                       </svg>
                     </div>
-                    <span className="group-hover:translate-x-0.5 transition-transform duration-300">Add Income</span>
+                    <span className="text-[11px] sm:text-xs lg:text-sm whitespace-nowrap">Add<br className="sm:hidden" />Income</span>
                   </div>
                 </button>
                 
                 <button
                   onClick={handleOpenReports}
-                  className="group relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white shadow-2xl hover:shadow-blue-500/25 hover:-translate-y-1 flex items-center justify-center gap-2 px-4 py-3 lg:px-6 lg:py-3.5 rounded-2xl font-semibold text-sm transition-all duration-300 border border-white/10"
+                  className="group relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white shadow-lg hover:shadow-blue-500/25 sm:hover:-translate-y-1 flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-2.5 sm:px-4 sm:py-3 lg:px-6 lg:py-3.5 rounded-xl sm:rounded-2xl font-semibold text-xs sm:text-sm transition-all duration-300 border border-white/10 flex-1 sm:flex-none"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="relative flex items-center gap-2">
-                    <div className="w-4 h-4 rounded-lg bg-white/20 flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="relative flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
+                    <div className="w-8 h-8 sm:w-4 sm:h-4 rounded-lg bg-white/20 flex items-center justify-center group-hover:scale-110 transition-all duration-300">
+                      <svg className="w-4 h-4 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
                     </div>
-                    <span className="group-hover:translate-x-0.5 transition-transform duration-300">Reports</span>
+                    <span className="text-[11px] sm:text-xs lg:text-sm">Reports</span>
                   </div>
                 </button>
               </div>
@@ -686,9 +686,9 @@ export default function Expenses() {
                 <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mt-6">
                   <button
                     onClick={() => setShowAddExpenseModal(true)}
-                    className="btn-premium bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 px-6 py-2.5 text-sm font-semibold group transition-all duration-200"
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-premium hover:shadow-premium-lg hover:-translate-y-0.5 active:scale-95 px-4 py-2 md:px-6 md:py-2.5 text-xs md:text-sm font-semibold group transition-all duration-200 rounded-xl inline-flex items-center justify-center gap-1.5"
                   >
-                    <svg className="w-4 h-4 mr-1.5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3.5 h-3.5 md:w-4 md:h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                     </svg>
                     {resultCount < totalCount
@@ -699,7 +699,7 @@ export default function Expenses() {
                   {resultCount < totalCount && (
                     <button
                       onClick={clearAllFilters}
-                      className="px-4 py-2 text-muted-foreground hover:text-foreground bg-secondary/50 hover:bg-secondary rounded-xl text-sm font-medium transition-all duration-200 hover:scale-105"
+                      className="px-3 py-1.5 md:px-4 md:py-2 text-muted-foreground hover:text-foreground bg-secondary/50 hover:bg-secondary rounded-xl text-xs md:text-sm font-medium transition-all duration-200 active:scale-95"
                     >
                       Clear All Filters
                     </button>

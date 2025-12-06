@@ -289,3 +289,266 @@ export function FormSkeleton({ fields = 4 }: { fields?: number }) {
     </div>
   )
 }
+
+// Mobile Dashboard Skeleton
+export function MobileDashboardSkeleton() {
+  return (
+    <div className="min-h-screen bg-background pb-20">
+      {/* Header Skeleton */}
+      <div className="glass-premium border-b border-border/20 p-4 animate-pulse">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <Skeleton className="w-10 h-10 rounded-xl" variant="circular" />
+            <div>
+              <Skeleton className="w-24 h-4 mb-1" />
+              <Skeleton className="w-32 h-6" />
+            </div>
+          </div>
+          <Skeleton className="w-10 h-10 rounded-xl" variant="circular" />
+        </div>
+        <Skeleton className="w-full h-3" />
+      </div>
+
+      {/* Balance Card Skeleton */}
+      <div className="p-4">
+        <div className="glass-premium rounded-2xl p-5 border border-border/20 animate-pulse">
+          <Skeleton className="w-20 h-4 mb-3" />
+          <Skeleton className="w-40 h-8 mb-2" />
+          <div className="flex items-center gap-2">
+            <Skeleton className="w-16 h-4 rounded-full" />
+            <Skeleton className="w-4 h-4" variant="circular" />
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Actions Skeleton */}
+      <div className="px-4 pb-4">
+        <Skeleton className="w-32 h-5 mb-3" />
+        <div className="grid grid-cols-2 gap-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="glass-premium rounded-xl p-4 border border-border/20 animate-pulse">
+              <Skeleton className="w-10 h-10 rounded-xl mb-3" variant="circular" />
+              <Skeleton className="w-20 h-4 mb-1" />
+              <Skeleton className="w-16 h-3" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Recent Transactions Skeleton */}
+      <div className="px-4">
+        <div className="flex items-center justify-between mb-3">
+          <Skeleton className="w-40 h-5" />
+          <Skeleton className="w-16 h-4" />
+        </div>
+        <div className="space-y-2">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="glass-premium rounded-xl p-3 border border-border/20 animate-pulse">
+              <div className="flex items-center gap-3">
+                <Skeleton className="w-10 h-10 rounded-xl" variant="circular" />
+                <div className="flex-1">
+                  <Skeleton className="w-32 h-4 mb-1" />
+                  <Skeleton className="w-24 h-3" />
+                </div>
+                <Skeleton className="w-16 h-5" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Mobile Expense List Skeleton
+export function MobileExpenseListSkeleton() {
+  return (
+    <div className="min-h-screen bg-background pb-20">
+      {/* Header */}
+      <div className="glass-premium border-b border-border/20 p-4 animate-pulse">
+        <div className="flex items-center justify-between mb-4">
+          <Skeleton className="w-32 h-6" />
+          <Skeleton className="w-10 h-10 rounded-xl" variant="circular" />
+        </div>
+        <div className="flex gap-2">
+          <Skeleton className="flex-1 h-10 rounded-xl" />
+          <Skeleton className="w-10 h-10 rounded-xl" />
+        </div>
+      </div>
+
+      {/* Filter Chips */}
+      <div className="p-4 flex gap-2 overflow-x-auto">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Skeleton key={i} className="w-20 h-8 rounded-full flex-shrink-0" />
+        ))}
+      </div>
+
+      {/* Expense List */}
+      <div className="px-4 space-y-3">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="glass-premium rounded-xl p-4 border border-border/20 animate-pulse">
+            <div className="flex items-start gap-3">
+              <Skeleton className="w-12 h-12 rounded-xl" variant="circular" />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-2">
+                  <Skeleton className="w-32 h-5" />
+                  <Skeleton className="w-20 h-6" />
+                </div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Skeleton className="w-16 h-3 rounded-full" />
+                  <Skeleton className="w-1 h-1 rounded-full" variant="circular" />
+                  <Skeleton className="w-20 h-3" />
+                </div>
+                <Skeleton className="w-full h-3" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Mobile Analytics Skeleton
+export function MobileAnalyticsSkeleton() {
+  return (
+    <div className="min-h-screen bg-background pb-20">
+      {/* Header */}
+      <div className="glass-premium border-b border-border/20 p-4 animate-pulse">
+        <Skeleton className="w-32 h-6 mb-4" />
+        <div className="flex gap-2">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className="flex-1 h-10 rounded-xl" />
+          ))}
+        </div>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="p-4 grid grid-cols-2 gap-3">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="glass-premium rounded-xl p-4 border border-border/20 animate-pulse">
+            <Skeleton className="w-16 h-4 mb-2" />
+            <Skeleton className="w-24 h-7 mb-1" />
+            <Skeleton className="w-20 h-3" />
+          </div>
+        ))}
+      </div>
+
+      {/* Chart Skeleton */}
+      <div className="px-4 pb-4">
+        <div className="glass-premium rounded-2xl p-4 border border-border/20 animate-pulse">
+          <Skeleton className="w-32 h-5 mb-4" />
+          <Skeleton className="w-full h-48 rounded-xl" />
+        </div>
+      </div>
+
+      {/* Category Breakdown */}
+      <div className="px-4">
+        <Skeleton className="w-40 h-5 mb-3" />
+        <div className="space-y-2">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="glass-premium rounded-xl p-3 border border-border/20 animate-pulse">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Skeleton className="w-8 h-8 rounded-lg" variant="circular" />
+                  <Skeleton className="w-24 h-4" />
+                </div>
+                <Skeleton className="w-16 h-5" />
+              </div>
+              <Skeleton className="w-full h-2 rounded-full" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Mobile Settings Skeleton
+export function MobileSettingsSkeleton() {
+  return (
+    <div className="min-h-screen bg-background pb-20">
+      {/* Header */}
+      <div className="glass-premium border-b border-border/20 p-4 animate-pulse">
+        <div className="flex items-center gap-3 mb-4">
+          <Skeleton className="w-16 h-16 rounded-2xl" variant="circular" />
+          <div className="flex-1">
+            <Skeleton className="w-32 h-5 mb-2" />
+            <Skeleton className="w-40 h-4" />
+          </div>
+        </div>
+      </div>
+
+      {/* Settings Sections */}
+      <div className="p-4 space-y-4">
+        {Array.from({ length: 3 }).map((_, sectionIdx) => (
+          <div key={sectionIdx}>
+            <Skeleton className="w-24 h-4 mb-3" />
+            <div className="glass-premium rounded-xl border border-border/20 divide-y divide-border/20">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="p-4 flex items-center justify-between animate-pulse">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="w-10 h-10 rounded-xl" variant="circular" />
+                    <div>
+                      <Skeleton className="w-32 h-4 mb-1" />
+                      <Skeleton className="w-40 h-3" />
+                    </div>
+                  </div>
+                  <Skeleton className="w-10 h-6 rounded-full" />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Mobile Profile Skeleton
+export function MobileProfileSkeleton() {
+  return (
+    <div className="min-h-screen bg-background pb-20">
+      {/* Header with Avatar */}
+      <div className="glass-premium border-b border-border/20 p-6 animate-pulse">
+        <div className="flex flex-col items-center text-center">
+          <Skeleton className="w-24 h-24 rounded-3xl mb-4" variant="circular" />
+          <Skeleton className="w-40 h-6 mb-2" />
+          <Skeleton className="w-48 h-4 mb-4" />
+          <div className="flex gap-2">
+            <Skeleton className="w-24 h-9 rounded-xl" />
+            <Skeleton className="w-24 h-9 rounded-xl" />
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Grid */}
+      <div className="p-4 grid grid-cols-3 gap-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="glass-premium rounded-xl p-3 border border-border/20 text-center animate-pulse">
+            <Skeleton className="w-16 h-6 mx-auto mb-1" />
+            <Skeleton className="w-12 h-3 mx-auto" />
+          </div>
+        ))}
+      </div>
+
+      {/* Info Cards */}
+      <div className="px-4 space-y-3">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="glass-premium rounded-xl p-4 border border-border/20 animate-pulse">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Skeleton className="w-10 h-10 rounded-xl" variant="circular" />
+                <div>
+                  <Skeleton className="w-20 h-4 mb-1" />
+                  <Skeleton className="w-32 h-5" />
+                </div>
+              </div>
+              <Skeleton className="w-6 h-6" variant="circular" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}

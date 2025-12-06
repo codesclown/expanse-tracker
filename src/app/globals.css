@@ -305,6 +305,75 @@
   animation: theme-toggle 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* New Premium Animations */
+.animate-fade-in {
+  animation: fadeIn 1s ease-out forwards;
+}
+
+.animate-delay-300 {
+  animation-delay: 0.3s;
+}
+
+.animate-delay-600 {
+  animation-delay: 0.6s;
+}
+
+.animate-delay-900 {
+  animation-delay: 0.9s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced gradient animation */
+.bg-size-200 {
+  background-size: 200% 200%;
+}
+
+/* Staggered animation delays */
+.animate-stagger-1 {
+  animation-delay: 0.1s;
+}
+
+.animate-stagger-2 {
+  animation-delay: 0.2s;
+}
+
+.animate-stagger-3 {
+  animation-delay: 0.3s;
+}
+
+.animate-stagger-4 {
+  animation-delay: 0.4s;
+}
+
+/* Premium hover effects */
+.hover-glow:hover {
+  box-shadow: 0 0 30px hsl(var(--primary) / 0.3);
+}
+
+/* Dark mode specific animations */
+.dark .animate-pulse-glow {
+  animation: pulse-glow-dark 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow-dark {
+  0%, 100% {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px hsl(var(--primary) / 0.8);
+  }
+}
+
 /* Theme toggle button styles */
 .theme-toggle-btn {
   position: relative;
@@ -1204,6 +1273,45 @@ button, input, textarea, select {
     padding-top: calc(env(safe-area-inset-top) + 1rem);
     backdrop-filter: blur(20px) saturate(180%);
   }
+  
+  /* Premium mobile button enhancements */
+  .mobile-premium-button {
+    @apply relative overflow-hidden;
+    backdrop-filter: blur(12px) saturate(180%);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.12),
+      0 2px 8px rgba(0, 0, 0, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  
+  .mobile-premium-button:active {
+    transform: scale(0.95);
+    box-shadow: 
+      0 4px 16px rgba(0, 0, 0, 0.15),
+      0 1px 4px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  
+  /* Premium floating action button */
+  .mobile-fab {
+    @apply relative overflow-hidden;
+    backdrop-filter: blur(16px) saturate(200%);
+    box-shadow: 
+      0 16px 40px rgba(0, 0, 0, 0.15),
+      0 8px 16px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  
+  .mobile-fab:hover {
+    box-shadow: 
+      0 20px 50px rgba(0, 0, 0, 0.2),
+      0 12px 24px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  }
+  
+  .mobile-fab:active {
+    transform: scale(0.92);
+  }
 }
 
 /* Tablet optimizations */
@@ -1586,5 +1694,212 @@ button, input, textarea, select {
     margin-top: -3rem; /* Desktop negative margin */
     padding-left: 1.5rem;
     padding-right: 1.5rem;
+  }
+}
+
+/* --------------------------------------------------
+   PERFORMANCE OPTIMIZATIONS
+-------------------------------------------------- */
+
+/* Enable hardware acceleration for better performance */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+.will-change-auto {
+  will-change: auto;
+}
+
+/* Optimized float animation with reduced GPU usage */
+@keyframes optimized-float {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate3d(0, -8px, 0) rotate(0.5deg);
+  }
+  66% {
+    transform: translate3d(0, -4px, 0) rotate(-0.5deg);
+  }
+}
+
+.animate-float {
+  animation: optimized-float 8s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Optimized slide-in animation */
+@keyframes optimized-slide-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 30px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-slide-in {
+  animation: optimized-slide-in 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  will-change: transform, opacity;
+}
+
+/* Reduce motion for better performance on low-end devices */
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-slide-in,
+  .animate-pulse,
+  .animate-bounce {
+    animation: none !important;
+  }
+  
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* Optimize transforms for better performance */
+.transform-gpu {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Efficient hover states */
+.hover-efficient:hover {
+  transform: translate3d(0, -2px, 0);
+}
+
+/* Optimized glass effect with reduced blur for better performance */
+.glass-optimized {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  will-change: background-color, border-color;
+}
+
+.dark .glass-optimized {
+  background: rgba(30, 30, 35, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Efficient shadow system */
+.shadow-efficient {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-efficient-hover:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Optimized gradient backgrounds */
+.bg-gradient-optimized {
+  background: linear-gradient(135deg, 
+    hsl(var(--background)), 
+    hsl(var(--secondary) / 0.3)
+  );
+}
+
+/* Efficient button states */
+.btn-optimized {
+  transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              background-color 0.2s ease,
+              box-shadow 0.2s ease;
+  will-change: transform;
+}
+
+.btn-optimized:hover {
+  transform: translate3d(0, -1px, 0);
+}
+
+.btn-optimized:active {
+  transform: translate3d(0, 0, 0);
+}
+
+/* Efficient counter animation */
+.counter-optimized {
+  font-variant-numeric: tabular-nums;
+  will-change: contents;
+}
+
+/* Optimized mobile animations */
+@media (max-width: 768px) {
+  .animate-slide-in {
+    animation-duration: 0.4s;
+  }
+  
+  .animate-float {
+    animation-duration: 10s;
+  }
+  
+  /* Reduce blur for better mobile performance */
+  .glass,
+  .glass-optimized {
+    backdrop-filter: blur(12px) saturate(150%);
+  }
+  
+  /* Simplified mobile shadows */
+  .shadow-premium,
+  .shadow-premium-lg {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Container queries for better responsive design */
+@container (max-width: 768px) {
+  .container-optimized {
+    padding: 0.75rem;
+  }
+}
+
+/* Efficient scroll behavior */
+.scroll-smooth {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Optimized focus states */
+.focus-optimized:focus {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+  transition: outline-offset 0.2s ease;
+}
+
+/* Efficient loading states */
+.loading-optimized {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted) / 0.3),
+    hsl(var(--muted) / 0.5),
+    hsl(var(--muted) / 0.3)
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+/* Optimized theme transitions */
+.theme-transition-optimized {
+  transition: background-color 0.2s ease,
+              color 0.2s ease,
+              border-color 0.2s ease;
+}
+
+/* Efficient grid layouts */
+.grid-optimized {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+@media (max-width: 768px) {
+  .grid-optimized {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
   }
 }

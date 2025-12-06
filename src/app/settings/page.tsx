@@ -226,7 +226,7 @@ export default function Settings() {
         <div className="md:hidden fixed top-16 left-0 right-0 z-40 px-3 py-2 bg-background/98 backdrop-blur-xl border-b border-border/5">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-lg font-bold text-foreground">Settings</h1>
+              <h1 className="text-base font-bold text-foreground">Settings</h1>
               <p className="text-xs text-muted-foreground">
                 Account & Preferences
               </p>
@@ -234,11 +234,11 @@ export default function Settings() {
             <button
               onClick={toggleTheme}
               disabled={isTransitioning}
-              className="w-10 h-10 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md disabled:opacity-50"
+              className="w-9 h-9 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md disabled:opacity-50"
             >
-              <div className="relative w-5 h-5">
+              <div className="relative w-4 h-4">
                 <svg
-                  className={`absolute inset-0 w-5 h-5 text-white transition-all duration-300 ${
+                  className={`absolute inset-0 w-4 h-4 text-white transition-all duration-300 ${
                     theme === 'light' ? 'opacity-100 rotate-0' : 'opacity-0 rotate-180'
                   }`}
                   fill="none"
@@ -248,7 +248,7 @@ export default function Settings() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                 </svg>
                 <svg
-                  className={`absolute inset-0 w-5 h-5 text-white transition-all duration-300 ${
+                  className={`absolute inset-0 w-4 h-4 text-white transition-all duration-300 ${
                     theme === 'dark' ? 'opacity-100 rotate-0' : 'opacity-0 -rotate-180'
                   }`}
                   fill="none"
@@ -264,53 +264,53 @@ export default function Settings() {
 
         <main className="max-w-3xl mx-auto px-3 md:px-6 lg:px-8 mt-16 md:-mt-12 pb-safe relative z-10 space-y-4 md:space-y-6">
           {/* Slick Profile Card */}
-          <div className="glass-premium rounded-2xl p-6 border border-border/50 shadow-premium mb-6 animate-slide-in relative overflow-hidden">
+          <div className="glass-premium rounded-xl md:rounded-2xl p-4 md:p-6 border border-border/20 shadow-premium mb-4 md:mb-6 animate-slide-in relative overflow-hidden">
             {/* Subtle Background Pattern */}
             <div className="absolute inset-0 opacity-3">
               <div className="absolute inset-0 bg-gradient-to-br from-violet-500/20 via-purple-500/20 to-indigo-500/20" />
             </div>
             
-            <div className="relative flex items-center gap-4">
+            <div className="relative flex items-center gap-3 md:gap-4">
               <div className="relative flex-shrink-0">
-                <div className="w-16 h-16 bg-gradient-to-br from-violet-500 via-purple-600 to-indigo-600 rounded-2xl flex items-center justify-center text-white font-semibold text-xl shadow-lg">
+                <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-violet-500 via-purple-600 to-indigo-600 rounded-xl md:rounded-2xl flex items-center justify-center text-white font-semibold text-base md:text-xl shadow-lg">
                   {user?.name?.charAt(0).toUpperCase() || 'U'}
                 </div>
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center shadow-md">
-                  <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="absolute -bottom-0.5 -right-0.5 md:-bottom-1 md:-right-1 w-4 h-4 md:w-5 md:h-5 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center shadow-md">
+                  <svg className="w-2 h-2 md:w-3 md:h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
               </div>
               
               <div className="flex-1 min-w-0">
-                <h2 className="text-xl font-semibold text-foreground mb-1 truncate">
+                <h2 className="text-base md:text-xl font-semibold text-foreground mb-0.5 md:mb-1 truncate">
                   {user?.name || 'User'}
                 </h2>
-                <p className="text-sm text-muted-foreground mb-2 truncate">
+                <p className="text-xs md:text-sm text-muted-foreground mb-1.5 md:mb-2 truncate">
                   {user?.email || 'user@example.com'}
                 </p>
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-full border border-emerald-200/30 dark:border-emerald-800/30">
-                    <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                    <span className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                <div className="flex flex-wrap items-center gap-1.5 md:gap-2">
+                  <div className="flex items-center gap-1 md:gap-1.5 px-2 md:px-2.5 py-0.5 md:py-1 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-full border border-emerald-200/30 dark:border-emerald-800/30">
+                    <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                    <span className="text-[10px] md:text-xs font-medium text-emerald-700 dark:text-emerald-300">
                       Active
                     </span>
                   </div>
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 rounded-full border border-violet-200/30 dark:border-violet-800/30">
-                    <svg className="w-2.5 h-2.5 text-violet-600 dark:text-violet-400" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="flex items-center gap-1 md:gap-1.5 px-2 md:px-2.5 py-0.5 md:py-1 bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 rounded-full border border-violet-200/30 dark:border-violet-800/30">
+                    <svg className="w-2 h-2 md:w-2.5 md:h-2.5 text-violet-600 dark:text-violet-400" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                     </svg>
-                    <span className="text-xs font-medium text-violet-700 dark:text-violet-300">
+                    <span className="text-[10px] md:text-xs font-medium text-violet-700 dark:text-violet-300">
                       Pro
                     </span>
                   </div>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="hidden md:inline text-xs text-muted-foreground">
                     Since {new Date().getFullYear()}
                   </span>
                 </div>
               </div>
               
-              <div className="flex-shrink-0">
+              <div className="hidden md:flex flex-shrink-0">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
@@ -323,43 +323,43 @@ export default function Settings() {
 
           {/* Slick Menu Sections */}
           {menuItems.map((section, sectionIndex) => (
-            <div key={section.title} className="mb-6 animate-slide-in" style={{ animationDelay: `${(sectionIndex + 1) * 80}ms` }}>
-              <div className="flex items-center gap-2 mb-3 px-1">
-                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">{section.title}</h3>
+            <div key={section.title} className="mb-4 md:mb-6 animate-slide-in" style={{ animationDelay: `${(sectionIndex + 1) * 80}ms` }}>
+              <div className="flex items-center gap-2 mb-2 md:mb-3 px-1">
+                <h3 className="text-xs md:text-sm font-semibold text-foreground uppercase tracking-wide">{section.title}</h3>
                 <div className="flex-1 h-px bg-gradient-to-r from-border/50 to-transparent"></div>
               </div>
               
-              <div className="glass rounded-2xl border border-border/30 shadow-lg overflow-hidden">
+              <div className="glass-premium rounded-xl md:rounded-2xl border border-border/20 shadow-premium overflow-hidden">
                 {section.items.map((item, index) => (
                   <button
                     key={item.label}
                     onClick={item.action}
-                    className="w-full px-4 py-4 flex items-center justify-between hover:bg-gradient-to-r hover:from-violet-50/30 hover:to-purple-50/30 dark:hover:from-violet-900/10 dark:hover:to-purple-900/10 transition-all duration-200 border-b border-border/20 last:border-0 group relative"
+                    className="w-full px-3 py-3 md:px-4 md:py-4 flex items-center justify-between hover:bg-gradient-to-r hover:from-violet-50/30 hover:to-purple-50/30 dark:hover:from-violet-900/10 dark:hover:to-purple-900/10 transition-all duration-200 border-b border-border/10 last:border-0 group relative active:scale-[0.99]"
                   >
-                    <div className="flex items-center gap-3 relative z-10">
-                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-100/80 to-purple-100/80 dark:from-violet-900/20 dark:to-purple-900/20 flex items-center justify-center text-lg group-hover:scale-105 transition-all duration-200 shadow-sm">
+                    <div className="flex items-center gap-2.5 md:gap-3 relative z-10">
+                      <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg md:rounded-xl bg-gradient-to-br from-violet-100/80 to-purple-100/80 dark:from-violet-900/20 dark:to-purple-900/20 flex items-center justify-center text-base md:text-lg group-hover:scale-105 transition-all duration-200 shadow-sm">
                         {item.icon}
                       </div>
                       <div className="text-left">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <p className="text-sm font-medium text-foreground group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                        <div className="flex items-center gap-1.5 md:gap-2 mb-0.5">
+                          <p className="text-xs md:text-sm font-medium text-foreground group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
                             {item.label}
                           </p>
                           {item.badge && (
-                            <span className="px-2 py-0.5 bg-gradient-to-r from-amber-100 to-yellow-100 dark:from-amber-900/20 dark:to-yellow-900/20 text-amber-700 dark:text-amber-300 rounded-md text-xs font-medium border border-amber-200/30 dark:border-amber-800/30">
+                            <span className="px-1.5 py-0.5 md:px-2 bg-gradient-to-r from-amber-100 to-yellow-100 dark:from-amber-900/20 dark:to-yellow-900/20 text-amber-700 dark:text-amber-300 rounded text-[10px] md:text-xs font-medium border border-amber-200/30 dark:border-amber-800/30">
                               {item.badge}
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground group-hover:text-muted-foreground/70 transition-colors">
+                        <p className="text-[10px] md:text-xs text-muted-foreground group-hover:text-muted-foreground/70 transition-colors">
                           {item.description}
                         </p>
                       </div>
                     </div>
                     
                     <div className="relative z-10 flex items-center">
-                      <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-violet-500/5 to-purple-500/5 dark:from-violet-400/5 dark:to-purple-400/5 flex items-center justify-center group-hover:bg-gradient-to-br group-hover:from-violet-500/10 group-hover:to-purple-500/10 transition-all duration-200">
-                        <svg className="w-3 h-3 text-muted-foreground group-hover:text-violet-600 dark:group-hover:text-violet-400 group-hover:translate-x-0.5 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="w-5 h-5 md:w-6 md:h-6 rounded-lg bg-gradient-to-br from-violet-500/5 to-purple-500/5 dark:from-violet-400/5 dark:to-purple-400/5 flex items-center justify-center group-hover:bg-gradient-to-br group-hover:from-violet-500/10 group-hover:to-purple-500/10 transition-all duration-200">
+                        <svg className="w-2.5 h-2.5 md:w-3 md:h-3 text-muted-foreground group-hover:text-violet-600 dark:group-hover:text-violet-400 group-hover:translate-x-0.5 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                       </div>
@@ -374,21 +374,21 @@ export default function Settings() {
           <div className="relative animate-slide-in" style={{ animationDelay: '320ms' }}>
             <button
               onClick={handleLogout}
-              className="w-full p-4 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-2xl shadow-lg hover:shadow-xl hover:shadow-red-500/20 flex items-center gap-3 transition-all duration-200 hover:scale-[0.99] group relative overflow-hidden"
+              className="w-full p-3 md:p-4 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-xl md:rounded-2xl shadow-lg hover:shadow-xl hover:shadow-red-500/20 flex items-center gap-2.5 md:gap-3 transition-all duration-200 active:scale-[0.98] group relative overflow-hidden"
             >
-              <div className="w-9 h-9 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center group-hover:scale-105 transition-all duration-200">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg md:rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center group-hover:scale-105 transition-all duration-200">
+                <svg className="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
               </div>
               
               <div className="flex-1 text-left">
-                <p className="text-sm font-semibold">Sign Out</p>
-                <p className="text-xs text-white/70">End your current session</p>
+                <p className="text-xs md:text-sm font-semibold">Sign Out</p>
+                <p className="text-[10px] md:text-xs text-white/70">End your current session</p>
               </div>
               
-              <div className="w-6 h-6 rounded-lg bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all duration-200">
-                <svg className="w-3 h-3 group-hover:translate-x-0.5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-5 h-5 md:w-6 md:h-6 rounded-lg bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all duration-200">
+                <svg className="w-2.5 h-2.5 md:w-3 md:h-3 group-hover:translate-x-0.5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </div>
